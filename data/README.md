@@ -4,6 +4,8 @@ This is a starter package for collecting the project data. It contains source ca
 
 For the actual official documents to collect first, use the [real source guide](sources/REAL_DATA_GUIDE.md) and its [machine-readable source list](sources/real_sources.csv).
 
+A [populated source passage CSV](sources/source_passages_starter.csv) contains eight real source-backed records. It is a starter sample pending domain review; its text is paraphrased and must not be treated as final legal-answer evidence.
+
 | File | Use | Owner | Release condition |
 |---|---|---|---|
 | [Source register](sources/source_register.csv) | Track official source candidates and provenance | Thulasi | Reviewed status and exact instrument URL |

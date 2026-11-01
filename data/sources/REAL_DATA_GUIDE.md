@@ -1,6 +1,6 @@
 # Real source material for the MVP
 
-The [real source list](real_sources.csv) names seven actual official resources for the project's first corpus. These are primary legal or regulatory texts, except the TKDL public overview, which is background. The sources have real URLs; they are **not yet extracted into reviewed passages**. The earlier [candidate register](source_register.csv) remains a collection tracker. These files should not be counted as a finished knowledge dataset.
+The [real source list](real_sources.csv) names seven actual official resources for the project's first corpus. The [populated passage CSV](source_passages_starter.csv) provides eight source-backed paraphrases with locators. These are a small, source-checked sample pending domain review and amendment checks, **not** a completed production corpus. The earlier [candidate register](source_register.csv) remains a collection tracker.
 
 | Topic | Real source to collect | What it supports |
 |---|---|---|
