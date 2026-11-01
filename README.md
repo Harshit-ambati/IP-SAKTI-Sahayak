@@ -14,6 +14,8 @@ IP-SAKTI Sahayak is a six-member capstone project. The intended system guides us
 
 - [Team module index and handoffs](docs/work-plan/README.md)
 - [Complete 16-week plan: scope, schedule, ownership, workflow, evaluation and risks](docs/work-plan/MASTER_PLAN.md)
+- [Data package and dataset inventory](data/README.md)
+- [Data collection and evaluation methodology](docs/methodology.md)
 
 | Member | Primary responsibility | Individual module |
 |---|---|---|
