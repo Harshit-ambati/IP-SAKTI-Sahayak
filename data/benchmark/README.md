@@ -1,6 +1,6 @@
 # Benchmark dataset protocol
 
-The twelve rows in [scenarios_dev.csv](scenarios_dev.csv) are synthetic prompts for early interface and routing work. They are not a validated legal-answer benchmark. No answer or citation should be scored as correct until Thulasi checks the expected route and official evidence.
+This is the protocol for a future source-grounded evaluation dataset. No validated benchmark cases have been published yet. The earlier unreviewed synthetic fixture CSV was removed. No answer or citation should be scored as correct until Thulasi checks the expected route and official evidence.
 
 ## Canonical scenario fields
 

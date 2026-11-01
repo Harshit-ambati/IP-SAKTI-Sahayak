@@ -1,26 +1,7 @@
-# Project data package
+# Project data
 
-This is a starter package for collecting the project data. It contains source candidates and synthetic test prompts, not a reviewed legal corpus or completed benchmark. See [methodology](../docs/methodology.md) for collection and evaluation steps.
+The [knowledge corpus](corpus/README.md) is the project's real-source dataset. It currently has [seven official document records](corpus/documents.csv) and [eight source-backed passage summaries](corpus/passages.csv). The summaries still need domain and amendment review before they may support substantive answers.
 
-For the actual official documents to collect first, use the [real source guide](sources/REAL_DATA_GUIDE.md) and its [machine-readable source list](sources/real_sources.csv).
+The [benchmark protocol](benchmark/README.md) defines a separate evaluation dataset to be created by the team: realistic synthetic questions with source-checked expected routes and evidence. No validated benchmark CSV exists yet. The earlier unreviewed fixture questions and empty templates were removed to avoid implying otherwise.
 
-A [populated source passage CSV](sources/source_passages_starter.csv) contains eight real source-backed records. It is a starter sample pending domain review; its text is paraphrased and must not be treated as final legal-answer evidence.
-
-| File | Use | Owner | Release condition |
-|---|---|---|---|
-| [Source register](sources/source_register.csv) | Track official source candidates and provenance | Thulasi | Reviewed status and exact instrument URL |
-| [Provision template](sources/provisions.template.csv) | One row per citable passage | Thulasi | Verbatim checked against official source |
-| [Development scenarios](benchmark/scenarios_dev.csv) | Synthetic prompts for early routing and safety tests | Sabeena | Gold labels and evidence independently reviewed |
-| [Benchmark guide](benchmark/README.md) | Scenario schema and split rules | Sabeena | Frozen development/holdout split |
-| [Glossary template](glossary/terms.template.csv) | Controlled legal and Ayurveda terms | Deepshika | Hindi and regional terms reviewed |
-
-## Required data by the midpoint
-
-1. Approved public-source corpus: target 25-35 useful official documents or a smaller set that covers all supported topics. Store source metadata, the approved passages and a version manifest.
-2. Evaluation set: target 120 canonical synthetic cases, split 60 development and 60 held out. Include six formulation routes, evidence questions, unclear cases and adversarial/jurisdiction cases.
-3. Language set: 30 selected cases with reviewed Hindi and regional-language versions, kept in the same development or holdout split as the English originals.
-4. Human review records: who reviewed each provision, expected answer, translation and final output; date, decision and disagreement.
-
-The application retrieves sources; it does not need a patient dataset or a model trained from scratch. Use only public information whose use and redistribution have been checked. Do not commit user formulations, restricted TKDL records, credentials or raw copies whose reuse terms are unclear.
-
-Create active corpus and holdout files only after review. Suggested later files: `sources/approved.csv`, `sources/provisions.csv`, `sources/corpus_manifest.json`, `benchmark/scenarios_holdout.csv`, `benchmark/translations.csv`, `evaluation/results.csv`. Record actual metrics in results, never in the templates.
+See the [collection and evaluation method](../docs/methodology.md) and the [16-week work plan](../docs/work-plan/MASTER_PLAN.md) for ownership and targets. Do not commit private formulations, restricted TKDL records, credentials or unapproved full-text copies.
