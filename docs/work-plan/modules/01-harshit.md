@@ -14,7 +14,7 @@
 
 - **Primary tasks:** define module boundaries and response contracts; implement ingestion adapters, provision-aware chunking, exact-term/semantic retrieval, evidence-constrained generation, citation validation, abstention and jurisdiction isolation; integrate the system and lead technical decisions.
 - **Supporting tasks:** mentor difficult fixes, review critical PRs, maintain architectural decisions, compare retrieval baseline against hybrid retrieval, assemble reproducible release and evaluation configuration.
-- **Inputs needed:** three sample sources and draft rules from Thulasi by week 2; API fixtures from Suresh; glossary constraints from Deepshika; benchmark format from Sabeena.
+- **Inputs needed:** the existing seven-document/eight-passage [corpus inventory](../../../data/corpus/README.md), with at least three passages reviewed by Thulasi for the week-2 ingestion gate; API fixtures from Suresh; glossary constraints from Deepshika; benchmark format from Sabeena. Exclude unreviewed rows from substantive answers.
 - **Outputs:** architecture note, versioned schemas, retrieval/generation module, claim-evidence validator, safety policy, evaluation runner and integrated release.
 - **Acceptance:** every emitted citation resolves to a real indexed passage and provision locator; wrong-jurisdiction sources are blocked; missing evidence yields clarification/abstention; citation support and retrieval meet section 6 gates. Automatic ID checks are not presented as proof of legal entailment.
 - **Dependencies and handoff:** start with synthetic fixtures in week 1 and three real documents in week 2; ingest weekly batches instead of waiting for the entire corpus.

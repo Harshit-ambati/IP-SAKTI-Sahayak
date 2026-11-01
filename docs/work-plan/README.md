@@ -2,7 +2,7 @@
 
 [Project README](../../README.md) · [Full 16-week execution plan](MASTER_PLAN.md)
 
-This directory contains the work allocation for IP-SAKTI Sahayak (SIH26045). These documents describe planned work; they do not indicate that the application, corpus or benchmark has been implemented.
+This directory contains the work allocation for IP-SAKTI Sahayak (SIH26045). The [real-source corpus CSVs](../../data/corpus/README.md) now contain seven document records and eight preliminary passage summaries pending domain review. The application and validated benchmark have not been implemented.
 
 ## Individual ownership
 

@@ -14,8 +14,8 @@
 
 - **Primary tasks:** research public official sources; record provenance and access rights; extract provision locators; build formulation questions, category rules and bounded IP/ABS/TK routing tables.
 - **Supporting tasks:** create source-grounded expected answers, verify corpus revisions, review citation support, document unresolved interpretations and international scope boundaries.
-- **Inputs needed:** frozen MVP topic list, metadata template and ingestion feedback; public source portals, not private datasets.
-- **Outputs:** source register, approved provision extracts, version/change log, rule table with question/condition/route/source fields, coverage map and expected-evidence annotations.
+- **Inputs needed:** frozen MVP topic list, the existing [corpus documents and passages](../../../data/corpus/README.md), and ingestion feedback; public source portals, not private datasets.
+- **Outputs:** reviewed and expanded corpus CSVs, approved provision extracts, version/change log, rule table with question/condition/route/source fields, coverage map and expected-evidence annotations. The present eight paraphrases still need domain and amendment review.
 - **Acceptance:** at least 25 useful approved documents or a documented smaller corpus covering every supported topic; every source has URL, authority, jurisdiction, publication/effective date and version where available, capture date, checksum, access/reuse status and reviewer. Missing dates are explicitly unknown, never invented; uncertain legal status excludes an item from definitive guidance. Every decision rule cites a provision; ambiguity produces clarification/referral.
 - **Dependencies and handoff:** deliver three records in week 2, 10 approved sources in week 4, around 20 in week 6 and baseline coverage in week 8. One reviewer checks a sample from each batch before activation.
 - **Effort:** 125 hours: research 45; metadata/extraction 25; rules 25; evidence annotation 20; freshness/report review 10.

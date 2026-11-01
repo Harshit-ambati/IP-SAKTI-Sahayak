@@ -12,7 +12,7 @@
 
 ## Module specification
 
-- **Primary tasks:** maintain scenario files and expected-result templates; execute repeatable test checklists; record results, defects and user feedback; write the guide and organize report/presentation evidence.
+- **Primary tasks:** create the synthetic but source-grounded scenarios described in the [benchmark protocol](../../../data/benchmark/README.md); maintain expected-result records; execute repeatable test checklists; record results, defects and user feedback; write the guide and organize report/presentation evidence. The earlier unreviewed fixture CSV was removed, so no validated cases exist yet.
 - **Supporting tasks:** coordinate six to eight consenting student/potential-user walkthroughs where feasible, maintain milestone checklist and rehearse the live demo with Akshay. Usability participants do not certify legal correctness.
 - **Inputs needed:** test template from Harshit, source-based labels from Thulasi and language fixtures from Deepshika. Sabeena records legal evaluations but does not independently determine legal truth.
 - **Outputs:** 120 canonical scenarios, test-run ledger, issue evidence, user guide, feedback summary, report draft and presentation outline.

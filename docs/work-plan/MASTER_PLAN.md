@@ -4,6 +4,8 @@ Status: planned work; implementation and evaluation results are not yet availabl
 
 All weeks are relative to kickoff. Confirm the actual institutional deadline at kickoff; dated SIH details in the background report are not the schedule used here. All numerical targets are proposed acceptance gates, not achieved results or legal validation.
 
+**Data baseline (1 November 2026):** [data/corpus/documents.csv](../../data/corpus/documents.csv) has seven real official-source records and [data/corpus/passages.csv](../../data/corpus/passages.csv) has eight source-backed paraphrases. The passage rows remain marked for domain and amendment review; none is approved as final legal-answer evidence. The [benchmark protocol](../../data/benchmark/README.md) exists, but the 120 source-grounded evaluation cases and language variants remain to be created. The corpus CSVs hold source metadata and summaries, not full official document text. This baseline does not complete the week-2 or week-8 review gates.
+
 Start with the [work-plan index](README.md) or your [individual module](modules/). This master plan is the source of truth for shared scope, milestones and release gates. Keep member files consistent when the plan changes.
 
 ## 1. Scope, assumptions and achievable MVP
@@ -59,8 +61,8 @@ Harshit owns the hardest technical work and cross-module integration. Suresh is 
 
 - **Primary tasks:** research public official sources; record provenance and access rights; extract provision locators; build formulation questions, category rules and bounded IP/ABS/TK routing tables.
 - **Supporting tasks:** create source-grounded expected answers, verify corpus revisions, review citation support, document unresolved interpretations and international scope boundaries.
-- **Inputs needed:** frozen MVP topic list, metadata template and ingestion feedback; public source portals, not private datasets.
-- **Outputs:** source register, approved provision extracts, version/change log, rule table with question/condition/route/source fields, coverage map and expected-evidence annotations.
+- **Inputs needed:** frozen MVP topic list, the existing [document and passage CSVs](../../data/corpus/README.md), and ingestion feedback; public source portals, not private datasets.
+- **Outputs:** expanded and reviewed corpus CSVs, approved provision extracts, version/change log, rule table with question/condition/route/source fields, coverage map and expected-evidence annotations.
 - **Acceptance:** at least 25 useful approved documents or a documented smaller corpus covering every supported topic; every source has URL, authority, jurisdiction, publication/effective date and version where available, capture date, checksum, access/reuse status and reviewer. Missing dates are explicitly unknown, never invented; uncertain legal status excludes an item from definitive guidance. Every decision rule cites a provision; ambiguity produces clarification/referral.
 - **Dependencies and handoff:** deliver three records in week 2, 10 approved sources in week 4, around 20 in week 6 and baseline coverage in week 8. One reviewer checks a sample from each batch before activation.
 - **Effort:** 125 hours: research 45; metadata/extraction 25; rules 25; evidence annotation 20; freshness/report review 10.
@@ -87,7 +89,7 @@ Harshit owns the hardest technical work and cross-module integration. Suresh is 
 
 ### Sabeena: benchmark records, user documentation and feedback
 
-- **Primary tasks:** maintain scenario files and expected-result templates; execute repeatable test checklists; record results, defects and user feedback; write the guide and organize report/presentation evidence.
+- **Primary tasks:** create source-grounded benchmark cases under the [benchmark protocol](../../data/benchmark/README.md), maintain expected-result records, execute repeatable test checklists, record results, defects and user feedback, write the guide and organize report/presentation evidence. The earlier unreviewed fixture CSV has been removed.
 - **Supporting tasks:** coordinate six to eight consenting student/potential-user walkthroughs where feasible, maintain milestone checklist and rehearse the live demo with Akshay. Usability participants do not certify legal correctness.
 - **Inputs needed:** test template from Harshit, source-based labels from Thulasi and language fixtures from Deepshika. Sabeena records legal evaluations but does not independently determine legal truth.
 - **Outputs:** 120 canonical scenarios, test-run ledger, issue evidence, user guide, feedback summary, report draft and presentation outline.
@@ -180,6 +182,8 @@ Routine PRs need one independent peer review and passing checks. Suresh or Harsh
 
 ### Source collection and activation
 
+The existing corpus CSVs are the starting inventory. They are not a ready-to-serve legal answer database. Populate approved passage rows from the official instrument after checking the exact provision, current amendments and source status. Keep unapproved rows out of the answer index.
+
 1. Thulasi opens a source issue tied to a supported question or routing rule. Prefer statutes, gazettes, rules, official regulators and treaty instruments; distinguish guidance from binding text and drafts from operative instruments.
 2. Record source ID, title, URL, issuing authority, country/jurisdiction, instrument type, publication/effective dates when available, version/amendment/supersession status, retrieval date, checksum and access/reuse conditions. A portal landing page is a discovery link, not a provision citation.
 3. Preserve authorized source copies or refetch instructions. Public visibility does not automatically grant unrestricted redistribution. Never scrape restricted TKDL material or use unofficial mirrors as controlling authority.
@@ -215,8 +219,8 @@ Display evidence status as supported, partial or insufficient, with reasons such
 | Artifact | Required contents | Due |
 |---|---|---|
 | Code release | UI/API/engine, staff access controls, rule definitions, migrations, dependency lockfiles, example configuration without secrets, run/install scripts, relevant automated tests and release tag | RC W14; final W16 |
-| Source corpus | Approximately 25-35 approved sources; source/provision records, lawful snapshots or retrieval instructions, version manifest/checksums, coverage map, exclusions and change log | Baseline W8; recheck W15 |
-| Benchmark | 120 canonical cases: 60 classification cases (10 per provisional route), 20 IP/ABS/TK evidence cases, 20 insufficient/conflicting-evidence cases and 20 adversarial/jurisdiction/privacy cases. Label answerability separately and ensure at least 20 unanswerable held-out cases across groups. | Frozen W7 |
+| Source corpus | Grow the current seven-document/eight-paraphrase inventory to approximately 25-35 approved sources or a documented smaller set covering all enabled topics; include reviewed provision records, lawful snapshots or retrieval instructions, version manifest/checksums, coverage map, exclusions and change log | Baseline W8; recheck W15 |
+| Benchmark | Create 120 source-grounded canonical synthetic cases: 60 classification cases (10 per provisional route), 20 IP/ABS/TK evidence cases, 20 insufficient/conflicting-evidence cases and 20 adversarial/jurisdiction/privacy cases. Label answerability separately and ensure at least 20 unanswerable held-out cases across groups. No validated cases are currently published. | Frozen W7 |
 | Language benchmark | Thirty selected canonical cases also rendered in Hindi and the regional language: 10 development and 20 holdout cases. This adds 60 prompt variants, producing 180 prompts in total; report unique-case and variant counts separately. | W10 |
 | Evaluation package | 60 canonical development and 60 canonical holdout cases, with the language variants kept in the same split as their originals; raw outputs, rubrics, scores, denominators, reviewers, disagreement log and model/corpus/release versions | W13-14 |
 | User guide | Installation/user quick start, guided intake, jurisdiction/language controls, source interpretation, scope limits, abstention/referral, privacy/deletion and troubleshooting | W10; final W15 |
