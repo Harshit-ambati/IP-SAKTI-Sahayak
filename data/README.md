@@ -2,6 +2,8 @@
 
 This is a starter package for collecting the project data. It contains source candidates and synthetic test prompts, not a reviewed legal corpus or completed benchmark. See [methodology](../docs/methodology.md) for collection and evaluation steps.
 
+For the actual official documents to collect first, use the [real source guide](sources/REAL_DATA_GUIDE.md) and its [machine-readable source list](sources/real_sources.csv).
+
 | File | Use | Owner | Release condition |
 |---|---|---|---|
 | [Source register](sources/source_register.csv) | Track official source candidates and provenance | Thulasi | Reviewed status and exact instrument URL |
