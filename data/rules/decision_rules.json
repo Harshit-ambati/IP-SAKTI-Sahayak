@@ -1,0 +1,265 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "version": "1.0.0",
+  "task_id": "T-03",
+  "module": "thulasi-decision-rules",
+  "owner": "Thulasi",
+  "reviewed_by": ["Harshit", "Deepshika"],
+  "effective_date": "2026-11-14",
+  "status": "in_review_draft_pr",
+  "description": "Machine-readable contract for formulation intake, provisional classification, Indian patent/TK screening, biological diversity (ABS) flags, and safe expert referral.",
+  "intake_fields": [
+    {
+      "id": "intended_use",
+      "type": "enum",
+      "values": ["medicinal", "food_dietary", "cosmetic", "other"],
+      "missing_prompt": "Please specify the primary intended purpose: Is the product meant to treat/prevent a disease, serve as a daily dietary food supplement, or provide external cosmetic care?"
+    },
+    {
+      "id": "ingredients_classical_status",
+      "type": "enum",
+      "values": ["all_classical", "partial_classical", "synthetic_added", "unknown"],
+      "missing_prompt": "Please confirm the source of active ingredients: Are all botanical/mineral ingredients documented in First Schedule authoritative Ayurvedic texts?"
+    },
+    {
+      "id": "formulation_source",
+      "type": "enum",
+      "values": ["exact_classical_recipe", "proprietary_combination", "modified_dosage_form", "novel_unlisted"],
+      "missing_prompt": "Is the formulation prepared strictly according to an unchanged recipe from an authoritative Ayurvedic book, or is it a proprietary combination or modified dosage form?"
+    },
+    {
+      "id": "administration_route",
+      "type": "enum",
+      "values": ["oral", "topical", "nasal_ocular", "parenteral", "unknown"],
+      "missing_prompt": "What is the intended route of administration (e.g. oral, topical)? Note: Injectable/parenteral administration is strictly prohibited for Ayurvedic medicines and Ayurveda Aahara."
+    },
+    {
+      "id": "phytopharmaceutical_criteria",
+      "type": "boolean",
+      "missing_prompt": "Is the product a purified, standardized fraction characterized by at least four bioactive or phytochemical markers?"
+    },
+    {
+      "id": "food_authoritative_text",
+      "type": "boolean",
+      "missing_prompt": "Is the recipe or ingredient described in authoritative Ayurvedic books listed in Schedule A of the Ayurveda Aahara Regulations 2022?"
+    },
+    {
+      "id": "disease_cure_claims",
+      "type": "boolean",
+      "missing_prompt": "Does the product labelling or advertising make any claims to prevent, treat, mitigate, or cure any human disease or disorder?"
+    },
+    {
+      "id": "synthetic_nutrients_added",
+      "type": "boolean",
+      "missing_prompt": "Are any synthetic vitamins, minerals, amino acids, or chemical additives added to the formulation?"
+    },
+    {
+      "id": "biological_resource_india",
+      "type": "boolean",
+      "missing_prompt": "Does the formulation utilize biological resources (plants, microbes, animals) or associated traditional knowledge accessed from India?"
+    },
+    {
+      "id": "patent_filing_intended",
+      "type": "boolean",
+      "missing_prompt": "Is the applicant intending to apply for a patent in India or internationally for this formulation?"
+    },
+    {
+      "id": "synergistic_data_available",
+      "type": "boolean",
+      "missing_prompt": "Does the applicant possess comparative experimental data demonstrating an unexpected synergistic technical effect exceeding mere aggregation of component properties?"
+    }
+  ],
+  "rules": [
+    {
+      "rule_id": "RULE-CLS-01",
+      "domain": "product_classification",
+      "name": "Classical Ayurvedic Medicine",
+      "condition": "intended_use == 'medicinal' and ingredients_classical_status == 'all_classical' and formulation_source == 'exact_classical_recipe' and administration_route != 'parenteral'",
+      "outcome": {
+        "route": "classical_ayurvedic_medicine",
+        "action": "provisional_classification",
+        "licensing_authority": "State AYUSH Licensing Authority",
+        "legal_basis": "Drugs and Cosmetics Act, 1940 Section 3(a) read with First Schedule; Drugs Rules, 1945 Rule 158-B(I)",
+        "source_ids": ["REAL-002", "REAL-009"],
+        "passage_locators": ["PASS-009", "PASS-017", "PASS-023"],
+        "disclaimer_required": true
+      }
+    },
+    {
+      "rule_id": "RULE-CLS-02",
+      "domain": "product_classification",
+      "name": "Patent or Proprietary Ayurvedic Medicine",
+      "condition": "intended_use == 'medicinal' and ingredients_classical_status == 'all_classical' and formulation_source in ['proprietary_combination', 'modified_dosage_form'] and administration_route != 'parenteral'",
+      "outcome": {
+        "route": "patent_or_proprietary_ayurvedic_medicine",
+        "action": "provisional_classification",
+        "licensing_authority": "State AYUSH Licensing Authority",
+        "legal_basis": "Drugs and Cosmetics Act, 1940 Section 3(h); Drugs Rules, 1945 Rule 158-B(II)",
+        "source_ids": ["REAL-002", "REAL-009"],
+        "passage_locators": ["PASS-010", "PASS-018"],
+        "evidentiary_requirement": "Published scientific literature or safety/efficacy data under Rule 158-B(II)",
+        "disclaimer_required": true
+      }
+    },
+    {
+      "rule_id": "RULE-CLS-03",
+      "domain": "product_classification",
+      "name": "Novel / Non-Classical Formulation Referral",
+      "condition": "intended_use == 'medicinal' and (ingredients_classical_status in ['partial_classical', 'synthetic_added'] or formulation_source == 'novel_unlisted') and not phytopharmaceutical_criteria",
+      "outcome": {
+        "route": "novel_non_classical_referral",
+        "action": "needs_expert_referral",
+        "non_forcing_notice": "Product contains synthetic substances or botanicals outside First Schedule classical ASU texts. Cannot be classified under standard AYUSH licensing.",
+        "legal_basis": "Drugs and Cosmetics Act, 1940 non-ASU provisions; New Drugs and Clinical Trials Rules, 2019",
+        "source_ids": ["REAL-002"],
+        "passage_locators": ["PASS-009", "PASS-010"],
+        "referral_packet_required": true
+      }
+    },
+    {
+      "rule_id": "RULE-CLS-04",
+      "domain": "product_classification",
+      "name": "Phytopharmaceutical Drug Referral",
+      "condition": "intended_use == 'medicinal' and phytopharmaceutical_criteria == true and administration_route != 'parenteral'",
+      "outcome": {
+        "route": "phytopharmaceutical_referral",
+        "action": "needs_expert_referral",
+        "non_forcing_notice": "Standardized fraction with >=4 bioactives falls under CDSCO modern drug regulatory framework, not state AYUSH licensing.",
+        "legal_basis": "Drugs Rules, 1945 Rule 2(eb), Rule 122E, Schedule Y Appendix I/IA",
+        "source_ids": ["REAL-002", "REAL-012", "REAL-019"],
+        "passage_locators": ["PASS-012", "PASS-022"],
+        "referral_packet_required": true
+      }
+    },
+    {
+      "rule_id": "RULE-CLS-05",
+      "domain": "product_classification",
+      "name": "Ayurveda Aahara Food",
+      "condition": "intended_use == 'food_dietary' and food_authoritative_text == true and disease_cure_claims == false and synthetic_nutrients_added == false and administration_route != 'parenteral'",
+      "outcome": {
+        "route": "ayurveda_aahara",
+        "action": "provisional_classification",
+        "licensing_authority": "Food Safety and Standards Authority of India (FSSAI)",
+        "legal_basis": "Food Safety and Standards (Ayurveda Aahara) Regulations, 2022 Regulation 2(b) & Regulation 8; Schedule A",
+        "source_ids": ["REAL-003", "REAL-011"],
+        "passage_locators": ["PASS-003", "PASS-004", "PASS-021", "PASS-024"],
+        "mandatory_labels": ["Ayurveda Aahara Logo", "No disease prevention/cure claims"],
+        "disclaimer_required": true
+      }
+    },
+    {
+      "rule_id": "RULE-CLS-06",
+      "domain": "product_classification",
+      "name": "Ayurvedic Cosmetic",
+      "condition": "intended_use == 'cosmetic' and administration_route == 'topical' and disease_cure_claims == false",
+      "outcome": {
+        "route": "ayurvedic_cosmetic",
+        "action": "provisional_classification",
+        "legal_basis": "Drugs and Cosmetics Act, 1940 Section 3(aaa)",
+        "source_ids": ["REAL-002"],
+        "passage_locators": ["PASS-011"],
+        "disclaimer_required": true
+      }
+    },
+    {
+      "rule_id": "RULE-PAT-01",
+      "domain": "patent_screening",
+      "name": "Section 3(p) Traditional Knowledge Exclusion",
+      "condition": "patent_filing_intended == true and ingredients_classical_status == 'all_classical' and formulation_source == 'exact_classical_recipe'",
+      "outcome": {
+        "route": "patent_exclusion_tk",
+        "action": "statutory_exclusion_alert",
+        "statutory_risk": "High rejection risk under Section 3(p)",
+        "legal_basis": "The Patents Act, 1970 Section 3(p); CGPDTM Examination Guidelines (2012) Paragraph 4.1",
+        "source_ids": ["REAL-001", "REAL-010"],
+        "passage_locators": ["PASS-002", "PASS-019"],
+        "explanation": "Inventions that are in effect traditional knowledge or aggregation of known properties of traditionally known components are non-patentable."
+      }
+    },
+    {
+      "rule_id": "RULE-PAT-02",
+      "domain": "patent_screening",
+      "name": "Section 3(e) Mere Admixture vs Synergism",
+      "condition": "patent_filing_intended == true and formulation_source in ['proprietary_combination', 'modified_dosage_form'] and not synergistic_data_available",
+      "outcome": {
+        "route": "patent_exclusion_admixture",
+        "action": "statutory_exclusion_alert",
+        "statutory_risk": "Rejection under Section 3(e) as mere admixture",
+        "legal_basis": "The Patents Act, 1970 Section 3(e); CGPDTM Guidelines (2012) Paragraph 4.1",
+        "source_ids": ["REAL-001", "REAL-010"],
+        "passage_locators": ["PASS-013", "PASS-019"],
+        "explanation": "Mere aggregation of properties of components is excluded. Synergistic effect must be proven with comparative experimental data."
+      }
+    },
+    {
+      "rule_id": "RULE-PAT-03",
+      "domain": "patent_screening",
+      "name": "Mandatory Biological Material Disclosure",
+      "condition": "patent_filing_intended == true and biological_resource_india == true",
+      "outcome": {
+        "route": "patent_disclosure_mandate",
+        "action": "statutory_compliance_alert",
+        "legal_basis": "The Patents Act, 1970 Section 10(4)(d)(ii); Patents Rules, 2003 Rule 13",
+        "source_ids": ["REAL-001", "REAL-013"],
+        "passage_locators": ["PASS-026"],
+        "explanation": "Patent applicant must disclose the source and geographical origin of the biological material in the patent specification."
+      }
+    },
+    {
+      "rule_id": "RULE-ABS-01",
+      "domain": "biodiversity_abs",
+      "name": "NBA Prior Approval for IPR Applications",
+      "condition": "biological_resource_india == true and patent_filing_intended == true",
+      "outcome": {
+        "route": "nba_ipr_approval_mandate",
+        "action": "statutory_compliance_mandate",
+        "legal_basis": "The Biological Diversity Act, 2002 Section 6(1) read with Section 6(1A) as amended by Act 10 of 2023; Biological Diversity Rules, 2024 Rule 14 read with 2025 Amendment Rules",
+        "source_ids": ["REAL-004", "REAL-005", "REAL-008"],
+        "passage_locators": ["PASS-005", "PASS-006", "PASS-015", "PASS-016"],
+        "mandate_details": "Prior approval of National Biodiversity Authority (Form III) is mandatory before patent grant. Practitioner exemption under 6(1A) does not waive IPR application approval."
+      }
+    },
+    {
+      "rule_id": "RULE-ERR-01",
+      "domain": "safety_fallback",
+      "name": "Parenteral Administration Prohibition",
+      "condition": "administration_route == 'parenteral' and intended_use in ['medicinal', 'food_dietary']",
+      "outcome": {
+        "route": "prohibited_route_rejection",
+        "action": "statutory_violation_rejection",
+        "legal_basis": "Drugs and Cosmetics Act, 1940 Section 3(h); FSSAI Ayurveda Aahara Regulations, 2022 Regulation 2(b)",
+        "source_ids": ["REAL-002", "REAL-003"],
+        "passage_locators": ["PASS-010", "PASS-003"],
+        "explanation": "Injectable/parenteral formulations cannot be licensed as Ayurvedic medicines or Ayurveda Aahara under Indian law."
+      }
+    },
+    {
+      "rule_id": "RULE-ERR-02",
+      "domain": "safety_fallback",
+      "name": "Disease Cure Claims in Food or Cosmetic",
+      "condition": "disease_cure_claims == true and intended_use in ['food_dietary', 'cosmetic']",
+      "outcome": {
+        "route": "illegal_claim_reclassification",
+        "action": "statutory_violation_rejection",
+        "legal_basis": "FSSAI Ayurveda Aahara Regulations, 2022 Regulation 8; Drugs and Magic Remedies Act, 1954",
+        "source_ids": ["REAL-003", "REAL-011", "REAL-016"],
+        "passage_locators": ["PASS-004", "PASS-021", "PASS-031"],
+        "explanation": "Products claiming disease prevention or cure cannot be licensed as food or cosmetics. Re-routing to drug framework or referral."
+      }
+    },
+    {
+      "rule_id": "RULE-UNC-01",
+      "domain": "uncertainty_referral",
+      "name": "Incomplete or Contradictory Formulation Facts",
+      "condition": "ingredients_classical_status == 'unknown' or administration_route == 'unknown' or intended_use == 'other'",
+      "outcome": {
+        "route": "needs_expert_referral",
+        "action": "clarification_and_referral",
+        "legal_basis": "Master Plan Safety & Abstention Protocol",
+        "source_ids": ["REAL-001", "REAL-002", "REAL-003"],
+        "passage_locators": ["PASS-002", "PASS-003", "PASS-009"],
+        "explanation": "Critical formulation facts missing. Issuing targeted missing-fact prompt and generating preliminary referral packet."
+      }
+    }
+  ]
+}

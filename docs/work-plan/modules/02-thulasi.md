@@ -64,11 +64,12 @@ Weeks 15-16 are reserved for testing, repairs, packaging and submission; do not 
 
 ## Deliverable checklist
 
-- [x] Source register and access/reuse metadata ([source_register.csv](../../../data/corpus/source_register.csv), [SOURCE_AUDIT_T01.md](../../../data/corpus/SOURCE_AUDIT_T01.md), [SOURCE_AUDIT_T02.md](../../../data/corpus/SOURCE_AUDIT_T02.md))
-- [x] Approved provision excerpts with locators and version manifest ([passages.csv](../../../data/corpus/passages.csv): 25 provision rows verified and submitted for activation)
-- [x] Formulation intake questions and source-backed routing table ([thulasi-t01-specification.md](thulasi-t01-specification.md), [thulasi-t02-intake-rules.md](thulasi-t02-intake-rules.md))
-- [x] Topic coverage map, exclusions and supersession/change log ([thulasi-t02-intake-rules.md](thulasi-t02-intake-rules.md) Sections 4 & 5, [SOURCE_AUDIT_T02.md](../../../data/corpus/SOURCE_AUDIT_T02.md))
-- [ ] Expected evidence and claim-support annotations (scheduled for T-03 through T-05)
+- [x] Source register and access/reuse metadata ([source_register.csv](../../../data/corpus/source_register.csv), [SOURCE_AUDIT_T01.md](../../../data/corpus/SOURCE_AUDIT_T01.md), [SOURCE_AUDIT_T02.md](../../../data/corpus/SOURCE_AUDIT_T02.md), [SOURCE_AUDIT_T03.md](../../../data/corpus/SOURCE_AUDIT_T03.md))
+- [x] Approved provision excerpts with locators and version manifest ([passages.csv](../../../data/corpus/passages.csv): 35 provision rows verified and submitted for activation)
+- [x] Formulation intake questions and source-backed routing table ([thulasi-t01-specification.md](thulasi-t01-specification.md), [thulasi-t02-intake-rules.md](thulasi-t02-intake-rules.md), [thulasi-t03-decision-rules.md](thulasi-t03-decision-rules.md), [decision_rules.json](../../../data/rules/decision_rules.json))
+- [x] Topic coverage map, exclusions and supersession/change log ([thulasi-t03-decision-rules.md](thulasi-t03-decision-rules.md), [SOURCE_AUDIT_T03.md](../../../data/corpus/SOURCE_AUDIT_T03.md))
+- [x] Ten sample rule firings audited with teammates ([thulasi-t03-decision-rules.md](thulasi-t03-decision-rules.md) Section 3)
+- [ ] Expected evidence and claim-support annotations (scheduled for T-04 through T-05)
 - [ ] Relevant master-plan acceptance gates met and actual evidence recorded.
 - [ ] Independent peer review completed and all critical findings resolved (pending Harshit & Deepshika review).
 - [ ] Outputs integrated into the shared project; handoff notes and limitations documented.
@@ -76,8 +77,8 @@ Weeks 15-16 are reserved for testing, repairs, packaging and submission; do not 
 ## Start here
 
 1. Create one source-record example with authority, URL, jurisdiction, dates, version and locator. (Completed in Phase 1: see [SOURCE_AUDIT_T01.md](../../../data/corpus/SOURCE_AUDIT_T01.md))
-2. Identify sources for the first supported question in each selected topic. (Completed in Phase 1 & 2: see [thulasi-t01-specification.md](thulasi-t01-specification.md) and [thulasi-t02-intake-rules.md](thulasi-t02-intake-rules.md))
-3. Mark missing dates, unclear applicability and restricted access explicitly. (Completed in Phase 1 & 2: documented honestly in [source_register.csv](../../../data/corpus/source_register.csv))
+2. Identify sources for the first supported question in each selected topic. (Completed in Phases 1-3: see [thulasi-t01-specification.md](thulasi-t01-specification.md), [thulasi-t02-intake-rules.md](thulasi-t02-intake-rules.md), and [thulasi-t03-decision-rules.md](thulasi-t03-decision-rules.md))
+3. Mark missing dates, unclear applicability and restricted access explicitly. (Completed in Phases 1-3: documented honestly in [source_register.csv](../../../data/corpus/source_register.csv))
 
 ## Progress record
 
@@ -87,3 +88,4 @@ Use task IDs in issues and PRs. Replace the placeholder row only when work start
 |---|---|---|---|---|
 | T-01 | In review (draft PR) | Branch `thulasi/t-01-phase-1`; draft PR; [thulasi-t01-specification.md](thulasi-t01-specification.md), [SOURCE_AUDIT_T01.md](../../../data/corpus/SOURCE_AUDIT_T01.md), [source_register.csv](../../../data/corpus/source_register.csv), [documents.csv](../../../data/corpus/documents.csv), [passages.csv](../../../data/corpus/passages.csv) | Harshit (activation), Deepshika (terminology) | Awaiting Harshit's review of verified provisions before RAG activation; terminology signoff by Deepshika |
 | T-02 | In review (draft PR) | Branch `thulasi/t-02-phase-2`; draft PR; [thulasi-t02-intake-rules.md](thulasi-t02-intake-rules.md), [SOURCE_AUDIT_T02.md](../../../data/corpus/SOURCE_AUDIT_T02.md), [source_register.csv](../../../data/corpus/source_register.csv), [documents.csv](../../../data/corpus/documents.csv), [passages.csv](../../../data/corpus/passages.csv) | Harshit (activation), Deepshika (terminology) | Awaiting Harshit's review of 12 official sources and 25 passages before RAG activation; terminology signoff by Deepshika |
+| T-03 | In review (draft PR) | Branch `thulasi/t-03-phase-3`; draft PR; [decision_rules.json](../../../data/rules/decision_rules.json), [thulasi-t03-decision-rules.md](thulasi-t03-decision-rules.md), [SOURCE_AUDIT_T03.md](../../../data/corpus/SOURCE_AUDIT_T03.md), [source_register.csv](../../../data/corpus/source_register.csv), [documents.csv](../../../data/corpus/documents.csv), [passages.csv](../../../data/corpus/passages.csv) | Harshit (activation & rule contract), Deepshika (terminology) | Awaiting Harshit's review of machine-readable rule contract and 20 official sources; terminology signoff by Deepshika |
