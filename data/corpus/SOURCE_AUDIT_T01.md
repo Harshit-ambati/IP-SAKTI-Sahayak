@@ -94,8 +94,10 @@ The seven document records in `documents.csv` and eight paraphrases in `passages
 - **Integrity / Checksum:**
   - Inspected FSSAI Gazette publication (`62789a20b54bdGazette_Notification_Ayurveda_Aahara_09_05_2022.pdf`): full text verified across Regulations 1 through 13 and Schedules A through D.
 - **Operative Provisions Verified:**
-  - **Regulation 2(b):** Definition of "Ayurveda Aahara": food prepared in accordance with recipes or ingredients or processes described in authoritative books of Ayurveda listed in Schedule A. Explicitly excludes Ayurvedic drugs or proprietary Ayurvedic medicines under Drugs and Cosmetics Act 1940 and rules, cosmetics, parenteral administration, and synthetic vitamins, minerals or amino acids.
-  - **Regulation 8:** Labelling and claims: Mandates Ayurveda Aahara logo; explicitly prohibits claiming prevention, treatment, mitigation or cure of any human disease or disorder.
+  - **Regulation 2(b):** Definition of "Ayurveda Aahara": food prepared in accordance with recipes or ingredients or processes described in authoritative books of Ayurveda listed in Schedule A. Explicitly excludes Ayurvedic drugs or proprietary Ayurvedic medicines under Drugs and Cosmetics Act 1940 and rules, cosmetics, and parenteral administration.
+  - **Regulation 3(4):** Prohibition on synthetic additions: Strictly prohibits the addition of synthetic vitamins, minerals, amino acids, or isolated chemical compounds to Ayurveda Aahara.
+  - **Regulation 8:** Claims prohibition: Strictly prohibits claiming prevention, treatment, mitigation or cure of any human disease or disorder in advertising or packaging.
+  - **Regulation 13(a):** Front-of-pack logo: Mandates displaying the specified Ayurveda Aahara logo on the principal display panel on front of pack along with advisory statements.
   - **Schedule A:** Recognizes classical Ayurveda authoritative texts for foods and recipes.
 - **Audit Decision:** Verified for intake and classification rule grounding. Submitted as `reviewed_t01_pending_activation`.
 
@@ -147,4 +149,5 @@ In compliance with the project guidelines:
 1. No statutory provisions, amendment dates, or official source approvals have been invented or assumed.
 2. Where exact Gazette publication timestamps or dynamic checksums for web portals vary across mirror sites, they are explicitly catalogued as verified against the primary India Code and official Ministry portals on 14 November 2026.
 3. Substantive answer generation must **not** claim legal advice or formal regulatory clearance; all answers must carry the mandatory non-legal disclaimer.
-4. Activation of these rows into the RAG chunk index is held pending Harshit's technical review and validation.
+4. In `source_register.csv`, checksums are marked as `pending_w8_file_ingestion` in the `checksum_status` column rather than placeholder hash strings, honestly reflecting that physical binary capture and SHA-256 computation will occur upon local document ingestion at Week 8.
+5. Activation of these rows into the RAG chunk index is held pending Harshit's technical review and validation.

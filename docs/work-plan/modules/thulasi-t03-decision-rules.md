@@ -12,11 +12,11 @@
 
 Task T-03 delivers the bounded decision rules and multi-statutory screening framework for IP-SAKTI Sahayak, tying formulation intake directly to current operative Indian instruments:
 1. **Machine-Readable Rule Contract**: Implemented in [`data/rules/decision_rules.json`](../../data/rules/decision_rules.json) specifying 13 formal rules across product classification, patent/TK screening, biodiversity (ABS) compliance, and safety fallbacks.
-2. **Biodiversity Framework Integration**: Accurately harmonizes *The Biological Diversity Act, 2002* (as amended by Act 10 of 2023) with the *Biological Diversity Rules, 2024* read in conjunction with the *Biological Diversity Amendment Rules, 2025*.
+2. **Biodiversity Framework Integration**: Accurately harmonizes *The Biological Diversity Act, 2002* (as amended by Act 10 of 2023) with the *Biological Diversity Rules, 2024* (commenced 21 December 2024) read in conjunction with the *Biological Diversity Amendment Rules, 2025* (commencing 1 November 2025).
 3. **Strict TKDL Non-Confidentiality Boundary**: Re-affirms that confidential, restricted TKDL formulation dossiers are strictly excluded from the corpus.
 4. **Explicit Uncertain / Needs-Expert Referral Protocols**: Specifies automated fallback actions generating structured `ReferralPacket` objects whenever data is ambiguous or products fall outside standard AYUSH licensing.
 5. **Ten Sample Rule Firings Reviewed**: Complete end-to-end trace of ten representative formulation scenarios audited against statutory source passages in collaboration with teammates Harshit, Deepshika, and Sabeena.
-6. **Corpus Expansion to Twenty Useful Sources**: Documented in [`SOURCE_AUDIT_T03.md`](../../data/corpus/SOURCE_AUDIT_T03.md) and [`source_register.csv`](../../data/corpus/source_register.csv) with 35 provision passages.
+6. **Corpus Expansion to Twenty Useful Sources**: Documented in [`SOURCE_AUDIT_T03.md`](../../data/corpus/SOURCE_AUDIT_T03.md) and [`source_register.csv`](../../data/corpus/source_register.csv) with 36 provision passages.
 
 ---
 
@@ -30,11 +30,11 @@ The decision logic operates across three integrated legal domains:
         ┌───────────────────────────────────┼───────────────────────────────────┐
         ▼                                   ▼                                   ▼
  [ Product Classification ]       [ Patent / TK Screening ]            [ Biodiversity / ABS ]
-  - Classical ASU (s. 3(a))        - s. 3(p) TK Aggregation            - s. 6(1) Mandatory NBA Approval
-  - P&P ASU (s. 3(h))              - s. 3(e) Mere Admixture            - s. 6(1A) Vaid/Hakim Exemption
-  - Ayurveda Aahara (Reg. 2(b))    - s. 3(d) Efficacy Requirement      - 2024 Rules + 2025 Amendment
-  - Cosmetic (s. 3(aaa))           - s. 10(4)(d)(ii) Source Disclosure - Form III IPR Requirements
-  - Novel/Phyto (Referral)         - CGPDTM 2012 Examination Standard
+  - Classical ASU (s. 3(a))        - s. 3(p) TK Aggregation            - s. 6(1) Foreign Entities NBA Approval
+  - P&P ASU (s. 3(h))              - s. 3(e) Mere Admixture            - s. 6(2) Domestic Registration/Approval
+  - Ayurveda Aahara (Reg 2b,3(4),8)- s. 3(d) Efficacy Requirement      - s. 6(1A) Vaid/Hakim Exemption Scope
+  - Cosmetic (s. 3(aaa))           - s. 10(4)(d)(ii) Source Disclosure - 2024 Rules (21 Dec) + 2025 (1 Nov)
+  - Novel/Phyto (Referral)         - CGPDTM 2012 Examination Standard  - Form III IPR Requirements
 ```
 
 ### 2.1 Indian Patent & Traditional Knowledge (TK) Screening Rules
@@ -54,14 +54,16 @@ The decision logic operates across three integrated legal domains:
 ### 2.2 Biological Resource & ABS Flags (2024 Rules + 2025 Amendment)
 - **Harmonized Statutory Construction:**
   - *Parent Statute:* *The Biological Diversity Act, 2002* (Act No. 18 of 2003), substantially amended by the *Biological Diversity (Amendment) Act, 2023* (Act No. 10 of 2023, effective 1 August 2023).
-  - *Operative Rules:* *Biological Diversity Rules, 2024* read in conjunction with *Biological Diversity Amendment Rules, 2025*.
-- **Rule `RULE-ABS-01` (Mandatory Prior NBA Approval for IPR):**
+  - *Operative Rules:* *Biological Diversity Rules, 2024* (commenced 21 December 2024 per NBA FAQ) read in conjunction with *Biological Diversity Amendment Rules, 2025* (commencing 1 November 2025 per NBA FAQ).
+- **Rule `RULE-ABS-01` (Harmonized NBA Approval & Registration Requirements):**
   - *Trigger Condition:* Any person/entity applying for an intellectual property right in India or abroad based on research or information on biological resources obtained from India.
-  - *Statutory Finding:* Section 6(1) mandates prior approval of the National Biodiversity Authority (NBA). Form III application must be submitted, and approval obtained prior to patent grant.
+  - *Statutory Finding:* Section 6 of *The Biological Diversity Act, 2002* (as amended by Act 10 of 2023) establishes two distinct statutory pathways based on applicant status:
+    1. **Section 3(2) Entities (Foreign applicants, non-residents, or foreign-controlled corporate bodies):** Under Section 6(1), must obtain **prior approval** of the National Biodiversity Authority before applying for or obtaining the grant of the IPR.
+    2. **Section 7 Entities (Domestic Indian citizens and entities without foreign participation):** Under Section 6(2), must **register with the NBA before grant of the IPR**, and must obtain **prior approval of the NBA before commercialization** of the IPR.
   - *Subordinate Rules Implementation:* Rule 14 of the 2024 Rules and the 2025 Amendment Rules govern filing procedures, revised fee structures, and benefit-sharing determination.
-  - *Cited Passages:* `REAL-008` (Section 6(1), `PASS-015`); `REAL-004` (Rule 1(2), `PASS-005`); `REAL-005` (`PASS-006`); `REAL-017` (`PASS-032`).
+  - *Cited Passages:* `REAL-008` (Section 6(1), `PASS-015`; Section 6(2), `PASS-016`); `REAL-004` (Rule 1(2), `PASS-005`); `REAL-005` (`PASS-006`); `REAL-017` (`PASS-032`).
 - **Rule `RULE-ABS-02` (Scope of Practitioner & Cultivator Exemptions):**
-  - *Statutory Boundary:* Under Section 6(1A) (inserted by 2023 Amendment Act), local growers, cultivators, and registered vaids/hakims practicing indigenous medicine are exempt from intimation to State Biodiversity Boards for certain commercial utilization. **However, this exemption does NOT waive the Section 6(1) requirement for patent applications.** Any patent application remains subject to NBA approval.
+  - *Statutory Boundary:* Under Section 6(1A) (inserted by 2023 Amendment Act), local growers, cultivators, and registered vaids/hakims practicing indigenous medicine are exempt from intimation to State Biodiversity Boards for certain commercial utilization. **However, this exemption does NOT waive the Section 6 requirement for patent applications.** Any patent application remains subject to NBA registration/approval under Section 6(1) or Section 6(2).
   - *Cited Passages:* `REAL-008` (Section 6(1A), `PASS-016`).
 
 ### 2.3 Strict TKDL Access & Confidentiality Boundary
@@ -79,7 +81,7 @@ The decision logic operates across three integrated legal domains:
   - Action: Immediate statutory violation alert under D&C Act Section 3(h) and FSSAI Regulation 2(b). Prohibits ASU or Ayurveda Aahara classification.
 - **Rule `RULE-ERR-02` (Disease Cure Claims in Food or Cosmetic):**
   - Triggers when an Ayurveda Aahara or cosmetic product claims disease prevention, mitigation, or cure.
-  - Action: Flags statutory violation of FSSAI Regulation 8 and *Drugs and Magic Remedies Act, 1954*. Re-routes product to drug evaluation or referral.
+  - Action: Flags statutory violation of FSSAI Regulation 8, Regulation 13(a), and *Drugs and Magic Remedies Act, 1954*. Re-routes product to drug evaluation or referral.
 
 ---
 
@@ -96,8 +98,8 @@ To validate the machine-readable rule contract against real-world scenarios, ten
 | **SCEN-05** | **Kumkumadi Brightening Facial Serum:** Topical application solely for skin cleansing and promoting radiance; no medicinal claims. | `RULE-CLS-06` | **Route 6: Ayurvedic Cosmetic** | `REAL-002` s. 3(aaa), `PASS-011` | **Audited by Deepshika:** Verified cosmetic boundary under Section 3(aaa); confirmed absence of drug/medicinal claims. |
 | **SCEN-06** | **Herbal Pain Balm containing synthetic Methyl Salicylate & Paracetamol:** Topical analgesic combining classical herbs with modern API. | `RULE-CLS-03` | **Route 3: Novel / Non-Classical Formulation (Mandatory Referral)** | `REAL-002` s. 3(a)/3(h), `PASS-009`, `PASS-010` | **Audited by Harshit:** Confirmed strict non-forcing; presence of synthetic chemical blocks AYUSH classical/proprietary licensing. |
 | **SCEN-07** | **Injectable Ayurvedic Taila:** Classical taila proposed for intravenous / intramuscular administration for chronic joint pain. | `RULE-ERR-01` | **Statutory Rejection:** Prohibited route of administration | `REAL-002` s. 3(h), `PASS-010` | **Audited by Harshit:** Confirmed Section 3(h) explicit exclusion of parenteral route; immediate rejection generated. |
-| **SCEN-08** | **Patent Application on Neem-Turmeric Combination:** Research on Indian biological resources; patent filing planned in India and PCT. | `RULE-PAT-01`, `RULE-PAT-03`, `RULE-ABS-01` | **Statutory Exclusion Alert + NBA Prior Approval Mandate** | `REAL-001` s. 3(p), s. 10(4)(d)(ii), `REAL-008` s. 6(1), `PASS-002`, `PASS-015`, `PASS-026` | **Audited by Harshit:** Confirmed multi-statute interaction: s. 3(p) TK rejection risk, s. 10 origin disclosure, and Form III NBA prior approval. |
-| **SCEN-09** | **Ayurveda Aahara Brahmi Ghee:** Oral ghee prepared per *Sahasrayogam* (Schedule A); naturally occurring nutrients; general wellness claims; FSSAI logo. | `RULE-CLS-05` | **Route 5: Ayurveda Aahara (Food)** | `REAL-003` reg. 2(b), reg. 8, Sched A, `REAL-011`, `PASS-003`, `PASS-004`, `PASS-021`, `PASS-024` | **Audited by Deepshika:** Verified food labelling terms; confirmed full compliance with 2022 regulations and 2025 transition order. |
+| **SCEN-08** | **Patent Application on Neem-Turmeric Combination:** Research on Indian biological resources; patent filing planned in India and PCT. | `RULE-PAT-01`, `RULE-PAT-03`, `RULE-ABS-01` | **Statutory Exclusion Alert + NBA Compliance Mandate** | `REAL-001` s. 3(p), s. 10(4)(d)(ii), `REAL-008` s. 6(1)/6(2), `PASS-002`, `PASS-015`, `PASS-016`, `PASS-026` | **Audited by Harshit:** Confirmed multi-statute interaction: s. 3(p) TK risk, s. 10 origin disclosure, and Form III NBA compliance (s. 6(1) approval for foreign applicants, s. 6(2) registration before grant for domestic applicants). |
+| **SCEN-09** | **Ayurveda Aahara Brahmi Ghee:** Oral ghee prepared per *Sahasrayogam* (Schedule A); naturally occurring nutrients; general wellness claims; FSSAI logo. | `RULE-CLS-05` | **Route 5: Ayurveda Aahara (Food)** | `REAL-003` reg. 2(b), reg. 3(4), reg. 8, reg. 13(a), Sched A, `REAL-011`, `PASS-003`, `PASS-004`, `PASS-021`, `PASS-024` | **Audited by Deepshika:** Verified food labelling terms; confirmed full compliance with 2022 regulations (including Reg 3(4) synthetic nutrient ban & Reg 13(a) logo) and 2025 transition order. |
 | **SCEN-10** | **Unverified Forest Botanical Tonic:** Unidentified local plant extract; claims disease cure; dosage and route unverified. | `RULE-UNC-01` | **Route 7: Needs-Expert Referral (Explicit Uncertainty)** | `REAL-001`, `REAL-002`, `REAL-008`, `PASS-002`, `PASS-009`, `PASS-015` | **Audited by Sabeena:** Confirmed safe abstention behavior; missing facts prevented false positive classification; referral packet generated. |
 
 ---
@@ -113,3 +115,4 @@ The rule contract is formally serialized in [`data/rules/decision_rules.json`](.
    - If a referral rule fires (`RULE-CLS-03`, `RULE-CLS-04`, `RULE-UNC-01`), the system automatically packages a `ReferralPacket` without calling unconstrained generation.
    - For valid product routes (`RULE-CLS-01`, `RULE-CLS-02`, `RULE-CLS-05`, `RULE-CLS-06`), the associated `source_ids` and `passage_locators` serve as gold retrieved evidence seeds for Harshit's citation validator.
 3. **Patent & ABS Flagging:** In parallel, any query with `patent_filing_intended == true` evaluates `RULE-PAT-01`, `RULE-PAT-02`, `RULE-PAT-03`, and `RULE-ABS-01`, automatically appending statutory warnings and Form III compliance alerts to the response.
+

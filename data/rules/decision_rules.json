@@ -1,11 +1,11 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "task_id": "T-03",
   "module": "thulasi-decision-rules",
   "owner": "Thulasi",
   "reviewed_by": ["Harshit", "Deepshika"],
-  "effective_date": "2026-11-14",
+  "effective_date": "2026-11-15",
   "status": "in_review_draft_pr",
   "description": "Machine-readable contract for formulation intake, provisional classification, Indian patent/TK screening, biological diversity (ABS) flags, and safe expert referral.",
   "intake_fields": [
@@ -20,6 +20,11 @@
       "type": "enum",
       "values": ["all_classical", "partial_classical", "synthetic_added", "unknown"],
       "missing_prompt": "Please confirm the source of active ingredients: Are all botanical/mineral ingredients documented in First Schedule authoritative Ayurvedic texts?"
+    },
+    {
+      "id": "classical_book_citation",
+      "type": "string",
+      "missing_prompt": "Please specify the authoritative book listed in the First Schedule to the Drugs and Cosmetics Act from which this exact classical recipe is derived. (Note: Missing book reference requires clarification and cannot be assumed proprietary)."
     },
     {
       "id": "formulation_source",
@@ -46,17 +51,23 @@
     {
       "id": "disease_cure_claims",
       "type": "boolean",
-      "missing_prompt": "Does the product labelling or advertising make any claims to prevent, treat, mitigate, or cure any human disease or disorder?"
+      "missing_prompt": "Does the product labelling or advertising make any claims to prevent, treat, mitigate, or cure any human disease or disorder? (Prohibited under Regulation 8 of Ayurveda Aahara Regulations)."
     },
     {
       "id": "synthetic_nutrients_added",
       "type": "boolean",
-      "missing_prompt": "Are any synthetic vitamins, minerals, amino acids, or chemical additives added to the formulation?"
+      "missing_prompt": "Are any synthetic vitamins, minerals, amino acids, or isolated chemical additives added to the formulation? (Prohibited under Regulation 3(4) of Ayurveda Aahara Regulations)."
     },
     {
       "id": "biological_resource_india",
       "type": "boolean",
       "missing_prompt": "Does the formulation utilize biological resources (plants, microbes, animals) or associated traditional knowledge accessed from India?"
+    },
+    {
+      "id": "applicant_category",
+      "type": "enum",
+      "values": ["section_3_2_foreign_or_foreign_participation", "section_7_indian_domestic", "ayush_practitioner_vaid_hakim"],
+      "missing_prompt": "What is the legal status of the applicant? (Section 3(2) foreign entities require NBA approval before grant under s. 6(1); Section 7 domestic entities require registration before grant and approval at commercialization under s. 6(2))."
     },
     {
       "id": "patent_filing_intended",
@@ -74,7 +85,7 @@
       "rule_id": "RULE-CLS-01",
       "domain": "product_classification",
       "name": "Classical Ayurvedic Medicine",
-      "condition": "intended_use == 'medicinal' and ingredients_classical_status == 'all_classical' and formulation_source == 'exact_classical_recipe' and administration_route != 'parenteral'",
+      "condition": "intended_use == 'medicinal' and ingredients_classical_status == 'all_classical' and formulation_source == 'exact_classical_recipe' and classical_book_citation != null and administration_route != 'parenteral'",
       "outcome": {
         "route": "classical_ayurvedic_medicine",
         "action": "provisional_classification",
@@ -82,6 +93,7 @@
         "legal_basis": "Drugs and Cosmetics Act, 1940 Section 3(a) read with First Schedule; Drugs Rules, 1945 Rule 158-B(I)",
         "source_ids": ["REAL-002", "REAL-009"],
         "passage_locators": ["PASS-009", "PASS-017", "PASS-023"],
+        "missing_citation_fallback": "If authoritative text citation is missing, system halts confident routing and triggers RULE-UNC-01 for clarification; missing evidence must NEVER demote to proprietary.",
         "disclaimer_required": true
       }
     },
@@ -125,9 +137,9 @@
         "route": "phytopharmaceutical_referral",
         "action": "needs_expert_referral",
         "non_forcing_notice": "Standardized fraction with >=4 bioactives falls under CDSCO modern drug regulatory framework, not state AYUSH licensing.",
-        "legal_basis": "Drugs Rules, 1945 Rule 2(eb), Rule 122E, Schedule Y Appendix I/IA",
+        "legal_basis": "Drugs Rules, 1945 Rule 2(eb), Rule 122E, Schedule Y Appendix I/IA; CDSCO Guidance Document 2018",
         "source_ids": ["REAL-002", "REAL-012", "REAL-019"],
-        "passage_locators": ["PASS-012", "PASS-022"],
+        "passage_locators": ["PASS-012", "PASS-022", "PASS-034"],
         "referral_packet_required": true
       }
     },
@@ -140,10 +152,10 @@
         "route": "ayurveda_aahara",
         "action": "provisional_classification",
         "licensing_authority": "Food Safety and Standards Authority of India (FSSAI)",
-        "legal_basis": "Food Safety and Standards (Ayurveda Aahara) Regulations, 2022 Regulation 2(b) & Regulation 8; Schedule A",
+        "legal_basis": "Food Safety and Standards (Ayurveda Aahara) Regulations, 2022 Regulation 2(b) (definition/exclusions), Regulation 3(4) (synthetic nutrients ban), Regulation 8 (disease claims prohibition), Regulation 13(a) (front-of-pack logo); Schedule A",
         "source_ids": ["REAL-003", "REAL-011"],
         "passage_locators": ["PASS-003", "PASS-004", "PASS-021", "PASS-024"],
-        "mandatory_labels": ["Ayurveda Aahara Logo", "No disease prevention/cure claims"],
+        "mandatory_labels": ["Front-of-pack Ayurveda Aahara Logo (Reg. 13(a))", "No disease prevention/cure claims (Reg. 8)"],
         "disclaimer_required": true
       }
     },
@@ -200,23 +212,23 @@
         "route": "patent_disclosure_mandate",
         "action": "statutory_compliance_alert",
         "legal_basis": "The Patents Act, 1970 Section 10(4)(d)(ii); Patents Rules, 2003 Rule 13",
-        "source_ids": ["REAL-001", "REAL-013"],
-        "passage_locators": ["PASS-026"],
+        "source_ids": ["REAL-001", "REAL-013", "REAL-014"],
+        "passage_locators": ["PASS-026", "PASS-027"],
         "explanation": "Patent applicant must disclose the source and geographical origin of the biological material in the patent specification."
       }
     },
     {
       "rule_id": "RULE-ABS-01",
       "domain": "biodiversity_abs",
-      "name": "NBA Prior Approval for IPR Applications",
+      "name": "NBA Section 6 Approval and Registration Mandates (Amended 2023)",
       "condition": "biological_resource_india == true and patent_filing_intended == true",
       "outcome": {
         "route": "nba_ipr_approval_mandate",
         "action": "statutory_compliance_mandate",
-        "legal_basis": "The Biological Diversity Act, 2002 Section 6(1) read with Section 6(1A) as amended by Act 10 of 2023; Biological Diversity Rules, 2024 Rule 14 read with 2025 Amendment Rules",
-        "source_ids": ["REAL-004", "REAL-005", "REAL-008"],
-        "passage_locators": ["PASS-005", "PASS-006", "PASS-015", "PASS-016"],
-        "mandate_details": "Prior approval of National Biodiversity Authority (Form III) is mandatory before patent grant. Practitioner exemption under 6(1A) does not waive IPR application approval."
+        "legal_basis": "The Biological Diversity Act, 2002 Section 6(1) and Section 6(2) as amended by Act 10 of 2023; Biological Diversity Rules, 2024 Rule 14 read with 2025 Amendment Rules",
+        "source_ids": ["REAL-004", "REAL-005", "REAL-008", "REAL-017"],
+        "passage_locators": ["PASS-005", "PASS-006", "PASS-015", "PASS-016", "PASS-032"],
+        "mandate_details": "Under amended Section 6: Section 3(2) foreign entities must obtain NBA approval before grant of IPR under s. 6(1); Section 7 domestic Indian entities must register with the NBA before grant of IPR and obtain NBA approval prior to commercialization under s. 6(2). Practitioner exemptions under s. 6(1A) do not waive IPR registration or approval."
       }
     },
     {
@@ -241,9 +253,9 @@
       "outcome": {
         "route": "illegal_claim_reclassification",
         "action": "statutory_violation_rejection",
-        "legal_basis": "FSSAI Ayurveda Aahara Regulations, 2022 Regulation 8; Drugs and Magic Remedies Act, 1954",
-        "source_ids": ["REAL-003", "REAL-011", "REAL-016"],
-        "passage_locators": ["PASS-004", "PASS-021", "PASS-031"],
+        "legal_basis": "FSSAI Ayurveda Aahara Regulations, 2022 Regulation 8; Drugs and Magic Remedies Act, 1954 Sections 3 and 4; FSSAI Advertising and Claims Regulations 2018 Regulation 4",
+        "source_ids": ["REAL-003", "REAL-011", "REAL-016", "REAL-018"],
+        "passage_locators": ["PASS-004", "PASS-021", "PASS-030", "PASS-031", "PASS-033"],
         "explanation": "Products claiming disease prevention or cure cannot be licensed as food or cosmetics. Re-routing to drug framework or referral."
       }
     },
@@ -251,14 +263,14 @@
       "rule_id": "RULE-UNC-01",
       "domain": "uncertainty_referral",
       "name": "Incomplete or Contradictory Formulation Facts",
-      "condition": "ingredients_classical_status == 'unknown' or administration_route == 'unknown' or intended_use == 'other'",
+      "condition": "ingredients_classical_status == 'unknown' or administration_route == 'unknown' or intended_use == 'other' or (formulation_source == 'exact_classical_recipe' and classical_book_citation == null)",
       "outcome": {
         "route": "needs_expert_referral",
         "action": "clarification_and_referral",
-        "legal_basis": "Master Plan Safety & Abstention Protocol",
-        "source_ids": ["REAL-001", "REAL-002", "REAL-003"],
-        "passage_locators": ["PASS-002", "PASS-003", "PASS-009"],
-        "explanation": "Critical formulation facts missing. Issuing targeted missing-fact prompt and generating preliminary referral packet."
+        "legal_basis": "Master Plan Safety & Abstention Protocol; Drugs Rules Rule 158-B",
+        "source_ids": ["REAL-001", "REAL-002", "REAL-003", "REAL-009"],
+        "passage_locators": ["PASS-002", "PASS-003", "PASS-009", "PASS-017"],
+        "explanation": "Critical formulation facts missing or unverified. Missing classical treatise citation cannot be assumed proprietary. Issuing targeted missing-fact prompt and generating preliminary referral packet."
       }
     }
   ]

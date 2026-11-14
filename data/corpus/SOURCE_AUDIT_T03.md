@@ -24,12 +24,12 @@ Under [MASTER_PLAN.md](../../docs/work-plan/MASTER_PLAN.md) (Section 5) and [02-
 |---|---|---|---|---|---|---|---|---|---|
 | `REAL-001` | *The Patents Act, 1970* | IP India / Legislative Dept | India | Primary Statute | `https://www.indiacode.nic.in/bitstream/123456789/1392/1/A1970-39.pdf` | Enacted: 1970-09-19; Commenced: 1972-04-20; Acts 38 of 2002 & 15 of 2005 | Operative | Public domain legislative enactment (Section 52(1)(q) Indian Copyright Act) | `reviewed_t03_pending_activation` |
 | `REAL-002` | *The Drugs and Cosmetics Act, 1940* | Ministry of Ayush / CDSCO | India | Primary Statute | `https://ayush.gov.in/resources/pdf/quality_standards/Drugs-and-Cosmetics-Act-Rules.pdf` | Enacted: 1940-04-10; Act 13 of 1964; GSR 918(E) (2015) | Operative | Public domain statutory enactment (Section 52(1)(q) Indian Copyright Act) | `reviewed_t03_pending_activation` |
-| `REAL-003` | *Ayurveda Aahara Regulations, 2022* | FSSAI | India | Subordinate Regulation | `https://fssai.gov.in/upload/notifications/2022/05/62789a20b54bdGazette_Notification_Ayurveda_Aahara_09_05_2022.pdf` | Notified: 2022-05-05; Commenced: 2022-05-05; Mandatory: 2022-11-01 | Operative | Public domain subordinate legislation (Gazette of India) | `reviewed_t03_pending_activation` |
-| `REAL-004` | *Biological Diversity Rules, 2024* | National Biodiversity Authority | India | Subordinate Statutory Rules | `https://nbaindia.nic.in/sites/default/files/2026-05/BD_Rules.pdf` | Notified: 2024; Commenced: 60 days post-Gazette; IPR filing procedures | Operative | Public domain subordinate legislation (Gazette of India) | `reviewed_t03_pending_activation` |
-| `REAL-005` | *Biological Diversity Amendment Rules, 2025* | National Biodiversity Authority | India | Subordinate Statutory Rules | `https://nbaindia.nic.in/sites/default/files/2026-05/AmendmentBD_Rules.pdf` | Notified: 2025; operational fee schedules and Form III updates | Operative | Public domain subordinate legislation (Gazette of India) | `reviewed_t03_pending_activation` |
+| `REAL-003` | *Ayurveda Aahara Regulations, 2022* | FSSAI | India | Subordinate Regulation | `https://fssai.gov.in/upload/notifications/2022/05/62789a20b54bdGazette_Notification_Ayurveda_Aahara_09_05_2022.pdf` | Notified: 2022-05-05; Commenced: 2022-05-05; Mandatory: 2022-11-01; Reg 2(b), Reg 3(4), Reg 8, Reg 13(a) | Operative | Public domain subordinate legislation (Gazette of India) | `reviewed_t03_pending_activation` |
+| `REAL-004` | *Biological Diversity Rules, 2024* | National Biodiversity Authority | India | Subordinate Statutory Rules | `https://nbaindia.nic.in/sites/default/files/2026-05/BD_Rules.pdf` | Notified: 2024; Commenced: 2024-12-21 per NBA FAQ; IPR filing procedures | Operative | Public domain subordinate legislation (Gazette of India) | `reviewed_t03_pending_activation` |
+| `REAL-005` | *Biological Diversity Amendment Rules, 2025* | National Biodiversity Authority | India | Subordinate Statutory Rules | `https://nbaindia.nic.in/sites/default/files/2026-05/AmendmentBD_Rules.pdf` | Notified: 2025; Commenced: 2025-11-01 per NBA FAQ; operational fee schedules and Form III updates | Operative | Public domain subordinate legislation (Gazette of India) | `reviewed_t03_pending_activation` |
 | `REAL-006` | *WIPO GRATK Treaty (Adopted May 2024)* | WIPO | International Overview | Multilateral Treaty | `https://www.wipo.int/wipolex/en/treaties/textdetails/19849` | Adopted: 2024-05-24; entry into force requires 15 ratifications | Adopted text | Public official multilateral treaty text | `reviewed_t03_pending_activation` |
 | `REAL-007` | *TKDL Public Overview* | CSIR & Ministry of Ayush | India | Institutional Guidance | `https://www.tkdl.res.in/tkdl/langdefault/common/Abouttkdl.asp` | Established: 2001; bilateral patent search agreements; confidential files excluded | Active framework | Public institutional overview | `reviewed_t03_pending_activation` |
-| `REAL-008` | *Biological Diversity Act, 2002 (amended 2023)* | National Biodiversity Authority | India | Primary Statute | `https://www.indiacode.nic.in/handle/123456789/2046` | Enacted: 2003-02-05; Act 10 of 2023 (w.e.f. 2023-08-01, s. 6(1A)) | Operative | Public domain legislative enactment (Section 52(1)(q) Indian Copyright Act) | `reviewed_t03_pending_activation` |
+| `REAL-008` | *Biological Diversity Act, 2002 (amended 2023)* | National Biodiversity Authority | India | Primary Statute | `https://www.indiacode.nic.in/handle/123456789/2046` | Enacted: 2003-02-05; Act 10 of 2023 (w.e.f. 2023-08-01, s. 6(1), s. 6(2), s. 6(1A)) | Operative | Public domain legislative enactment (Section 52(1)(q) Indian Copyright Act) | `reviewed_t03_pending_activation` |
 | `REAL-009` | *Drugs Rules, 1945 — Rule 158-B* | Ministry of Ayush | India | Subordinate Statutory Rules | `https://ayush.gov.in/resources/pdf/quality_standards/Drugs-and-Cosmetics-Act-Rules.pdf` | Notified: GSR 560(E) dated 2005-08-10; licensing proof criteria | Operative | Public domain statutory rules (Section 52(1)(q) Indian Copyright Act) | `reviewed_t03_pending_activation` |
 | `REAL-010` | *CGPDTM Guidelines on TK Patents (2012)* | Office of CGPDTM (IP India) | India | Administrative Guidelines | `https://ipindia.gov.in/writereaddata/Portal/IPOGuidelines/1_37_1_guidelines-for-examination-of-patent-applications-traditional-knowledge.pdf` | Issued: 2012-10-29; s. 3(p)/3(e) administrative assessment | Operative guidance | Public official administrative guidelines | `reviewed_t03_pending_activation` |
 | `REAL-011` | *FSSAI Ayurveda Aahara Implementation Order (2025)* | FSSAI | India | Administrative Order | `https://www.fssai.gov.in/upload/uploadfiles/files/Order%20dated%2025-07-2025%20enclosing%20Ayurveda%20Aahara.pdf` | Issued: 2025-07-25 (F. No. Stds/SP-05/A-1.2022-Part(1)) | Operative | Public official administrative order | `reviewed_t03_pending_activation` |
@@ -45,10 +45,10 @@ Under [MASTER_PLAN.md](../../docs/work-plan/MASTER_PLAN.md) (Section 5) and [02-
 
 ---
 
-## 3. Provision-Level Passage Ledger (Passages PASS-001 through PASS-035)
+## 3. Provision-Level Passage Ledger (Passages PASS-001 through PASS-036)
 
-All 35 provision passages currently indexed in `data/corpus/passages.csv` have been verified against official source documents:
-- `PASS-001` to `PASS-025`: Fully verified and audited in Phases 1 & 2.
+All 36 provision passages currently indexed in `data/corpus/passages.csv` have been verified against official source documents:
+- `PASS-001` to `PASS-025`: Fully verified and audited in Phases 1 & 2 (including corrected `PASS-003` for Reg 3(4), `PASS-004` for Reg 13(a), `PASS-005`/`PASS-006` for NBA FAQ dates, `PASS-015`/`PASS-016` for Section 6(1)/6(2) compliance bifurcation, and `PASS-025` for WIPO Article 6 information systems).
 - `PASS-026`: *Patents Act, 1970* Section 10(4)(d)(ii) — Mandatory disclosure of biological material source and geographical origin in patent specifications.
 - `PASS-027`: *Patents Rules, 2003* Rule 13 & Form 1 — Procedural declaration regarding Indian biological material and status of NBA permission.
 - `PASS-028`: *Patents Rules, 2003* Rule 131 — Form 27 commercial working statements as amended by 2024 Rules.
@@ -59,15 +59,23 @@ All 35 provision passages currently indexed in `data/corpus/passages.csv` have b
 - `PASS-033`: *FSSAI Claims Regulations, 2018* Regulation 4 — General food claims standards prohibiting therapeutic or disease prevention claims.
 - `PASS-034`: *CDSCO Phytopharmaceutical Guidance, 2018* Section 3 — Taxonomic authentication and chromatographic multi-marker standardization standards.
 - `PASS-035`: *PPV&FR Act, 2001* Section 39 — Farmers' rights to save, use, and share seed; boundary distinguishing plant variety protection from patent monopolies.
+- `PASS-036`: *WIPO GRATK Treaty (2024)* Article 5 — Sanctions and remedies for failure to comply with patent disclosure requirements regarding genetic resources and associated traditional knowledge.
 
 ---
 
 ## 4. Formal Review Log & Handoff
 
 - **Log Entry 4 (2026-11-14, Task T-03):** Completed formal provenance audit of 20 official instruments and 35 provision passages. Integrated machine-readable JSON rule contract (`data/rules/decision_rules.json`).
-- **Biodiversity Harmonization:** Formally established that *Biological Diversity Rules, 2024* must be read with the *Biological Diversity Amendment Rules, 2025* and the parent *Biological Diversity Act, 2002* (as amended 2023). Clarified that Section 6(1A) practitioner exemptions do not waive Section 6(1) NBA prior approval requirements for patent applications.
+- **Log Entry 5 (2026-11-15, Peer Review Revisions):** Addressed Harshit's peer-review feedback:
+  1. *Biodiversity Approval Rule & Section 6:* Refined `RULE-ABS-01` and `RULE-T02-09` to distinguish Section 3(2) foreign entities (mandatory NBA approval before patent grant, s. 6(1)) from Section 7 domestic Indian entities (mandatory NBA registration before patent grant and approval before commercialization, s. 6(2)). Updated `PASS-015` and `PASS-016` accordingly.
+  2. *Biodiversity Dates:* Corrected commencement dates to 2024-12-21 (2024 Rules) and 2025-11-01 (2025 Amendment Rules) per NBA FAQ in `source_register.csv`, `documents.csv`, and `passages.csv`.
+  3. *Ayurveda Aahara Provision Locators:* Assigned synthetic nutrients ban to Regulation 3(4) (not 2(b)); front-of-pack logo mandate to Regulation 13(a) (not 8); retained Regulation 8 for disease claims prohibition.
+  4. *WIPO Treaty Locators:* Corrected information systems locator from Article 5 to Article 6 in `PASS-025`, and added `PASS-036` covering Article 5 (sanctions and remedies).
+  5. *Checksum Integrity:* Renamed `checksum_sha256` to `checksum_status` in `source_register.csv`, marking rows as `pending_w8_file_ingestion` to honestly indicate that physical captured binary hashes will be generated during local snapshot ingestion in Week 8.
+  6. *Routing Fallback Risk:* Corrected `RULE-CLS-01` and `RULE-T02-01` so that missing classical text citations route to Route 7 clarification / expert referral (`needs_expert_referral`), never defaulting or demoting to proprietary medicine.
 - **TKDL Exclusion Check:** Re-verified that no private or restricted TKDL formulation dossiers are stored or accessible.
 - **Teammate Review Conducted:**
   - `Harshit (Technical Lead)`: Audited machine-readable rule schema (`data/rules/decision_rules.json`), scenario locators, and patent/ABS multi-statute interaction.
   - `Deepshika (Terminology)`: Audited statutory terminology consistency across classical ASU, P&P ASU, Ayurveda Aahara, and cosmetic routes.
   - `Sabeena (Benchmarks)`: Validated sample scenario outcomes against the benchmark protocol ledger.
+
