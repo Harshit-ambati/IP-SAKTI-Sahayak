@@ -29,6 +29,12 @@ Assume part-time student availability, an existing laptop for development and de
 
 **Scope lock:** establish topic coverage in week 2, baseline corpus in week 8, feature freeze in week 12 and release candidate in week 14. Weeks 15-16 contain testing, repairs, packaging and submission only. Stretch work cannot displace required features, safety fixes or buffer.
 
+### Mandatory phase entry gate
+
+For every member, phase N+1 may start only after phase N is complete **and its phase PR is successfully merged into the shared branch**. A draft PR, passing CI, review approval or local commit alone does not clear the gate. Verify the merged PR URL and merge commit before creating a branch, files, implementation or PR for the next phase. Read-only discovery and discussion are allowed while waiting, but no next-phase deliverables may be created.
+
+If overlap is necessary, Harshit must give explicit written permission identifying the member, next phase, reason and permitted scope **before** that phase is created or implemented. Link the permission in the issue and next-phase PR. The prior phase remains open until its own checks, review and merge are complete; the exception does not waive independent review, safety gates or the normal PR process. Harshit records any exception to his own phase in the issue and obtains Suresh's independent review of that exception and resulting work. Without a verifiable merged PR or recorded exception, stop and report the blocker rather than assuming permission. Week numbers are targets and never override this gate.
+
 ### Capacity and workload
 
 These are planning allowances, including meetings, reviews and documentation. Commit about 78% to planned work; leave the remainder for integration problems, absence and rework. The hours are estimates, not equal grading weights.

@@ -30,6 +30,8 @@ Harshit has project-wide technical review and integration access. Each member re
 
 ## Task packages
 
+**Phase entry rule:** Do not create a branch, files, implementation or PR for the next task package until the previous package is complete and its phase PR is merged. Verify and record the merged PR URL and merge commit. Read-only preparation is allowed. An early start requires Harshit's explicit written permission naming this member, next phase, reason and permitted scope; link it in the issue and next PR. The previous phase stays open until merged. For Harshit's own exception, record his decision and obtain Suresh's independent review. Week targets do not override this rule.
+
 | Task | Target | Deliverable |
 |---|---|---|
 | Su-01 | W1-2 | Publish service/data skeleton and stub classify/answer/source responses. |

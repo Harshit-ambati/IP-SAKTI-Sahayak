@@ -44,6 +44,8 @@ This is a team policy; these documents do not configure GitHub permissions or br
 
 A task is complete only when its deliverable, relevant checks, review, documentation and integration are complete. Weeks 15-16 remain the testing/submission buffer. No live expert access, paid API, restricted TKDL dataset or cloud credit is assumed.
 
+**Phase gate:** no member may create or implement phase N+1 until phase N's PR is merged. Verify the merged PR URL and merge commit. Only Harshit's explicit written, phase-specific permission can allow an early start; link it in the issue and next PR. The earlier phase remains incomplete until merged. Read-only preparation is allowed while waiting. This rule also applies to Harshit's own phases, with Suresh reviewing any recorded exception. See the master plan for the full rule.
+
 ## Decisions at kickoff
 
 Confirm the actual dates and member availability, regional language/reviewers, supported question list, development/demo hardware and stack, and repository access plus institutional submission requirements.
