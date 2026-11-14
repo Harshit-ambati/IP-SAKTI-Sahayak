@@ -95,7 +95,7 @@ The seven document records in `documents.csv` and eight paraphrases in `passages
   - Inspected FSSAI Gazette publication (`62789a20b54bdGazette_Notification_Ayurveda_Aahara_09_05_2022.pdf`): full text verified across Regulations 1 through 13 and Schedules A through D.
 - **Operative Provisions Verified:**
   - **Regulation 2(b):** Definition of "Ayurveda Aahara": food prepared in accordance with recipes or ingredients or processes described in authoritative books of Ayurveda listed in Schedule A. Explicitly excludes Ayurvedic drugs or proprietary Ayurvedic medicines under Drugs and Cosmetics Act 1940 and rules, cosmetics, and parenteral administration.
-  - **Regulation 3(4):** Prohibition on synthetic additions: Strictly prohibits the addition of synthetic vitamins, minerals, amino acids, or isolated chemical compounds to Ayurveda Aahara.
+  - **Regulation 3(4):** Prohibition on added nutrients: Strictly prohibits the addition of vitamins, minerals or amino acids to Ayurveda Aahara.
   - **Regulation 8:** Claims prohibition: Strictly prohibits claiming prevention, treatment, mitigation or cure of any human disease or disorder in advertising or packaging.
   - **Regulation 13(a):** Front-of-pack logo: Mandates displaying the specified Ayurveda Aahara logo on the principal display panel on front of pack along with advisory statements.
   - **Schedule A:** Recognizes classical Ayurveda authoritative texts for foods and recipes.

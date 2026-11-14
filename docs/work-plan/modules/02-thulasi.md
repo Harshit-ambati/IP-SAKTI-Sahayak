@@ -68,10 +68,10 @@ Weeks 15-16 are reserved for testing, repairs, packaging and submission; do not 
 - [x] Approved provision excerpts with locators and version manifest ([passages.csv](../../../data/corpus/passages.csv): 36 provision rows verified and submitted for activation)
 - [x] Formulation intake questions and source-backed routing table ([thulasi-t01-specification.md](thulasi-t01-specification.md), [thulasi-t02-intake-rules.md](thulasi-t02-intake-rules.md), [thulasi-t03-decision-rules.md](thulasi-t03-decision-rules.md), [decision_rules.json](../../../data/rules/decision_rules.json))
 - [x] Topic coverage map, exclusions and supersession/change log ([thulasi-t03-decision-rules.md](thulasi-t03-decision-rules.md), [SOURCE_AUDIT_T03.md](../../../data/corpus/SOURCE_AUDIT_T03.md))
-- [x] Ten sample rule firings audited with teammates ([thulasi-t03-decision-rules.md](thulasi-t03-decision-rules.md) Section 3)
+- [x] Ten sample rule firings mapped and assigned for teammate review ([thulasi-t03-decision-rules.md](thulasi-t03-decision-rules.md) Section 3)
 - [ ] Expected evidence and claim-support annotations (scheduled for T-04 through T-05)
 - [ ] Relevant master-plan acceptance gates met and actual evidence recorded.
-- [x] Independent peer review findings resolved (addressed Harshit's review changes on biodiversity s. 6, BD Rules dates, FSSAI locators, WIPO articles, checksum gate status, and classical routing fallback).
+- [x] Independent peer review findings resolved (addressed Harshit's review changes on biodiversity s. 6(1)/6(1A)/6(1B), s. 7(1) proviso, Rule 170 omission via GSR 360(E), BD Rules dates, Form 7/8, FSSAI reg. 3(4) narrowing, WIPO articles, checksum gate status, and classical routing fallback).
 - [ ] Outputs integrated into the shared project; handoff notes and limitations documented.
 
 ## Start here

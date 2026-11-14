@@ -25,8 +25,9 @@ These are **real-source data**, not synthetic questions. The CSV holds paraphras
    - Extended corpus to **twenty reviewed official sources** (`REAL-001` through `REAL-020`) and **36 provision-level passages** (`PASS-001` through `PASS-036`).
    - Machine-readable decision rule contract implemented in [decision_rules.json](../rules/decision_rules.json).
    - Detailed specification and 10 reviewed sample rule firings published in [thulasi-t03-decision-rules.md](../../docs/work-plan/modules/thulasi-t03-decision-rules.md).
-   - Harmonized *Biological Diversity Rules, 2024* (commenced 21 Dec 2024) with *Biological Diversity Amendment Rules, 2025* (commencing 1 Nov 2025) and *Biological Diversity Act, 2002* (as amended 2023, distinguishing s. 6(1) foreign approval before grant vs s. 6(2) domestic registration before grant and approval before commercialization).
+   - Harmonized *Biological Diversity Rules, 2024* (notified 22 Oct 2024, commenced 21 Dec 2024) with *Biological Diversity Amendment Rules, 2025* (notified 6 May 2025, commencing 1 Nov 2025) and *Biological Diversity Act, 2002* (as amended 2023, effective 1 Apr 2024, distinguishing s. 6(1) foreign approval Form 7 from s. 6(1A) domestic registration Form 8, s. 6(1B) commercialization approval, and s. 7(1) proviso vaid/hakim exemption).
+   - Documented omission of Drugs Rules Rule 170 via G.S.R. 360(E) dated 1 July 2024 (`REAL-015`, `PASS-029` marked `omitted_superseded_gsr360e`).
    - Explicit strict TKDL non-confidentiality boundary and uncertain/needs-expert referral pathways.
-   - Addressed peer review revisions on FSSAI locators (Reg 3(4), Reg 13(a)), WIPO Articles 5/6, checksum status (`pending_w8_file_ingestion`), and classical routing fallback to Route 7.
+   - Addressed peer review revisions on FSSAI locators (Reg 3(4) vitamins/minerals/amino acids ban, Reg 13(a) logo), WIPO Articles 5/6, checksum status (`pending_w8_file_ingestion`), and classical routing fallback to Route 7.
 
 *Activation Gate:* Submitted for Harshit's technical review and validation before activation into the production RAG index.

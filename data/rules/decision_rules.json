@@ -56,7 +56,7 @@
     {
       "id": "synthetic_nutrients_added",
       "type": "boolean",
-      "missing_prompt": "Are any synthetic vitamins, minerals, amino acids, or isolated chemical additives added to the formulation? (Prohibited under Regulation 3(4) of Ayurveda Aahara Regulations)."
+      "missing_prompt": "Are any vitamins, minerals, or amino acids added to the formulation? (Prohibited under Regulation 3(4) of Ayurveda Aahara Regulations)."
     },
     {
       "id": "biological_resource_india",
@@ -225,10 +225,10 @@
       "outcome": {
         "route": "nba_ipr_approval_mandate",
         "action": "statutory_compliance_mandate",
-        "legal_basis": "The Biological Diversity Act, 2002 Section 6(1) and Section 6(2) as amended by Act 10 of 2023; Biological Diversity Rules, 2024 Rule 14 read with 2025 Amendment Rules",
+        "legal_basis": "The Biological Diversity Act, 2002 Section 6(1), Section 6(1A), Section 6(1B), and Section 6(2) as amended by Act 10 of 2023 (effective 2024-04-01); Biological Diversity Rules, 2024 (commenced 2024-12-21) Rule 14 read with 2025 Amendment Rules (commencing 2025-11-01)",
         "source_ids": ["REAL-004", "REAL-005", "REAL-008", "REAL-017"],
         "passage_locators": ["PASS-005", "PASS-006", "PASS-015", "PASS-016", "PASS-032"],
-        "mandate_details": "Under amended Section 6: Section 3(2) foreign entities must obtain NBA approval before grant of IPR under s. 6(1); Section 7 domestic Indian entities must register with the NBA before grant of IPR and obtain NBA approval prior to commercialization under s. 6(2). Practitioner exemptions under s. 6(1A) do not waive IPR registration or approval."
+        "mandate_details": "Under amended Section 6: Section 3(2) foreign entities must obtain prior approval of the NBA before grant of IPR under s. 6(1) using Form 7; Section 7 domestic Indian entities must register with the NBA before grant of IPR under s. 6(1A) using Form 8, and obtain NBA approval prior to commercialization under s. 6(1B). Section 6(2) governs benefit sharing determination. The local vaidya/hakim and grower exemption under the proviso to s. 7(1) applies to commercial utilization intimation and does not waive patent registration or approval duties under Section 6."
       }
     },
     {
