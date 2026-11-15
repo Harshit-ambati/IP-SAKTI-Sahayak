@@ -35,13 +35,13 @@ def seed_fixtures(conn: sqlite3.Connection) -> None:
 
     cur = conn.cursor()
 
-    # Seed synthetic sources
+    # Seed synthetic sources — activated=1 so they appear in public lookup endpoints
     for src in data.get("sources", []):
         cur.execute(
             """
             INSERT OR REPLACE INTO sources (
-                source_id, topic, authority, title, official_url, format, role, priority, verification_status, review_note, is_synthetic
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)
+                source_id, topic, authority, title, official_url, format, role, priority, verification_status, review_note, is_synthetic, activated
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 1)
             """,
             (
                 src["source_id"],
@@ -57,13 +57,13 @@ def seed_fixtures(conn: sqlite3.Connection) -> None:
             )
         )
 
-    # Seed synthetic passages
+    # Seed synthetic passages — activated=1
     for pas in data.get("passages", []):
         cur.execute(
             """
             INSERT OR REPLACE INTO passages (
-                passage_id, source_id, jurisdiction, authority, document_title, locator, paraphrased_content, source_url, source_type, review_status, review_note, is_synthetic
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)
+                passage_id, source_id, jurisdiction, authority, document_title, locator, paraphrased_content, source_url, source_type, review_status, review_note, is_synthetic, activated
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 1)
             """,
             (
                 pas["passage_id"],
@@ -86,7 +86,10 @@ def seed_fixtures(conn: sqlite3.Connection) -> None:
 
 def seed_real_corpus_if_available(conn: sqlite3.Connection) -> None:
     """
-    Seeds initial corpus CSV rows if available, marked as unapproved preliminary corpus (is_synthetic=0).
+    Seeds initial corpus CSV rows into the database as PRELIMINARY (activated=0).
+    These rows are stored locally for internal reference but are intentionally NOT
+    returned from public /sources or /passages API endpoints.
+    Activation requires Thulasi's review and Harshit's corpus activation gate.
     """
     cur = conn.cursor()
 
@@ -98,8 +101,8 @@ def seed_real_corpus_if_available(conn: sqlite3.Connection) -> None:
                 cur.execute(
                     """
                     INSERT OR REPLACE INTO sources (
-                        source_id, topic, authority, title, official_url, format, role, priority, verification_status, review_note, is_synthetic
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)
+                        source_id, topic, authority, title, official_url, format, role, priority, verification_status, review_note, is_synthetic, activated
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0)
                     """,
                     (
                         row["source_id"],
@@ -115,7 +118,7 @@ def seed_real_corpus_if_available(conn: sqlite3.Connection) -> None:
                     )
                 )
                 doc_count += 1
-        print(f"[INFO] Loaded {doc_count} real corpus document records from CSV.")
+        print(f"[INFO] Staged {doc_count} real corpus document records as preliminary (activated=0).")
 
     if CORPUS_PASSAGES_PATH.exists():
         with open(CORPUS_PASSAGES_PATH, "r", encoding="utf-8") as f:
@@ -125,8 +128,8 @@ def seed_real_corpus_if_available(conn: sqlite3.Connection) -> None:
                 cur.execute(
                     """
                     INSERT OR REPLACE INTO passages (
-                        passage_id, source_id, jurisdiction, authority, document_title, locator, paraphrased_content, source_url, source_type, review_status, review_note, is_synthetic
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)
+                        passage_id, source_id, jurisdiction, authority, document_title, locator, paraphrased_content, source_url, source_type, review_status, review_note, is_synthetic, activated
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0)
                     """,
                     (
                         row["passage_id"],
@@ -143,7 +146,7 @@ def seed_real_corpus_if_available(conn: sqlite3.Connection) -> None:
                     )
                 )
                 pas_count += 1
-        print(f"[INFO] Loaded {pas_count} real corpus passage records from CSV.")
+        print(f"[INFO] Staged {pas_count} real corpus passage records as preliminary (activated=0).")
 
     conn.commit()
 

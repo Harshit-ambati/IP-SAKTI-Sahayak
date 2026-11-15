@@ -1,6 +1,10 @@
 """
 Source and Passage lookup routes for IP-SAKTI Sahayak (Task Su-01).
-Allows retrieving official source records and verified passages by citation ID.
+
+Activation gate: only rows with activated=1 are returned from public endpoints.
+  - Synthetic fixtures (is_synthetic=1, activated=1): visible for testing.
+  - Preliminary real corpus rows (is_synthetic=0, activated=0): staged locally only;
+    NOT returned until Thulasi's review and Harshit's corpus activation gate is passed.
 """
 
 import sqlite3
@@ -16,12 +20,51 @@ from ...models.schemas import (
 
 router = APIRouter(prefix="/api/v1", tags=["Sources & Evidence"])
 
+# Activation gate: only rows with activated=1 are served from public endpoints.
+_ACTIVATION_FILTER = "activated = 1"
+
+
+def _row_to_source(r: sqlite3.Row) -> SourceRecord:
+    return SourceRecord(
+        source_id=r["source_id"],
+        topic=r["topic"],
+        authority=r["authority"],
+        title=r["title"],
+        official_url=r["official_url"],
+        format=r["format"],
+        role=r["role"],
+        priority=r["priority"],
+        verification_status=r["verification_status"],
+        review_note=r["review_note"],
+        is_synthetic=bool(r["is_synthetic"]),
+    )
+
+
+def _row_to_passage(r: sqlite3.Row) -> EvidencePassage:
+    return EvidencePassage(
+        passage_id=r["passage_id"],
+        source_id=r["source_id"],
+        jurisdiction=r["jurisdiction"],
+        authority=r["authority"],
+        document_title=r["document_title"],
+        locator=r["locator"],
+        paraphrased_content=r["paraphrased_content"],
+        source_url=r["source_url"],
+        source_type=r["source_type"],
+        review_status=r["review_status"],
+        review_note=r["review_note"],
+        is_synthetic=bool(r["is_synthetic"]),
+    )
+
 
 @router.get(
     "/sources/{source_id}",
     response_model=SourceRecord,
     summary="Get Source Document by ID",
-    description="Looks up an official or synthetic source record by its unique source_id.",
+    description=(
+        "Looks up an activated source record by its unique source_id. "
+        "Preliminary corpus rows (activated=0) are not returned; use the internal admin path."
+    ),
 )
 def get_source_by_id(
     source_id: str,
@@ -29,10 +72,11 @@ def get_source_by_id(
 ) -> SourceRecord:
     cur = conn.cursor()
     cur.execute(
-        """
-        SELECT source_id, topic, authority, title, official_url, format, role, priority, verification_status, review_note, is_synthetic
+        f"""
+        SELECT source_id, topic, authority, title, official_url, format, role, priority,
+               verification_status, review_note, is_synthetic
         FROM sources
-        WHERE source_id = ?
+        WHERE source_id = ? AND {_ACTIVATION_FILTER}
         """,
         (source_id,)
     )
@@ -40,29 +84,19 @@ def get_source_by_id(
     if not row:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Source record with ID '{source_id}' not found.",
+            detail=f"Source record with ID '{source_id}' not found or not yet activated.",
         )
-
-    return SourceRecord(
-        source_id=row["source_id"],
-        topic=row["topic"],
-        authority=row["authority"],
-        title=row["title"],
-        official_url=row["official_url"],
-        format=row["format"],
-        role=row["role"],
-        priority=row["priority"],
-        verification_status=row["verification_status"],
-        review_note=row["review_note"],
-        is_synthetic=bool(row["is_synthetic"]),
-    )
+    return _row_to_source(row)
 
 
 @router.get(
     "/sources",
     response_model=SourceListResponse,
-    summary="List Source Documents",
-    description="Returns a paginated list of registered official and synthetic source documents.",
+    summary="List Activated Source Documents",
+    description=(
+        "Returns a paginated list of activated source documents. "
+        "Preliminary corpus rows (activated=0) are excluded until Harshit's corpus activation gate is passed."
+    ),
 )
 def list_sources(
     topic: Optional[str] = Query(None, description="Optional topic filter"),
@@ -72,25 +106,31 @@ def list_sources(
 ) -> SourceListResponse:
     cur = conn.cursor()
     if topic:
-        cur.execute("SELECT count(*) FROM sources WHERE topic = ?", (topic,))
+        cur.execute(
+            f"SELECT count(*) FROM sources WHERE topic = ? AND {_ACTIVATION_FILTER}",
+            (topic,)
+        )
         total = cur.fetchone()[0]
         cur.execute(
-            """
-            SELECT source_id, topic, authority, title, official_url, format, role, priority, verification_status, review_note, is_synthetic
+            f"""
+            SELECT source_id, topic, authority, title, official_url, format, role, priority,
+                   verification_status, review_note, is_synthetic
             FROM sources
-            WHERE topic = ?
+            WHERE topic = ? AND {_ACTIVATION_FILTER}
             ORDER BY source_id ASC
             LIMIT ? OFFSET ?
             """,
             (topic, limit, offset)
         )
     else:
-        cur.execute("SELECT count(*) FROM sources")
+        cur.execute(f"SELECT count(*) FROM sources WHERE {_ACTIVATION_FILTER}")
         total = cur.fetchone()[0]
         cur.execute(
-            """
-            SELECT source_id, topic, authority, title, official_url, format, role, priority, verification_status, review_note, is_synthetic
+            f"""
+            SELECT source_id, topic, authority, title, official_url, format, role, priority,
+                   verification_status, review_note, is_synthetic
             FROM sources
+            WHERE {_ACTIVATION_FILTER}
             ORDER BY source_id ASC
             LIMIT ? OFFSET ?
             """,
@@ -98,30 +138,17 @@ def list_sources(
         )
 
     rows = cur.fetchall()
-    items = [
-        SourceRecord(
-            source_id=r["source_id"],
-            topic=r["topic"],
-            authority=r["authority"],
-            title=r["title"],
-            official_url=r["official_url"],
-            format=r["format"],
-            role=r["role"],
-            priority=r["priority"],
-            verification_status=r["verification_status"],
-            review_note=r["review_note"],
-            is_synthetic=bool(r["is_synthetic"]),
-        )
-        for r in rows
-    ]
-    return SourceListResponse(total=total, items=items)
+    return SourceListResponse(total=total, items=[_row_to_source(r) for r in rows])
 
 
 @router.get(
     "/passages/{passage_id}",
     response_model=EvidencePassage,
     summary="Get Evidence Passage by ID",
-    description="Looks up an authoritative provision passage excerpt by its passage_id.",
+    description=(
+        "Looks up an activated provision passage by its passage_id. "
+        "Preliminary corpus rows (activated=0) are not returned."
+    ),
 )
 def get_passage_by_id(
     passage_id: str,
@@ -129,10 +156,11 @@ def get_passage_by_id(
 ) -> EvidencePassage:
     cur = conn.cursor()
     cur.execute(
-        """
-        SELECT passage_id, source_id, jurisdiction, authority, document_title, locator, paraphrased_content, source_url, source_type, review_status, review_note, is_synthetic
+        f"""
+        SELECT passage_id, source_id, jurisdiction, authority, document_title, locator,
+               paraphrased_content, source_url, source_type, review_status, review_note, is_synthetic
         FROM passages
-        WHERE passage_id = ?
+        WHERE passage_id = ? AND {_ACTIVATION_FILTER}
         """,
         (passage_id,)
     )
@@ -140,30 +168,19 @@ def get_passage_by_id(
     if not row:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Evidence passage with ID '{passage_id}' not found.",
+            detail=f"Evidence passage with ID '{passage_id}' not found or not yet activated.",
         )
-
-    return EvidencePassage(
-        passage_id=row["passage_id"],
-        source_id=row["source_id"],
-        jurisdiction=row["jurisdiction"],
-        authority=row["authority"],
-        document_title=row["document_title"],
-        locator=row["locator"],
-        paraphrased_content=row["paraphrased_content"],
-        source_url=row["source_url"],
-        source_type=row["source_type"],
-        review_status=row["review_status"],
-        review_note=row["review_note"],
-        is_synthetic=bool(row["is_synthetic"]),
-    )
+    return _row_to_passage(row)
 
 
 @router.get(
     "/passages",
     response_model=PassageListResponse,
-    summary="List Evidence Passages",
-    description="Returns a paginated list of indexed evidence passages.",
+    summary="List Activated Evidence Passages",
+    description=(
+        "Returns a paginated list of activated evidence passages. "
+        "Preliminary corpus rows (activated=0) are excluded until Harshit's corpus activation gate is passed."
+    ),
 )
 def list_passages(
     source_id: Optional[str] = Query(None, description="Optional parent source_id filter"),
@@ -173,25 +190,31 @@ def list_passages(
 ) -> PassageListResponse:
     cur = conn.cursor()
     if source_id:
-        cur.execute("SELECT count(*) FROM passages WHERE source_id = ?", (source_id,))
+        cur.execute(
+            f"SELECT count(*) FROM passages WHERE source_id = ? AND {_ACTIVATION_FILTER}",
+            (source_id,)
+        )
         total = cur.fetchone()[0]
         cur.execute(
-            """
-            SELECT passage_id, source_id, jurisdiction, authority, document_title, locator, paraphrased_content, source_url, source_type, review_status, review_note, is_synthetic
+            f"""
+            SELECT passage_id, source_id, jurisdiction, authority, document_title, locator,
+                   paraphrased_content, source_url, source_type, review_status, review_note, is_synthetic
             FROM passages
-            WHERE source_id = ?
+            WHERE source_id = ? AND {_ACTIVATION_FILTER}
             ORDER BY passage_id ASC
             LIMIT ? OFFSET ?
             """,
             (source_id, limit, offset)
         )
     else:
-        cur.execute("SELECT count(*) FROM passages")
+        cur.execute(f"SELECT count(*) FROM passages WHERE {_ACTIVATION_FILTER}")
         total = cur.fetchone()[0]
         cur.execute(
-            """
-            SELECT passage_id, source_id, jurisdiction, authority, document_title, locator, paraphrased_content, source_url, source_type, review_status, review_note, is_synthetic
+            f"""
+            SELECT passage_id, source_id, jurisdiction, authority, document_title, locator,
+                   paraphrased_content, source_url, source_type, review_status, review_note, is_synthetic
             FROM passages
+            WHERE {_ACTIVATION_FILTER}
             ORDER BY passage_id ASC
             LIMIT ? OFFSET ?
             """,
@@ -199,21 +222,4 @@ def list_passages(
         )
 
     rows = cur.fetchall()
-    items = [
-        EvidencePassage(
-            passage_id=r["passage_id"],
-            source_id=r["source_id"],
-            jurisdiction=r["jurisdiction"],
-            authority=r["authority"],
-            document_title=r["document_title"],
-            locator=r["locator"],
-            paraphrased_content=r["paraphrased_content"],
-            source_url=r["source_url"],
-            source_type=r["source_type"],
-            review_status=r["review_status"],
-            review_note=r["review_note"],
-            is_synthetic=bool(r["is_synthetic"]),
-        )
-        for r in rows
-    ]
-    return PassageListResponse(total=total, items=items)
+    return PassageListResponse(total=total, items=[_row_to_passage(r) for r in rows])

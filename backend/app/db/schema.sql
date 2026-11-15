@@ -2,6 +2,8 @@
 -- Su-01 Data Skeleton: Sources, Passages, FTS5 Search, and Privacy-Compliant Audit Log
 
 -- 1. Official and Synthetic Sources
+-- activated = 1: eligible for public lookup endpoints (synthetic test fixtures or Thulasi-approved real records)
+-- activated = 0: stored locally but NOT returned from public /sources or /passages endpoints (preliminary corpus rows)
 CREATE TABLE IF NOT EXISTS sources (
     source_id TEXT PRIMARY KEY,
     topic TEXT NOT NULL,
@@ -13,10 +15,13 @@ CREATE TABLE IF NOT EXISTS sources (
     priority TEXT NOT NULL DEFAULT 'required',
     verification_status TEXT NOT NULL,
     review_note TEXT,
-    is_synthetic INTEGER NOT NULL DEFAULT 0
+    is_synthetic INTEGER NOT NULL DEFAULT 0,
+    activated INTEGER NOT NULL DEFAULT 0
 );
 
 -- 2. Evidence Passages
+-- activated = 1: eligible for public lookup endpoints
+-- activated = 0: stored locally but NOT returned from public /passages endpoints
 CREATE TABLE IF NOT EXISTS passages (
     passage_id TEXT PRIMARY KEY,
     source_id TEXT NOT NULL REFERENCES sources(source_id) ON DELETE CASCADE,
@@ -29,7 +34,8 @@ CREATE TABLE IF NOT EXISTS passages (
     source_type TEXT NOT NULL DEFAULT 'statute',
     review_status TEXT NOT NULL,
     review_note TEXT,
-    is_synthetic INTEGER NOT NULL DEFAULT 0
+    is_synthetic INTEGER NOT NULL DEFAULT 0,
+    activated INTEGER NOT NULL DEFAULT 0
 );
 
 -- 3. FTS5 Virtual Table for Hybrid/Full-Text Search

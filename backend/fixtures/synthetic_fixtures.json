@@ -40,6 +40,19 @@
       "verification_status": "synthetic_mock_verified",
       "review_note": "Synthetic fixture representing Ayurveda Aahara food category and disease claim prohibition.",
       "is_synthetic": true
+    },
+    {
+      "source_id": "SYNTH-SRC-004",
+      "topic": "international_treaty",
+      "authority": "WIPO (Synthetic Mock)",
+      "title": "Synthetic WIPO GRATK Treaty Overview",
+      "official_url": "https://www.wipo.int/en/web/treaties/ip/gratk/index",
+      "format": "html",
+      "role": "primary",
+      "priority": "required",
+      "verification_status": "synthetic_mock_verified",
+      "review_note": "Synthetic international fixture for WIPO GRATK treaty 2024. Strictly distinct from India-jurisdiction sources.",
+      "is_synthetic": true
     }
   ],
   "passages": [
@@ -83,6 +96,20 @@
       "source_type": "regulation",
       "review_status": "synthetic_reviewed_su01",
       "review_note": "Synthetic test passage for Ayurveda Aahara route.",
+      "is_synthetic": true
+    },
+    {
+      "passage_id": "SYNTH-PASS-INT-001",
+      "source_id": "SYNTH-SRC-004",
+      "jurisdiction": "International",
+      "authority": "WIPO (Synthetic Mock)",
+      "document_title": "Synthetic WIPO GRATK Treaty Overview",
+      "locator": "WIPO GRATK Treaty 2024, Treaty Overview",
+      "paraphrased_content": "[SYNTHETIC FIXTURE - INTERNATIONAL] The WIPO Treaty on Intellectual Property, Genetic Resources and Associated Traditional Knowledge (GRATK), adopted May 2024, establishes a mandatory patent disclosure requirement. Applicants must disclose the country of origin or source of genetic resources or associated traditional knowledge. Treaty does not automatically confer domestic enforceability; ratification by contracting parties is required.",
+      "source_url": "https://www.wipo.int/en/web/treaties/ip/gratk/index",
+      "source_type": "official_treaty_overview",
+      "review_status": "synthetic_reviewed_su01",
+      "review_note": "Synthetic international fixture for WIPO GRATK treaty. Distinct from India-jurisdiction passages.",
       "is_synthetic": true
     }
   ],
