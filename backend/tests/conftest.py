@@ -33,8 +33,7 @@ def test_db_path() -> Generator[Path, None, None]:
     """
     with tempfile.NamedTemporaryFile(suffix=".db", delete=False) as tf:
         temp_path = Path(tf.name)
-    
-    # Initialize schema and load synthetic fixtures
+
     init_database(temp_path)
     conn = get_db_connection(temp_path)
     seed_fixtures(conn)
@@ -42,7 +41,6 @@ def test_db_path() -> Generator[Path, None, None]:
 
     yield temp_path
 
-    # Cleanup
     if temp_path.exists():
         try:
             temp_path.unlink()

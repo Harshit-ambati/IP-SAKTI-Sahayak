@@ -186,13 +186,14 @@ def test_classify_empty_ingredients_fails_validation(client: TestClient):
 
 
 def test_classify_patent_proprietary_success(client: TestClient):
-    """Rule 02: Explicit proprietary branded ASU medicine returns patent_proprietary route."""
+    """Rule 02: Explicit proprietary branded ASU medicine with verified First Schedule ingredients returns patent_proprietary route."""
     payload = {
         "formulation_title": "Synthetic Proprietary Brahmi Capsule",
         "ingredients": ["Bacopa monnieri extract", "Excipients Q.S."],
         "intended_use": "medicinal",
         "classical_text_reference": None,
         "is_proprietary_branded": True,
+        "all_ingredients_in_authoritative_texts": True,
         "has_novel_ingredient": False,
         "standardized_fraction": False,
         "external_application_only": False,
@@ -206,6 +207,52 @@ def test_classify_patent_proprietary_success(client: TestClient):
     assert any("Section 3(h)" in p for p in data["governing_provisions"])
     assert data["referral_required"] is False
     assert data["is_synthetic_fixture"] is True
+
+
+def test_classify_proprietary_with_unverified_ingredient_is_ambiguous(client: TestClient):
+    """Gate 6: Proprietary branded with unverified ingredients (all_ingredients_in_authoritative_texts=False) returns unknown_ambiguous."""
+    payload = {
+        "formulation_title": "Synthetic Mystery Herb Proprietary Syrup",
+        "ingredients": ["Unverified Herb Extract X"],
+        "intended_use": "medicinal",
+        "classical_text_reference": None,
+        "is_proprietary_branded": True,
+        "all_ingredients_in_authoritative_texts": False,  # Not verified against First Schedule texts
+        "has_novel_ingredient": False,
+        "standardized_fraction": False,
+        "external_application_only": False,
+        "jurisdiction": "India",
+        "language": "en"
+    }
+    response = client.post("/api/v1/classify", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["provisional_route"] == "unknown_ambiguous"
+    assert data["referral_required"] is True
+    assert any("First Schedule" in f or "unverified" in f.lower() for f in data["missing_facts"])
+
+
+def test_classify_proprietary_with_unverified_token_is_ambiguous(client: TestClient):
+    """Gate 6: Proprietary branded containing 'unknown' token in ingredients list returns unknown_ambiguous."""
+    payload = {
+        "formulation_title": "Synthetic Partial Unknown Tonic",
+        "ingredients": ["Withania somnifera", "unknown"],
+        "intended_use": "medicinal",
+        "classical_text_reference": None,
+        "is_proprietary_branded": True,
+        "all_ingredients_in_authoritative_texts": True,
+        "has_novel_ingredient": False,
+        "standardized_fraction": False,
+        "external_application_only": False,
+        "jurisdiction": "India",
+        "language": "en"
+    }
+    response = client.post("/api/v1/classify", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["provisional_route"] == "unknown_ambiguous"
+    assert data["referral_required"] is True
+    assert any("unverified" in f.lower() or "first schedule" in f.lower() for f in data["missing_facts"])
 
 
 def test_classify_contradictory_food_external_use(client: TestClient):

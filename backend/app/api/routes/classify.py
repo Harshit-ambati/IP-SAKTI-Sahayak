@@ -200,12 +200,41 @@ def classify_formulation(intake: Intake) -> ClassificationResult:
             is_synthetic_fixture=True,
         )
 
+    # --- Gate 6: Proprietary declared but ingredients are unverified against First Schedule texts ---
+    # Section 3(h) of the Drugs and Cosmetics Act 1940 strictly defines Patent or Proprietary
+    # ASU medicines as containing ONLY ingredients mentioned in the authoritative books
+    # of the First Schedule. If all_ingredients_in_authoritative_texts is False or any ingredient
+    # is unverified, it CANNOT receive a confident proprietary classification.
+    _unverified_tokens = {"unknown", "unverified", "tbd", "n/a", "na", "", "?", "unspecified"}
+    has_unverified_token = any(ing.strip().lower() in _unverified_tokens for ing in intake.ingredients)
+
+    if intake.intended_use == "medicinal" and intake.is_proprietary_branded:
+        if has_unverified_token or not intake.all_ingredients_in_authoritative_texts:
+            return ClassificationResult(
+                provisional_route=ProvisionalRouteEnum.UNKNOWN_AMBIGUOUS,
+                confidence_label="synthetic_mock_uncertain",
+                governing_provisions=["Drugs and Cosmetics Act 1940, Section 3(h)"],
+                missing_facts=[
+                    "Under Section 3(h) of the Drugs and Cosmetics Act 1940, a Patent or Proprietary "
+                    "ASU medicine must contain ONLY ingredients documented in the First Schedule "
+                    "authoritative books. The listed ingredients are unverified against First Schedule "
+                    "texts (all_ingredients_in_authoritative_texts=False). Please verify each ingredient "
+                    "against First Schedule texts or clarify botanical/mineral identities before a "
+                    "confident proprietary classification can be assigned."
+                ],
+                referral_required=True,
+                disclaimer="Provisional classification only; does not constitute legal or regulatory approval.",
+                is_synthetic_fixture=True,
+            )
+
     # --- Rule 02: Patent or Proprietary ASU Drug ---
     # Explicitly declared as proprietary/branded ASU drug, without classical text reference,
-    # and without novel synthetic chemicals or standardized fraction.
+    # without novel synthetic chemicals or standardized fraction, AND with all ingredients verified
+    # in First Schedule authoritative books per Section 3(h).
     if (
         intake.intended_use == "medicinal"
         and intake.is_proprietary_branded
+        and intake.all_ingredients_in_authoritative_texts
         and not intake.classical_text_reference
         and not intake.has_novel_ingredient
         and not intake.standardized_fraction

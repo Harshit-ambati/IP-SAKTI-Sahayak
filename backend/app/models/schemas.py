@@ -99,6 +99,10 @@ class Intake(BaseModel):
         default=False,
         description="Whether the formulation is an explicitly branded proprietary ASU drug not based on classical texts."
     )
+    all_ingredients_in_authoritative_texts: bool = Field(
+        default=False,
+        description="Whether all formulation ingredients are documented in First Schedule authoritative books (Drugs and Cosmetics Act Section 3(h))."
+    )
     external_application_only: bool = Field(
         default=False,
         description="Whether formulation is strictly for external topical use for cleansing/beautifying."
