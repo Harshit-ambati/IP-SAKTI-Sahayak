@@ -183,3 +183,45 @@ def test_classify_empty_ingredients_fails_validation(client: TestClient):
     }
     response = client.post("/api/v1/classify", json=payload)
     assert response.status_code == 422
+
+
+def test_classify_patent_proprietary_success(client: TestClient):
+    """Rule 02: Explicit proprietary branded ASU medicine returns patent_proprietary route."""
+    payload = {
+        "formulation_title": "Synthetic Proprietary Brahmi Capsule",
+        "ingredients": ["Bacopa monnieri extract", "Excipients Q.S."],
+        "intended_use": "medicinal",
+        "classical_text_reference": None,
+        "is_proprietary_branded": True,
+        "has_novel_ingredient": False,
+        "standardized_fraction": False,
+        "external_application_only": False,
+        "jurisdiction": "India",
+        "language": "en"
+    }
+    response = client.post("/api/v1/classify", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["provisional_route"] == "patent_proprietary"
+    assert any("Section 3(h)" in p for p in data["governing_provisions"])
+    assert data["referral_required"] is False
+    assert data["is_synthetic_fixture"] is True
+
+
+def test_classify_contradictory_food_external_use(client: TestClient):
+    """Gate 5: Food/dietary use marked with external_application_only=True returns unknown_ambiguous."""
+    payload = {
+        "formulation_title": "Synthetic Topical Food Bar",
+        "ingredients": ["Herbal Seed Oil", "Honey Base"],
+        "intended_use": "food_dietary",
+        "external_application_only": True,  # Physical/legal contradiction
+        "claims_disease_cure": False,
+        "jurisdiction": "India",
+        "language": "en"
+    }
+    response = client.post("/api/v1/classify", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["provisional_route"] == "unknown_ambiguous"
+    assert data["referral_required"] is True
+    assert any("external" in f.lower() or "contradiction" in f.lower() for f in data["missing_facts"])

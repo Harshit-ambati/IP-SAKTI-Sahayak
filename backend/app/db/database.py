@@ -63,6 +63,7 @@ def check_db_health(db_path: Optional[Path] = None) -> dict:
 def init_database(db_path: Optional[Path] = None) -> None:
     """
     Applies schema.sql to initialize all tables and triggers.
+    Runs idempotent migrations on any existing tables.
     """
     conn = get_db_connection(db_path)
     with open(SCHEMA_PATH, "r", encoding="utf-8") as f:
@@ -70,3 +71,7 @@ def init_database(db_path: Optional[Path] = None) -> None:
     conn.executescript(schema_sql)
     conn.commit()
     conn.close()
+
+    # Apply migrations for preexisting tables that might lack new columns
+    from .migrate import run_migrations
+    run_migrations(db_path)

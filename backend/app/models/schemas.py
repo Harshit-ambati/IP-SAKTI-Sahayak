@@ -95,6 +95,10 @@ class Intake(BaseModel):
         default=False,
         description="Whether a purified standardized fraction with >=4 bioactive markers is used."
     )
+    is_proprietary_branded: bool = Field(
+        default=False,
+        description="Whether the formulation is an explicitly branded proprietary ASU drug not based on classical texts."
+    )
     external_application_only: bool = Field(
         default=False,
         description="Whether formulation is strictly for external topical use for cleansing/beautifying."

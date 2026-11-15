@@ -105,6 +105,21 @@ def classify_formulation(intake: Intake) -> ClassificationResult:
             is_synthetic_fixture=True,
         )
 
+    # --- Gate 5: Contradiction — food_dietary + external_application_only ---
+    if intake.intended_use == "food_dietary" and intake.external_application_only:
+        return ClassificationResult(
+            provisional_route=ProvisionalRouteEnum.UNKNOWN_AMBIGUOUS,
+            confidence_label="synthetic_mock_rule_conflict",
+            governing_provisions=["FSSAI Ayurveda Aahara Regulations 2022, Regulation 2(b)"],
+            missing_facts=[
+                "Contradiction: intended_use is food_dietary (ingested) but external_application_only is True (topical). "
+                "Food products cannot be external application only. Please clarify the formulation route of administration."
+            ],
+            referral_required=True,
+            disclaimer="Provisional classification only; does not constitute legal or regulatory approval.",
+            is_synthetic_fixture=True,
+        )
+
     # --- Rule 04: Phytopharmaceutical Drug ---
     if intake.standardized_fraction and intake.intended_use == "medicinal":
         return ClassificationResult(
@@ -186,8 +201,26 @@ def classify_formulation(intake: Intake) -> ClassificationResult:
         )
 
     # --- Rule 02: Patent or Proprietary ASU Drug ---
-    # FIX-2b: Only assigned when intended_use="medicinal" AND at least one positive indicator is present
-    # (classical_text_reference is absent, meaning it cannot be classical, but other facts are clear).
+    # Explicitly declared as proprietary/branded ASU drug, without classical text reference,
+    # and without novel synthetic chemicals or standardized fraction.
+    if (
+        intake.intended_use == "medicinal"
+        and intake.is_proprietary_branded
+        and not intake.classical_text_reference
+        and not intake.has_novel_ingredient
+        and not intake.standardized_fraction
+    ):
+        return ClassificationResult(
+            provisional_route=ProvisionalRouteEnum.PATENT_PROPRIETARY,
+            confidence_label="synthetic_mock_rule_match",
+            governing_provisions=["Drugs and Cosmetics Act 1940, Section 3(h)"],
+            missing_facts=[],
+            referral_required=False,
+            disclaimer="Provisional classification only; does not constitute legal or regulatory approval.",
+            is_synthetic_fixture=True,
+        )
+
+    # --- Ambiguity: medicinal without classical text reference or proprietary declaration ---
     # Missing text reference alone is surfaced as a clarification question, not silently assigned a route.
     if intake.intended_use == "medicinal" and not intake.classical_text_reference:
         return ClassificationResult(

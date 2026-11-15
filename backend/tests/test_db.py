@@ -90,3 +90,80 @@ def test_audit_table_schema_privacy(test_db_path: Path):
 
     for expected in ["audit_id", "request_id", "timestamp", "route", "jurisdiction", "evidence_ids", "versions", "status"]:
         assert expected in columns, f"Required audit column '{expected}' is missing."
+
+
+def test_database_migration_adds_activated_column(tmp_path: Path):
+    """
+    Simulates an existing database from before d961cc7 (missing 'activated' column)
+    and verifies that run_migrations idempotently adds the column and activates synthetic rows.
+    """
+    from app.db.migrate import run_migrations
+
+    legacy_db = tmp_path / "legacy.db"
+    conn = get_db_connection(legacy_db)
+    # Create tables without 'activated' column
+    conn.execute("""
+        CREATE TABLE sources (
+            source_id TEXT PRIMARY KEY,
+            topic TEXT NOT NULL,
+            authority TEXT NOT NULL,
+            title TEXT NOT NULL,
+            official_url TEXT NOT NULL,
+            format TEXT NOT NULL DEFAULT 'html',
+            role TEXT NOT NULL DEFAULT 'primary',
+            priority TEXT NOT NULL DEFAULT 'required',
+            verification_status TEXT NOT NULL,
+            review_note TEXT,
+            is_synthetic INTEGER NOT NULL DEFAULT 0
+        );
+    """)
+    conn.execute("""
+        CREATE TABLE passages (
+            passage_id TEXT PRIMARY KEY,
+            source_id TEXT NOT NULL REFERENCES sources(source_id),
+            jurisdiction TEXT NOT NULL,
+            authority TEXT NOT NULL,
+            document_title TEXT NOT NULL,
+            locator TEXT NOT NULL,
+            paraphrased_content TEXT NOT NULL,
+            source_url TEXT NOT NULL,
+            source_type TEXT NOT NULL DEFAULT 'statute',
+            review_status TEXT NOT NULL,
+            review_note TEXT,
+            is_synthetic INTEGER NOT NULL DEFAULT 0
+        );
+    """)
+    # Insert a synthetic record
+    conn.execute("""
+        INSERT INTO sources (source_id, topic, authority, title, official_url, verification_status, is_synthetic)
+        VALUES ('SYNTH-LEGACY-001', 'patents', 'Test', 'Test Title', 'http://example.com', 'verified', 1);
+    """)
+    conn.commit()
+    conn.close()
+
+    # Verify column is missing initially
+    conn = get_db_connection(legacy_db)
+    cur = conn.cursor()
+    cur.execute("PRAGMA table_info(sources);")
+    cols = {r["name"] for r in cur.fetchall()}
+    assert "activated" not in cols
+    conn.close()
+
+    # Run migration
+    run_migrations(legacy_db)
+
+    # Verify column now exists and synthetic record is activated
+    conn = get_db_connection(legacy_db)
+    cur = conn.cursor()
+    cur.execute("PRAGMA table_info(sources);")
+    cols = {r["name"] for r in cur.fetchall()}
+    assert "activated" in cols
+
+    cur.execute("PRAGMA table_info(passages);")
+    cols_pas = {r["name"] for r in cur.fetchall()}
+    assert "activated" in cols_pas
+
+    cur.execute("SELECT activated FROM sources WHERE source_id = 'SYNTH-LEGACY-001';")
+    row = cur.fetchone()
+    assert row["activated"] == 1
+    conn.close()

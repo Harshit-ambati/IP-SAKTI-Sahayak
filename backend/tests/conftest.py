@@ -3,6 +3,13 @@ Pytest configuration and fixtures for IP-SAKTI Sahayak backend tests.
 Uses an isolated in-memory or temporary SQLite test database.
 """
 
+import os
+# Suppress LangChain / LangSmith background network tracing during tests
+os.environ["LANGCHAIN_TRACING_V2"] = "false"
+os.environ["LANGSMITH_TEST_TRACKING"] = "false"
+os.environ["LANGCHAIN_CALLBACKS_BACKGROUND"] = "false"
+os.environ["LANGSMITH_TRACING"] = "false"
+
 import sys
 import tempfile
 from pathlib import Path
