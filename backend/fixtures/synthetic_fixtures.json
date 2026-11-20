@@ -1,0 +1,258 @@
+{
+  "_NOTICE": "VISIBLY SYNTHETIC FIXTURE DATA FOR SU-01 SKELETON AND MOCK TESTING. NOT PRODUCTION EVIDENCE. NOT LEGAL ADVICE.",
+  "corpus_version": "v0.1-synthetic-su01",
+  "sources": [
+    {
+      "source_id": "SYNTH-SRC-001",
+      "topic": "patents",
+      "authority": "IP India (Synthetic Mock)",
+      "title": "Synthetic Patents Act Section 3 Mock Provision",
+      "official_url": "https://www.ipindia.gov.in/acts/patent-act-1970/section-3",
+      "format": "html",
+      "role": "primary",
+      "priority": "required",
+      "verification_status": "synthetic_mock_verified",
+      "review_note": "Synthetic fixture representing Patent exclusions Section 3(p) traditional knowledge.",
+      "is_synthetic": true
+    },
+    {
+      "source_id": "SYNTH-SRC-002",
+      "topic": "ayurveda_product_classification",
+      "authority": "Ministry of Ayush (Synthetic Mock)",
+      "title": "Synthetic Drugs and Cosmetics Act Mock Compilation",
+      "official_url": "https://ayush.gov.in/resources/pdf/quality_standards/Drugs-and-Cosmetics-Act-Rules.pdf",
+      "format": "pdf",
+      "role": "primary",
+      "priority": "required",
+      "verification_status": "synthetic_mock_verified",
+      "review_note": "Synthetic fixture representing ASU classical vs proprietary definitions under Section 3(a) & 3(h).",
+      "is_synthetic": true
+    },
+    {
+      "source_id": "SYNTH-SRC-003",
+      "topic": "ayurveda_aahara",
+      "authority": "FSSAI (Synthetic Mock)",
+      "title": "Synthetic Ayurveda Aahara Mock Regulation 2022",
+      "official_url": "https://fssai.gov.in/upload/notifications/2022/05/62789a20b54bdGazette_Notification_Ayurveda_Aahara_09_05_2022.pdf",
+      "format": "pdf",
+      "role": "primary",
+      "priority": "required",
+      "verification_status": "synthetic_mock_verified",
+      "review_note": "Synthetic fixture representing Ayurveda Aahara food category and disease claim prohibition.",
+      "is_synthetic": true
+    },
+    {
+      "source_id": "SYNTH-SRC-004",
+      "topic": "international_treaty",
+      "authority": "WIPO (Synthetic Mock)",
+      "title": "Synthetic WIPO GRATK Treaty Overview",
+      "official_url": "https://www.wipo.int/en/web/treaties/ip/gratk/index",
+      "format": "html",
+      "role": "primary",
+      "priority": "required",
+      "verification_status": "synthetic_mock_verified",
+      "review_note": "Synthetic international fixture for WIPO GRATK treaty 2024. Strictly distinct from India-jurisdiction sources.",
+      "is_synthetic": true
+    }
+  ],
+  "passages": [
+    {
+      "passage_id": "SYNTH-PASS-001",
+      "source_id": "SYNTH-SRC-001",
+      "jurisdiction": "India",
+      "authority": "IP India (Synthetic Mock)",
+      "document_title": "Synthetic Patents Act 1970",
+      "locator": "Section 3(p)",
+      "paraphrased_content": "[SYNTHETIC FIXTURE] An invention which in effect is traditional knowledge or an aggregation of known properties of traditionally known component is not patentable under Section 3(p).",
+      "source_url": "https://www.ipindia.gov.in/acts/patent-act-1970/section-3",
+      "source_type": "statute",
+      "review_status": "synthetic_reviewed_su01",
+      "review_note": "Synthetic test passage for Section 3(p) patent exclusion checks.",
+      "is_synthetic": true
+    },
+    {
+      "passage_id": "SYNTH-PASS-002",
+      "source_id": "SYNTH-SRC-002",
+      "jurisdiction": "India",
+      "authority": "Ministry of Ayush (Synthetic Mock)",
+      "document_title": "Synthetic Drugs and Cosmetics Act 1940",
+      "locator": "Section 3(a)",
+      "paraphrased_content": "[SYNTHETIC FIXTURE] Ayurvedic drugs manufactured exclusively in accordance with formulae described in the authoritative books specified in the First Schedule are classical ASU drugs.",
+      "source_url": "https://ayush.gov.in/resources/pdf/quality_standards/Drugs-and-Cosmetics-Act-Rules.pdf",
+      "source_type": "statute",
+      "review_status": "synthetic_reviewed_su01",
+      "review_note": "Synthetic test passage for classical ASU route.",
+      "is_synthetic": true
+    },
+    {
+      "passage_id": "SYNTH-PASS-003",
+      "source_id": "SYNTH-SRC-003",
+      "jurisdiction": "India",
+      "authority": "FSSAI (Synthetic Mock)",
+      "document_title": "Synthetic Food Safety and Standards (Ayurveda Aahara) Regulations 2022",
+      "locator": "Regulation 2(b) & Regulation 8",
+      "paraphrased_content": "[SYNTHETIC FIXTURE] Ayurveda Aahara includes food prepared in accordance with Ayurvedic texts but excludes drugs. Labelling and advertising must not claim prevention, treatment or cure of disease.",
+      "source_url": "https://fssai.gov.in/upload/notifications/2022/05/62789a20b54bdGazette_Notification_Ayurveda_Aahara_09_05_2022.pdf",
+      "source_type": "regulation",
+      "review_status": "synthetic_reviewed_su01",
+      "review_note": "Synthetic test passage for Ayurveda Aahara route.",
+      "is_synthetic": true
+    },
+    {
+      "passage_id": "SYNTH-PASS-INT-001",
+      "source_id": "SYNTH-SRC-004",
+      "jurisdiction": "International",
+      "authority": "WIPO (Synthetic Mock)",
+      "document_title": "Synthetic WIPO GRATK Treaty Overview",
+      "locator": "WIPO GRATK Treaty 2024, Treaty Overview",
+      "paraphrased_content": "[SYNTHETIC FIXTURE - INTERNATIONAL] The WIPO Treaty on Intellectual Property, Genetic Resources and Associated Traditional Knowledge (GRATK), adopted May 2024, establishes a mandatory patent disclosure requirement. Applicants must disclose the country of origin or source of genetic resources or associated traditional knowledge. Treaty does not automatically confer domestic enforceability; ratification by contracting parties is required.",
+      "source_url": "https://www.wipo.int/en/web/treaties/ip/gratk/index",
+      "source_type": "official_treaty_overview",
+      "review_status": "synthetic_reviewed_su01",
+      "review_note": "Synthetic international fixture for WIPO GRATK treaty. Distinct from India-jurisdiction passages.",
+      "is_synthetic": true
+    }
+  ],
+  "mock_classify_scenarios": {
+    "classical_intake": {
+      "intake": {
+        "formulation_title": "Synthetic Triphala Churna Sample A",
+        "ingredients": ["Terminalia chebula", "Terminalia bellirica", "Phyllanthus emblica"],
+        "classical_text_reference": "Charaka Samhita",
+        "processing_method": "Churna fine powder",
+        "intended_use": "medicinal",
+        "claims_disease_treatment": true,
+        "claims_disease_cure": false,
+        "has_novel_ingredient": false,
+        "standardized_fraction": false,
+        "external_application_only": false,
+        "jurisdiction": "India",
+        "language": "en"
+      },
+      "expected_result": {
+        "provisional_route": "classical_generic",
+        "confidence_label": "synthetic_mock_rule_match",
+        "governing_provisions": ["Drugs and Cosmetics Act 1940, Section 3(a)", "First Schedule texts"],
+        "missing_facts": [],
+        "referral_required": false,
+        "disclaimer": "Provisional classification only; does not constitute legal or regulatory approval.",
+        "is_synthetic_fixture": true
+      }
+    },
+    "aahara_intake": {
+      "intake": {
+        "formulation_title": "Synthetic Herbal Chyawanprash Food Bar",
+        "ingredients": ["Emblica officinalis", "Sesamum indicum oil", "Honey", "Spices"],
+        "classical_text_reference": "Schedule A recipe reference",
+        "processing_method": "Food confection",
+        "intended_use": "food_dietary",
+        "claims_disease_treatment": false,
+        "claims_disease_cure": false,
+        "has_novel_ingredient": false,
+        "standardized_fraction": false,
+        "external_application_only": false,
+        "jurisdiction": "India",
+        "language": "en"
+      },
+      "expected_result": {
+        "provisional_route": "ayurveda_aahara",
+        "confidence_label": "synthetic_mock_rule_match",
+        "governing_provisions": ["FSSAI Ayurveda Aahara Regulations 2022, Regulation 2(b) & Regulation 8"],
+        "missing_facts": [],
+        "referral_required": false,
+        "disclaimer": "Provisional classification only; does not constitute legal or regulatory approval.",
+        "is_synthetic_fixture": true
+      }
+    },
+    "cosmetic_intake": {
+      "intake": {
+        "formulation_title": "Synthetic Kumkumadi Taila Skin Glow Oil",
+        "ingredients": ["Crocus sativus", "Sandalwood oil", "Sesame oil base"],
+        "classical_text_reference": "Bhaishajya Ratnavali recipe basis",
+        "processing_method": "Oil preparation",
+        "intended_use": "cosmetic",
+        "claims_disease_treatment": false,
+        "claims_disease_cure": false,
+        "has_novel_ingredient": false,
+        "standardized_fraction": false,
+        "external_application_only": true,
+        "jurisdiction": "India",
+        "language": "en"
+      },
+      "expected_result": {
+        "provisional_route": "cosmetic",
+        "confidence_label": "synthetic_mock_rule_match",
+        "governing_provisions": ["Drugs and Cosmetics Act 1940, Section 3(aaa)"],
+        "missing_facts": [],
+        "referral_required": false,
+        "disclaimer": "Provisional classification only; does not constitute legal or regulatory approval.",
+        "is_synthetic_fixture": true
+      }
+    },
+    "ambiguous_intake": {
+      "intake": {
+        "formulation_title": "Synthetic Unknown Herbal Compound",
+        "ingredients": ["Extract X (unidentified)", "Excipient Y"],
+        "classical_text_reference": null,
+        "processing_method": null,
+        "intended_use": "unspecified",
+        "claims_disease_treatment": true,
+        "claims_disease_cure": true,
+        "has_novel_ingredient": true,
+        "standardized_fraction": false,
+        "external_application_only": false,
+        "jurisdiction": "India",
+        "language": "en"
+      },
+      "expected_result": {
+        "provisional_route": "unknown_ambiguous",
+        "confidence_label": "synthetic_mock_uncertain",
+        "governing_provisions": ["Master Plan Safety & Referral Gate"],
+        "missing_facts": [
+          "Classical text reference or patent documentation not specified",
+          "Ingredient chemical identities and standardisation not disclosed",
+          "Disease cure claim violates cosmetic and food regulations; requires drug licensing review"
+        ],
+        "referral_required": true,
+        "disclaimer": "Provisional classification only; does not constitute legal or regulatory approval.",
+        "is_synthetic_fixture": true
+      }
+    }
+  },
+  "mock_answer_response": {
+    "status": "answered",
+    "jurisdiction": "India",
+    "language": "en",
+    "provisional_class": "classical_generic",
+    "answer_text": "[SYNTHETIC MOCK ANSWER] In India, a classical Ayurvedic formulation manufactured strictly according to an authoritative text listed in the First Schedule of the Drugs and Cosmetics Act, 1940 is categorized as a Classical ASU Drug under Section 3(a). Furthermore, under Section 3(p) of the Patents Act, 1970, an invention which in effect is traditional knowledge or an aggregation of known properties of traditionally known components is not patentable.",
+    "assumptions": [
+      "Assumed all ingredients are known classical herbs listed in official pharmacopoeia.",
+      "Assumed no synthetic chemical additives or modified solvent fractions are introduced."
+    ],
+    "claims": [
+      {
+        "claim_id": "SYNTH-CLAIM-01",
+        "claim_text": "Classical Ayurvedic medicines manufactured strictly per First Schedule texts are categorized as Classical ASU Drugs.",
+        "evidence_ids": ["SYNTH-PASS-002"]
+      },
+      {
+        "claim_id": "SYNTH-CLAIM-02",
+        "claim_text": "Inventions that are traditional knowledge or aggregations of known traditional properties are excluded from patentability in India.",
+        "evidence_ids": ["SYNTH-PASS-001"]
+      }
+    ],
+    "cited_provisions": [
+      "Drugs and Cosmetics Act 1940, Section 3(a)",
+      "The Patents Act 1970, Section 3(p)"
+    ],
+    "limitations": [
+      "Informational output only; not legal advice or regulatory certification.",
+      "Patent examiners evaluate individual claims on novelty, inventive step and Section 3 exclusions on a case-by-case basis.",
+      "This response is derived from synthetic Phase 1 fixtures for skeleton testing."
+    ],
+    "evidence_status": "supported",
+    "corpus_version": "v0.1-synthetic-su01",
+    "model_version": "mock-stub-v1",
+    "is_synthetic_fixture": true
+  }
+}

@@ -1,0 +1,2 @@
+"""IP-SAKTI Sahayak - Backend Application Package"""
+__version__ = "0.1.0-su01"

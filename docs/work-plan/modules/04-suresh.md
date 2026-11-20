@@ -87,4 +87,4 @@ Use task IDs in issues and PRs. Replace the placeholder row only when work start
 
 | Task ID | Status | Evidence / issue / PR | Reviewer | Blocker / next action |
 |---|---|---|---|---|
-| Not started | Planned | None yet | Unassigned | Confirm kickoff inputs |
+| Su-01 | Submitted for review | Draft PR (branch `suresh/su-01-phase-1`); backend skeleton, SQLite FTS5, synthetic fixtures, 24/24 tests passing | Harshit, Akshay | Awaiting Harshit contract review; Su-02 gated on Su-01 PR merge |
