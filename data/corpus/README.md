@@ -14,7 +14,7 @@ These are **real-source data**, not synthetic questions. The CSV holds paraphras
 1. **Verified Instruments (`reviewed_t01_pending_activation`):**
    - `REAL-001`: *The Patents Act, 1970* (as amended by Act 38 of 2002 and Act 15 of 2005) — verified for ASU patent exclusions under Section 3(p), Section 3(e), and Section 3(d). Passages: `PASS-002`, `PASS-013`, `PASS-014`.
    - `REAL-002`: *The Drugs and Cosmetics Act, 1940* and *Drugs Rules, 1945* (Ministry of Ayush / CDSCO) — verified for ASU product classification under Section 3(a), First Schedule, Section 3(h), Section 3(aaa), and Rule 2(eb). Passages: `PASS-009`, `PASS-010`, `PASS-011`, `PASS-012`.
-   - `REAL-003`: *Food Safety and Standards (Ayurveda Aahara) Regulations, 2022* (FSSAI) — verified for food/supplement boundary, exclusions, statutory ban on vitamins/minerals/amino acids, front-of-pack logo, and disease claims prohibitions under Regulation 2(b), Regulation 3(4), Regulation 8, Regulation 13(a), and Schedule A. Passages: `PASS-003`, `PASS-004`.
+   - `REAL-003`: *Food Safety and Standards (Ayurveda Aahara) Regulations, 2022* (FSSAI) — verified for food/supplement boundary, exclusions of drugs/cosmetics, statutory ban on vitamins/minerals/amino acids, front-of-pack logo, and prohibition against claims to prevent, treat or cure disease under Regulation 2(b), Regulation 3(4), Regulation 8, Regulation 13(a), and Schedule A. Passages: `PASS-003`, `PASS-004`.
    - *Activation Gate:* Submitted for Harshit's technical review and validation before activation into the production RAG index.
 
 2. **Preliminary / Unapproved Records (`preliminary_unverified` / `source_checked_domain_review_pending`):**
