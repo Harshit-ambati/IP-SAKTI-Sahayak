@@ -45,7 +45,7 @@ app = FastAPI(
         "IP-SAKTI Sahayak Backend API.\n\n"
         "Provides validated endpoints for formulation classification, evidence retrieval, "
         "source lookup, citation verification, and user referral export.\n\n"
-        "**Phase 1 (Su-01)**: Delivers service skeleton and explicit mock/stub responses."
+        "**Phase 2 (Su-02)**: Real query engine integration via stable retrieval adapter."
     ),
     lifespan=lifespan,
 )
@@ -72,7 +72,7 @@ def root():
     return {
         "service": PROJECT_NAME,
         "version": VERSION,
-        "phase": "Su-01: API and Data Skeleton",
+        "phase": "Su-02: Query Engine Integration",
         "docs_url": "/docs",
         "health_url": "/api/v1/health",
         "status": "operational",
