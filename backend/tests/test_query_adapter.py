@@ -8,6 +8,8 @@ Verifies:
 5. Safe abstention on zero approved evidence.
 6. Graceful handling of FTS syntax edge cases.
 7. Swappable adapter interface.
+8. Answerability gate requires ALL substantive terms to match (BLOCKER-1 fix).
+9. Default public mode excludes synthetic fixtures (BLOCKER-2 fix).
 """
 
 import sqlite3
@@ -116,11 +118,16 @@ def test_fts5_adapter_safe_abstention_on_zero_evidence(db_conn: sqlite3.Connecti
 
 
 def test_fts5_adapter_answer_grounded_in_citations(db_conn: sqlite3.Connection):
+    """
+    Demo mode (require_approved_evidence=False): synthetic fixtures are allowed.
+    Synthetic demo fixtures must be explicitly marked mock with evidence_status='partial'.
+    """
     adapter = SQLiteFTS5QueryAdapter(db_conn)
     req = AnswerRequest(
         query="Is a classical Ayurvedic Triphala formula eligible for a patent in India?",
         jurisdiction=JurisdictionEnum.INDIA,
         language=LanguageEnum.EN,
+        require_approved_evidence=False,  # explicit demo/synthetic mode
     )
     result = adapter.generate_answer(req)
     assert result.status == AnswerStatusEnum.ANSWERED
@@ -148,6 +155,7 @@ def test_fts5_adapter_mixed_query_with_unsupported_subject_abstains(db_conn: sql
         query="Is quantum cryptography patentable in India?",
         jurisdiction=JurisdictionEnum.INDIA,
         language=LanguageEnum.EN,
+        require_approved_evidence=False,  # allow synthetic pool so retrieval runs
     )
     result = adapter.generate_answer(req)
     assert result.status == AnswerStatusEnum.ABSTAINED
@@ -211,3 +219,61 @@ def test_fts5_adapter_handles_special_characters_gracefully(db_conn: sqlite3.Con
     )
     # Must not raise sqlite3.OperationalError and return results if matches exist
     assert isinstance(passages, list)
+
+
+def test_fts5_adapter_drone_query_with_traditional_term_abstains(db_conn: sqlite3.Connection):
+    """
+    BLOCKER-1 Regression — Strict answerability gate (all substantive terms must match):
+    A query with unsupported primary subjects ('drone', 'navigation') must abstain
+    even if the word 'traditional' appears in a retrieved passage.
+
+    Before the fix: _DOMAIN_SYNONYMS caused 'traditional' to match via synonym expansion,
+    and ANY one matching term was sufficient — so the query was incorrectly answered.
+    After the fix: ALL substantive terms must match (or n-1 for 3+ terms). 'drone' and
+    'navigation' are not in any indexed passage, so the gate correctly abstains.
+    """
+    adapter = SQLiteFTS5QueryAdapter(db_conn)
+    req = AnswerRequest(
+        query="Is drone navigation using traditional Indian techniques patentable in India?",
+        jurisdiction=JurisdictionEnum.INDIA,
+        language=LanguageEnum.EN,
+        require_approved_evidence=False,  # allow synthetic pool so retrieval runs
+    )
+    result = adapter.generate_answer(req)
+    assert result.status == AnswerStatusEnum.ABSTAINED, (
+        "Query with unsupported subject terms ('drone', 'navigation') must abstain "
+        "even when 'traditional' appears in a retrieved passage."
+    )
+    assert result.evidence_status == EvidenceStatusEnum.INSUFFICIENT
+    assert len(result.claims) == 0
+    assert len(result.evidence) == 0
+
+
+def test_fts5_adapter_default_mode_excludes_synthetic(db_conn: sqlite3.Connection):
+    """
+    BLOCKER-2 Regression — System is the safety gate on evidence quality:
+    Calling generate_answer with no explicit require_approved_evidence (defaults to True)
+    must exclude synthetic fixtures. When only synthetic passages exist in the corpus,
+    the adapter must abstain rather than surfacing synthetic data as approved legal evidence.
+
+    This verifies that callers cannot accidentally expose synthetic fixtures by omitting
+    the require_approved_evidence flag — the system enforces the safe default.
+    """
+    adapter = SQLiteFTS5QueryAdapter(db_conn)
+    req = AnswerRequest(
+        query="Is classical Triphala Churna eligible for patent protection in India?",
+        jurisdiction=JurisdictionEnum.INDIA,
+        language=LanguageEnum.EN,
+        # require_approved_evidence omitted — must default to True
+    )
+    result = adapter.generate_answer(req)
+    # With only synthetic fixtures in the corpus, default mode must abstain
+    assert result.status == AnswerStatusEnum.ABSTAINED, (
+        "Default adapter call must abstain when only synthetic fixtures exist; "
+        "the system must not expose synthetic data as approved legal evidence."
+    )
+    assert result.evidence_status == EvidenceStatusEnum.INSUFFICIENT
+    assert len(result.claims) == 0
+    # Confirm no synthetic passages leaked through
+    assert all(not p.is_synthetic for p in result.evidence)
+

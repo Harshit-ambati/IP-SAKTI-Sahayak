@@ -23,6 +23,7 @@ Key architectural invariants:
 """
 
 from abc import ABC, abstractmethod
+import math
 import re
 import sqlite3
 from typing import List, Optional, Tuple
@@ -90,21 +91,6 @@ def _extract_locators(query: str) -> List[str]:
     return re.findall(r"\b\d+\([a-zA-Z0-9]+\)", query.lower())
 
 
-_DOMAIN_SYNONYMS = {
-    "classical": {"classical", "traditional", "samhita", "heritage", "asu"},
-    "traditional": {"traditional", "classical", "heritage", "indigenous", "folklore"},
-    "ayurvedic": {"ayurvedic", "ayurveda", "herbal", "traditional", "asu"},
-    "ayurveda": {"ayurvedic", "ayurveda", "herbal", "traditional", "asu"},
-    "triphala": {"ayurvedic", "traditional", "herbal", "classical", "plant"},
-    "herbal": {"herbal", "plant", "botanical", "ayurvedic", "traditional"},
-    "genetic": {"genetic", "biological", "dna", "resources", "indigenous"},
-    "disclosure": {"disclosure", "disclose", "source", "origin", "gratk"},
-    "aahara": {"aahara", "food", "dietary", "fssai", "recipe", "recipes"},
-    "food": {"aahara", "food", "dietary", "nutrition", "fssai"},
-    "cosmetic": {"cosmetic", "cosmetics", "skin", "cleansing", "topical"},
-}
-
-
 def _passage_supports_query(
     passage: EvidencePassage,
     substantive_terms: List[str],
@@ -112,28 +98,44 @@ def _passage_supports_query(
 ) -> bool:
     """
     Answerability Gate: checks if a candidate retrieved passage materially supports
-    the substantive question, rather than just matching generic legal/procedural tokens
-    (e.g. 'patent', 'india').
+    the substantive question by requiring that a strict majority of substantive terms
+    are present in the passage text via stem matching.
+
+    Threshold:
+    - 1 term  → 1 must match (all)
+    - 2 terms → 1 must match (majority, ceil(2/2))
+    - 3 terms → 2 must match (majority, ceil(3/2))
+    - 4 terms → 2 must match (majority, ceil(4/2))
+    - 5 terms → 3 must match (majority, ceil(5/2))
+    - …
+
+    Domain synonym expansion is intentionally excluded: synonym expansion can cause
+    false support (e.g. 'traditional' matching for 'drone navigation' queries because
+    _DOMAIN_SYNONYMS['traditional'] included 'traditional' itself).  Only direct
+    stem matching against passage text is used.
     """
     passage_text = f"{passage.document_title} {passage.locator} {passage.paraphrased_content}".lower()
 
-    # 1. If query specified an explicit statutory locator (e.g. '3(p)'), check if passage locator matches
+    # 1. Explicit statutory locator match always supports (e.g. '3(p)' in query)
     for loc in locators:
         if loc in passage.locator.lower():
             return True
 
-    # 2. If substantive domain terms exist, at least one must be grounded in the passage text or domain synonyms
-    if substantive_terms:
-        for term in substantive_terms:
-            synonyms = _DOMAIN_SYNONYMS.get(term, {term})
-            for s in synonyms:
-                stem = s[:4] if len(s) >= 5 else s
-                if stem in passage_text:
-                    return True
+    # 2. No substantive terms and no locators — cannot verify answerability
+    if not substantive_terms:
         return False
 
-    # 3. If query had no specific substantive terms and no locators, candidate cannot be verified
-    return True
+    # 3. Count how many substantive terms have a stem match in the passage text
+    matched = sum(
+        1 for term in substantive_terms
+        if (term[:4] if len(term) >= 5 else term) in passage_text
+    )
+
+    # Require a strict majority (ceil(n/2)) to match.
+    # This prevents a single coincidental synonym from creating false answerability,
+    # while allowing queries where the dominant substantive terms are grounded.
+    required = math.ceil(len(substantive_terms) / 2)
+    return matched >= required
 
 
 class QueryEngineAdapter(ABC):
@@ -302,7 +304,10 @@ class SQLiteFTS5QueryAdapter(QueryEngineAdapter):
             else None
         )
 
-        # 1. Retrieve candidates from index
+        # 1. Retrieve candidates from index.
+        # The public API ALWAYS requires approved non-synthetic evidence.
+        # `request.require_approved_evidence` is kept on AnswerRequest for
+        # explicit unit-test / demo override only; the production default is True.
         raw_passages = self.search_passages(
             query=request.query,
             jurisdiction=request.jurisdiction,
