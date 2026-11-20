@@ -8,8 +8,8 @@ Verifies:
 5. Safe abstention on zero approved evidence.
 6. Graceful handling of FTS syntax edge cases.
 7. Swappable adapter interface.
-8. Answerability gate requires ALL substantive terms to match (BLOCKER-1 fix).
-9. Default public mode excludes synthetic fixtures (BLOCKER-2 fix).
+8. Answerability gate enforces that all material subject constraints must match (Finding 1).
+9. Default mode excludes synthetic fixtures without explicit server-side override (Finding 2).
 """
 
 import sqlite3
@@ -43,6 +43,7 @@ def test_fts5_adapter_retrieves_india_patent_passages(db_conn: sqlite3.Connectio
         query="traditional knowledge patent exclusion",
         jurisdiction=JurisdictionEnum.INDIA,
         limit=5,
+        require_approved_evidence=False,  # allow synthetic fixtures for retrieval test
     )
     assert len(passages) > 0
     assert any(p.passage_id == "SYNTH-PASS-001" for p in passages)
@@ -55,6 +56,7 @@ def test_fts5_adapter_retrieves_international_wipo_treaty(db_conn: sqlite3.Conne
         query="WIPO GRATK treaty genetic resources disclosure",
         jurisdiction=JurisdictionEnum.INTERNATIONAL,
         limit=5,
+        require_approved_evidence=False,  # allow synthetic fixtures for retrieval test
     )
     assert len(passages) > 0
     assert any(p.passage_id == "SYNTH-PASS-INT-001" for p in passages)
@@ -68,6 +70,7 @@ def test_fts5_adapter_strict_jurisdiction_isolation(db_conn: sqlite3.Connection)
         query="WIPO treaty patent disclosure",
         jurisdiction=JurisdictionEnum.INDIA,
         limit=5,
+        require_approved_evidence=False,
     )
     assert all(p.jurisdiction == "India" for p in india_passages)
     assert not any(p.passage_id == "SYNTH-PASS-INT-001" for p in india_passages)
@@ -77,6 +80,7 @@ def test_fts5_adapter_strict_jurisdiction_isolation(db_conn: sqlite3.Connection)
         query="Section 3(p) Patents Act India",
         jurisdiction=JurisdictionEnum.INTERNATIONAL,
         limit=5,
+        require_approved_evidence=False,
     )
     assert all(p.jurisdiction == "International" for p in int_passages)
     assert not any(p.passage_id == "SYNTH-PASS-001" for p in int_passages)
@@ -84,13 +88,12 @@ def test_fts5_adapter_strict_jurisdiction_isolation(db_conn: sqlite3.Connection)
 
 def test_fts5_adapter_excludes_unactivated_preliminary_rows(db_conn: sqlite3.Connection):
     adapter = SQLiteFTS5QueryAdapter(db_conn)
-    # Search for terms present in preliminary corpus (e.g., biological diversity or traditional knowledge)
     passages = adapter.search_passages(
         query="traditional knowledge biological diversity",
         jurisdiction=JurisdictionEnum.INDIA,
         limit=20,
+        require_approved_evidence=False,
     )
-    # None of the retrieved passages should have activated=0
     cur = db_conn.cursor()
     cur.execute("SELECT passage_id FROM passages WHERE activated = 0")
     unactivated_ids = {r["passage_id"] for r in cur.fetchall()}
@@ -124,12 +127,11 @@ def test_fts5_adapter_answer_grounded_in_citations(db_conn: sqlite3.Connection):
     """
     adapter = SQLiteFTS5QueryAdapter(db_conn)
     req = AnswerRequest(
-        query="Is a classical Ayurvedic Triphala formula eligible for a patent in India?",
+        query="Is traditional knowledge patentable under Section 3(p) in India?",
         jurisdiction=JurisdictionEnum.INDIA,
         language=LanguageEnum.EN,
-        require_approved_evidence=False,  # explicit demo/synthetic mode
     )
-    result = adapter.generate_answer(req)
+    result = adapter.generate_answer(req, require_approved_evidence=False)
     assert result.status == AnswerStatusEnum.ANSWERED
     # Synthetic demo fixtures are explicitly marked mock and have evidence_status='partial'
     assert result.evidence_status == EvidenceStatusEnum.PARTIAL
@@ -155,9 +157,8 @@ def test_fts5_adapter_mixed_query_with_unsupported_subject_abstains(db_conn: sql
         query="Is quantum cryptography patentable in India?",
         jurisdiction=JurisdictionEnum.INDIA,
         language=LanguageEnum.EN,
-        require_approved_evidence=False,  # allow synthetic pool so retrieval runs
     )
-    result = adapter.generate_answer(req)
+    result = adapter.generate_answer(req, require_approved_evidence=False)
     assert result.status == AnswerStatusEnum.ABSTAINED
     assert result.evidence_status == EvidenceStatusEnum.INSUFFICIENT
     assert len(result.claims) == 0
@@ -193,9 +194,8 @@ def test_fts5_adapter_genuinely_approved_evidence_produces_supported_status(db_c
             query="Is traditional knowledge patentable in India?",
             jurisdiction=JurisdictionEnum.INDIA,
             language=LanguageEnum.EN,
-            require_approved_evidence=True,
         )
-        result = adapter.generate_answer(req)
+        result = adapter.generate_answer(req, require_approved_evidence=True)
         assert result.status == AnswerStatusEnum.ANSWERED
         assert result.evidence_status == EvidenceStatusEnum.SUPPORTED
         assert result.is_synthetic_fixture is False
@@ -210,36 +210,75 @@ def test_fts5_adapter_genuinely_approved_evidence_produces_supported_status(db_c
 
 def test_fts5_adapter_handles_special_characters_gracefully(db_conn: sqlite3.Connection):
     adapter = SQLiteFTS5QueryAdapter(db_conn)
-    # Query with punctuation and FTS syntax edge cases (quotes, stars, parentheses, colons)
     query_with_syntax = 'patent* AND ("traditional" OR [knowledge]): s.3(p)!'
     passages = adapter.search_passages(
         query=query_with_syntax,
         jurisdiction=JurisdictionEnum.INDIA,
         limit=5,
+        require_approved_evidence=False,
     )
-    # Must not raise sqlite3.OperationalError and return results if matches exist
     assert isinstance(passages, list)
+
+
+def test_fts5_adapter_unsupported_drone_navigation_under_matching_locator_abstains(db_conn: sqlite3.Connection):
+    """
+    Answerability Gate Regression (Finding 1):
+    Query: 'Is drone navigation patentable under Section 3(p)?'
+    With Section 3(p) in the retrieved pool, locator matches 3(p), but 'drone' and 'navigation'
+    are unsupported. The adapter must reject the passage and abstain.
+    """
+    adapter = SQLiteFTS5QueryAdapter(db_conn)
+    req = AnswerRequest(
+        query="Is drone navigation patentable under Section 3(p)?",
+        jurisdiction=JurisdictionEnum.INDIA,
+        language=LanguageEnum.EN,
+    )
+    result = adapter.generate_answer(req, require_approved_evidence=False)
+    assert result.status == AnswerStatusEnum.ABSTAINED, (
+        "Query with unsupported subject terms ('drone', 'navigation') must abstain "
+        "even when a matching statutory locator like Section 3(p) is present."
+    )
+    assert result.evidence_status == EvidenceStatusEnum.INSUFFICIENT
+    assert len(result.claims) == 0
+    assert len(result.evidence) == 0
+
+
+def test_fts5_adapter_unsupported_drone_with_matching_traditional_terms_abstains(db_conn: sqlite3.Connection):
+    """
+    Answerability Gate Regression (Finding 1):
+    Query: 'Is drone traditional knowledge patentable in India?'
+    Even though 'traditional' and 'knowledge' match Section 3(p), the material subject
+    constraint 'drone' is not addressed by any passage in the pool.
+    The adapter must force abstention.
+    """
+    adapter = SQLiteFTS5QueryAdapter(db_conn)
+    req = AnswerRequest(
+        query="Is drone traditional knowledge patentable in India?",
+        jurisdiction=JurisdictionEnum.INDIA,
+        language=LanguageEnum.EN,
+    )
+    result = adapter.generate_answer(req, require_approved_evidence=False)
+    assert result.status == AnswerStatusEnum.ABSTAINED, (
+        "Query with unsupported subject constraint 'drone' must abstain "
+        "even when other subject terms ('traditional', 'knowledge') match a passage."
+    )
+    assert result.evidence_status == EvidenceStatusEnum.INSUFFICIENT
+    assert len(result.claims) == 0
+    assert len(result.evidence) == 0
 
 
 def test_fts5_adapter_drone_query_with_traditional_term_abstains(db_conn: sqlite3.Connection):
     """
-    BLOCKER-1 Regression — Strict answerability gate (all substantive terms must match):
-    A query with unsupported primary subjects ('drone', 'navigation') must abstain
-    even if the word 'traditional' appears in a retrieved passage.
-
-    Before the fix: _DOMAIN_SYNONYMS caused 'traditional' to match via synonym expansion,
-    and ANY one matching term was sufficient — so the query was incorrectly answered.
-    After the fix: ALL substantive terms must match (or n-1 for 3+ terms). 'drone' and
-    'navigation' are not in any indexed passage, so the gate correctly abstains.
+    Answerability Gate Regression: A query with unsupported primary subjects ('drone', 'navigation')
+    must abstain even when 'traditional' appears in a retrieved passage.
     """
     adapter = SQLiteFTS5QueryAdapter(db_conn)
     req = AnswerRequest(
         query="Is drone navigation using traditional Indian techniques patentable in India?",
         jurisdiction=JurisdictionEnum.INDIA,
         language=LanguageEnum.EN,
-        require_approved_evidence=False,  # allow synthetic pool so retrieval runs
     )
-    result = adapter.generate_answer(req)
+    result = adapter.generate_answer(req, require_approved_evidence=False)
     assert result.status == AnswerStatusEnum.ABSTAINED, (
         "Query with unsupported subject terms ('drone', 'navigation') must abstain "
         "even when 'traditional' appears in a retrieved passage."
@@ -251,29 +290,22 @@ def test_fts5_adapter_drone_query_with_traditional_term_abstains(db_conn: sqlite
 
 def test_fts5_adapter_default_mode_excludes_synthetic(db_conn: sqlite3.Connection):
     """
-    BLOCKER-2 Regression — System is the safety gate on evidence quality:
-    Calling generate_answer with no explicit require_approved_evidence (defaults to True)
-    must exclude synthetic fixtures. When only synthetic passages exist in the corpus,
-    the adapter must abstain rather than surfacing synthetic data as approved legal evidence.
-
-    This verifies that callers cannot accidentally expose synthetic fixtures by omitting
-    the require_approved_evidence flag — the system enforces the safe default.
+    Finding 2 Regression — System is the safety gate on evidence quality:
+    Calling generate_answer with default require_approved_evidence=True must exclude synthetic fixtures.
+    When only synthetic passages exist in the corpus, the adapter must abstain rather than
+    surfacing synthetic data as approved legal evidence.
     """
     adapter = SQLiteFTS5QueryAdapter(db_conn)
     req = AnswerRequest(
-        query="Is classical Triphala Churna eligible for patent protection in India?",
+        query="Is traditional knowledge patentable under Section 3(p) in India?",
         jurisdiction=JurisdictionEnum.INDIA,
         language=LanguageEnum.EN,
-        # require_approved_evidence omitted — must default to True
     )
-    result = adapter.generate_answer(req)
-    # With only synthetic fixtures in the corpus, default mode must abstain
+    result = adapter.generate_answer(req)  # default require_approved_evidence=True
     assert result.status == AnswerStatusEnum.ABSTAINED, (
         "Default adapter call must abstain when only synthetic fixtures exist; "
         "the system must not expose synthetic data as approved legal evidence."
     )
     assert result.evidence_status == EvidenceStatusEnum.INSUFFICIENT
     assert len(result.claims) == 0
-    # Confirm no synthetic passages leaked through
     assert all(not p.is_synthetic for p in result.evidence)
-

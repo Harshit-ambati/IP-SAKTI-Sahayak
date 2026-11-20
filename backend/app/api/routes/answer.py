@@ -16,7 +16,7 @@ import uuid
 from datetime import datetime, timezone
 from fastapi import APIRouter, Depends
 from ...adapters.query_adapter import QueryEngineAdapter, get_query_adapter
-from ...config import AUDIT_LOG_ENABLED
+from ...config import AUDIT_LOG_ENABLED, ALLOW_SYNTHETIC_DEMO
 from ...db.database import get_db
 from ...models.schemas import (
     AnswerRequest,
@@ -45,13 +45,22 @@ def generate_answer(
 ) -> AnswerResult:
     """
     Executes answer generation via the configured QueryEngineAdapter.
+    Enforces approved evidence gate: callers cannot relax or override this.
+    Only server-side ALLOW_SYNTHETIC_DEMO configuration can permit synthetic demo retrieval.
     Records a privacy-preserving audit event without user secret formulation data.
     """
     request_id = str(uuid.uuid4())
     timestamp = datetime.now(timezone.utc).isoformat()
 
+    # Enforce approved evidence gate: callers cannot relax or override this.
+    # Only server-side ALLOW_SYNTHETIC_DEMO configuration can permit synthetic demo retrieval.
+    require_approved = not ALLOW_SYNTHETIC_DEMO
+
     # Delegate retrieval and synthesis to the stable query adapter
-    result = query_adapter.generate_answer(request)
+    result = query_adapter.generate_answer(
+        request,
+        require_approved_evidence=require_approved,
+    )
 
     # Privacy-Compliant Audit Event Logging
     # MUST NOT log user query text, full formulation, or confidential ingredients.

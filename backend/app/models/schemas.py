@@ -240,20 +240,11 @@ class AnswerRequest(BaseModel):
         default=None,
         description="Optional accompanying formulation intake."
     )
-    require_approved_evidence: bool = Field(
-        default=True,
-        description=(
-            "Whether to restrict retrieval to non-synthetic, reviewed approved evidence. "
-            "Defaults to True: the system is the safety gate on evidence quality and excludes "
-            "synthetic fixtures from public answer paths by default. "
-            "Set to False only for explicit demo/testing mode where synthetic fixtures are acceptable."
-        ),
-    )
 
     model_config = ConfigDict(
         json_schema_extra={
             "example": {
-                "query": "Is a classical Triphala churna eligible for a product patent in India?",
+                "query": "Is traditional knowledge patentable under Section 3(p) in India?",
                 "jurisdiction": "India",
                 "language": "en"
             }

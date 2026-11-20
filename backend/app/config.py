@@ -21,6 +21,12 @@ QUERY_ADAPTER_TYPE = os.getenv("QUERY_ADAPTER_TYPE", "fts5")
 ENABLE_PERSISTENT_CASE_STORAGE = os.getenv("ENABLE_PERSISTENT_CASE_STORAGE", "false").lower() == "true"
 AUDIT_LOG_ENABLED = os.getenv("AUDIT_LOG_ENABLED", "true").lower() == "true"
 
+# Synthetic Demo Gating (Su-02)
+# Public API strictly requires reviewed, non-synthetic approved evidence.
+# Synthetic fixtures are NEVER served to public callers.
+# Server-side demo mode can only be enabled via server configuration (env var).
+ALLOW_SYNTHETIC_DEMO = os.getenv("ALLOW_SYNTHETIC_DEMO", "false").lower() == "true"
+
 # CORS origins for Akshay's frontend
 CORS_ORIGINS = [
     "http://localhost:3000",

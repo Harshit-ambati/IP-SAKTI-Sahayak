@@ -48,6 +48,7 @@ _STOPWORDS = {
     "with", "be", "are", "do", "does", "can", "could", "should", "would",
     "by", "from", "as", "into", "through", "during", "before", "after",
     "it", "its", "this", "that", "these", "those", "have", "has", "had",
+    "use", "using", "used", "uses",
 }
 
 _PROCEDURAL_TERMS = {
@@ -61,6 +62,8 @@ _PROCEDURAL_TERMS = {
     "eligible", "eligibility", "govern", "governed", "governing",
     "applicable", "apply", "requirement", "requirements", "compliance", "comply",
     "approved", "unapproved", "status", "test", "demo", "sample", "example",
+    "defined", "define", "definition", "definitions",
+    "classified", "classify", "classification", "classifications",
 }
 
 
@@ -98,44 +101,40 @@ def _passage_supports_query(
 ) -> bool:
     """
     Answerability Gate: checks if a candidate retrieved passage materially supports
-    the substantive question by requiring that a strict majority of substantive terms
-    are present in the passage text via stem matching.
+    the substantive question.
 
-    Threshold:
-    - 1 term  → 1 must match (all)
-    - 2 terms → 1 must match (majority, ceil(2/2))
-    - 3 terms → 2 must match (majority, ceil(3/2))
-    - 4 terms → 2 must match (majority, ceil(4/2))
-    - 5 terms → 3 must match (majority, ceil(5/2))
-    - …
-
-    Domain synonym expansion is intentionally excluded: synonym expansion can cause
-    false support (e.g. 'traditional' matching for 'drone navigation' queries because
-    _DOMAIN_SYNONYMS['traditional'] included 'traditional' itself).  Only direct
-    stem matching against passage text is used.
+    Invariants (enforced per Harshit's safety review):
+    1. If the query specifies explicit statutory locators (e.g. '3(p)'), the passage locator
+       must match one of them.
+    2. If the query specifies substantive subject terms, EVERY substantive term must be
+       grounded in the passage text via stem matching. An unsupported material subject
+       constraint (e.g. 'drone') forces rejection even if a locator (e.g. 'Section 3(p)')
+       or other subject terms (e.g. 'traditional knowledge') match.
+    3. If neither substantive terms nor locators exist, the passage cannot be verified.
     """
     passage_text = f"{passage.document_title} {passage.locator} {passage.paraphrased_content}".lower()
 
-    # 1. Explicit statutory locator match always supports (e.g. '3(p)' in query)
-    for loc in locators:
-        if loc in passage.locator.lower():
-            return True
+    # 1. If explicit locators are present in query, passage MUST match at least one locator
+    if locators:
+        locator_matches = any(loc in passage.locator.lower() for loc in locators)
+        if not locator_matches:
+            return False
 
-    # 2. No substantive terms and no locators — cannot verify answerability
-    if not substantive_terms:
-        return False
+    # 2. If substantive subject terms are present in query, EVERY term must be present
+    # in the passage text. Any missing term means the material subject is unsupported.
+    if substantive_terms:
+        for term in substantive_terms:
+            stem = term[:4] if len(term) >= 5 else term
+            if stem not in passage_text:
+                return False
+        return True
 
-    # 3. Count how many substantive terms have a stem match in the passage text
-    matched = sum(
-        1 for term in substantive_terms
-        if (term[:4] if len(term) >= 5 else term) in passage_text
-    )
+    # 3. If no substantive terms were present, locator match above is sufficient
+    if locators:
+        return True
 
-    # Require a strict majority (ceil(n/2)) to match.
-    # This prevents a single coincidental synonym from creating false answerability,
-    # while allowing queries where the dominant substantive terms are grounded.
-    required = math.ceil(len(substantive_terms) / 2)
-    return matched >= required
+    # 4. Neither substantive terms nor locators present
+    return False
 
 
 class QueryEngineAdapter(ABC):
@@ -147,7 +146,7 @@ class QueryEngineAdapter(ABC):
         query: str,
         jurisdiction: JurisdictionEnum,
         limit: int = 5,
-        require_approved_evidence: bool = False,
+        require_approved_evidence: bool = True,
     ) -> List[EvidencePassage]:
         """Retrieves activated evidence passages matching the query and jurisdiction."""
         pass
@@ -156,6 +155,7 @@ class QueryEngineAdapter(ABC):
     def generate_answer(
         self,
         request: AnswerRequest,
+        require_approved_evidence: bool = True,
     ) -> AnswerResult:
         """Synthesizes an evidence-grounded answer or cleanly abstains if no evidence is found."""
         pass
@@ -172,7 +172,7 @@ class SQLiteFTS5QueryAdapter(QueryEngineAdapter):
         query: str,
         jurisdiction: JurisdictionEnum,
         limit: int = 5,
-        require_approved_evidence: bool = False,
+        require_approved_evidence: bool = True,
     ) -> List[EvidencePassage]:
         """
         Executes full-text retrieval on passages_fts joined with passages table.
@@ -239,7 +239,7 @@ class SQLiteFTS5QueryAdapter(QueryEngineAdapter):
         terms: List[str],
         jurisdiction: JurisdictionEnum,
         limit: int = 5,
-        require_approved_evidence: bool = False,
+        require_approved_evidence: bool = True,
     ) -> List[EvidencePassage]:
         """Graceful fallback search when FTS syntax encounters special characters."""
         cur = self.conn.cursor()
@@ -257,9 +257,9 @@ class SQLiteFTS5QueryAdapter(QueryEngineAdapter):
 
         sql = f"""
             SELECT p.passage_id, p.source_id, p.jurisdiction, p.authority,
-                   p.document_title, p.locator, p.paraphrased_content,
-                   p.source_url, p.source_type, p.review_status,
-                   p.review_note, p.is_synthetic, p.activated
+               p.document_title, p.locator, p.paraphrased_content,
+               p.source_url, p.source_type, p.review_status,
+               p.review_note, p.is_synthetic, p.activated
             FROM passages p
             WHERE ({like_clauses})
               AND p.jurisdiction = ?
@@ -290,6 +290,7 @@ class SQLiteFTS5QueryAdapter(QueryEngineAdapter):
     def generate_answer(
         self,
         request: AnswerRequest,
+        require_approved_evidence: bool = True,
     ) -> AnswerResult:
         """
         Retrieves matching approved evidence passages and synthesizes a grounded response.
@@ -305,14 +306,12 @@ class SQLiteFTS5QueryAdapter(QueryEngineAdapter):
         )
 
         # 1. Retrieve candidates from index.
-        # The public API ALWAYS requires approved non-synthetic evidence.
-        # `request.require_approved_evidence` is kept on AnswerRequest for
-        # explicit unit-test / demo override only; the production default is True.
+        # Strict evidence safety: defaults to requiring approved non-synthetic evidence.
         raw_passages = self.search_passages(
             query=request.query,
             jurisdiction=request.jurisdiction,
             limit=5,
-            require_approved_evidence=request.require_approved_evidence,
+            require_approved_evidence=require_approved_evidence,
         )
 
         # 2. Case: Zero passages found in DB
@@ -321,7 +320,7 @@ class SQLiteFTS5QueryAdapter(QueryEngineAdapter):
                 f"No reviewed, non-synthetic approved evidence is available in the indexed corpus for this "
                 f"question under {request.jurisdiction.value} jurisdiction. Synthetic test fixtures are excluded "
                 "from production answers per safety policy. The system abstains."
-                if request.require_approved_evidence
+                if require_approved_evidence
                 else (
                     f"No approved statutory or regulatory evidence was found in the indexed corpus "
                     f"for the query under {request.jurisdiction.value} jurisdiction. To prevent "
@@ -349,7 +348,7 @@ class SQLiteFTS5QueryAdapter(QueryEngineAdapter):
                 evidence_status=EvidenceStatusEnum.INSUFFICIENT,
                 corpus_version="v0.2-fts5-adapter",
                 model_version="fts5-retrieval-adapter-v1",
-                is_synthetic_fixture=False if request.require_approved_evidence else True,
+                is_synthetic_fixture=False if require_approved_evidence else True,
             )
 
         # 3. Answerability Gate: Check whether retrieved passages support the substantive query
@@ -361,9 +360,13 @@ class SQLiteFTS5QueryAdapter(QueryEngineAdapter):
             if _passage_supports_query(p, substantive_terms, locators)
         ]
 
-        # Mixed query rejection: query has substantive terms, but NONE are addressed by retrieved passages
-        if substantive_terms and not supported_passages:
-            unsupported_subjects = ", ".join(f"'{t}'" for t in substantive_terms[:3])
+        # Mixed query rejection: query has substantive terms or locators, but candidate passages do not support them
+        if not supported_passages:
+            unsupported_subjects = (
+                ", ".join(f"'{t}'" for t in substantive_terms[:3])
+                if substantive_terms
+                else "unsupported statutory subject"
+            )
             return AnswerResult(
                 status=AnswerStatusEnum.ABSTAINED,
                 jurisdiction=request.jurisdiction,
@@ -376,15 +379,15 @@ class SQLiteFTS5QueryAdapter(QueryEngineAdapter):
                     "specific subject. The system abstains from generating substantive claims to prevent ungrounded legal advice."
                 ),
                 assumptions=[
-                    f"Query contains substantive subject terms ({unsupported_subjects}) absent from retrieved provisions.",
-                    "Answerability gate prevents lexical overlap on procedural words from creating false support.",
+                    f"Query contains substantive subject constraints ({unsupported_subjects}) absent from retrieved provisions.",
+                    "Answerability gate prevents lexical overlap on procedural words or section locators from creating false support.",
                 ],
                 claims=[],
                 cited_provisions=[],
                 evidence=[],
                 limitations=[
                     "Abstained: Retrieved passages do not address the query's material subject.",
-                    "Procedural term overlap alone does not establish legal answerability.",
+                    "Procedural term overlap or locator presence alone does not establish legal answerability.",
                 ],
                 evidence_status=EvidenceStatusEnum.INSUFFICIENT,
                 corpus_version="v0.2-fts5-adapter",
