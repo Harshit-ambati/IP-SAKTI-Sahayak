@@ -124,7 +124,10 @@ def test_fts5_adapter_answer_grounded_in_citations(db_conn: sqlite3.Connection):
     )
     result = adapter.generate_answer(req)
     assert result.status == AnswerStatusEnum.ANSWERED
-    assert result.evidence_status == EvidenceStatusEnum.SUPPORTED
+    # Synthetic demo fixtures are explicitly marked mock and have evidence_status='partial'
+    assert result.evidence_status == EvidenceStatusEnum.PARTIAL
+    assert result.is_synthetic_fixture is True
+    assert "SYNTHETIC MOCK/DEMO" in result.answer_text
     assert len(result.claims) > 0
     assert len(result.evidence) > 0
 
@@ -132,6 +135,69 @@ def test_fts5_adapter_answer_grounded_in_citations(db_conn: sqlite3.Connection):
     for claim in result.claims:
         for eid in claim.evidence_ids:
             assert eid in evidence_ids, f"Claim cites unretrieved passage {eid}"
+
+
+def test_fts5_adapter_mixed_query_with_unsupported_subject_abstains(db_conn: sqlite3.Connection):
+    """
+    Answerability Gate: A mixed query sharing common procedural legal words
+    ('patentable', 'India') with an unsupported subject matter ('quantum cryptography')
+    must abstain and not emit substantive claims.
+    """
+    adapter = SQLiteFTS5QueryAdapter(db_conn)
+    req = AnswerRequest(
+        query="Is quantum cryptography patentable in India?",
+        jurisdiction=JurisdictionEnum.INDIA,
+        language=LanguageEnum.EN,
+    )
+    result = adapter.generate_answer(req)
+    assert result.status == AnswerStatusEnum.ABSTAINED
+    assert result.evidence_status == EvidenceStatusEnum.INSUFFICIENT
+    assert len(result.claims) == 0
+    assert len(result.cited_provisions) == 0
+    assert len(result.evidence) == 0
+    assert "quantum cryptography" in result.answer_text.lower() or "abstains" in result.answer_text.lower()
+
+
+def test_fts5_adapter_genuinely_approved_evidence_produces_supported_status(db_conn: sqlite3.Connection):
+    """
+    Genuine Evidence Path: Non-synthetic, reviewed approved evidence (is_synthetic=0,
+    review_status='approved', activated=1) produces evidence_status='supported'
+    and is_synthetic_fixture=False.
+    """
+    cur = db_conn.cursor()
+    try:
+        cur.execute(
+            """
+            INSERT OR REPLACE INTO sources (source_id, topic, authority, title, official_url, verification_status, is_synthetic, activated)
+            VALUES ('REAL-SRC-001', 'patents', 'IP India', 'The Patents Act 1970', 'https://ipindia.gov.in', 'verified', 0, 1)
+            """
+        )
+        cur.execute(
+            """
+            INSERT OR REPLACE INTO passages (passage_id, source_id, jurisdiction, authority, document_title, locator, paraphrased_content, source_url, source_type, review_status, is_synthetic, activated)
+            VALUES ('REAL-PASS-001', 'REAL-SRC-001', 'India', 'IP India', 'The Patents Act 1970', 'Section 3(p)', 'Traditional knowledge and aggregation of known traditional properties are not patentable inventions.', 'https://ipindia.gov.in', 'statute', 'approved', 0, 1)
+            """
+        )
+        db_conn.commit()
+
+        adapter = SQLiteFTS5QueryAdapter(db_conn)
+        req = AnswerRequest(
+            query="Is traditional knowledge patentable in India?",
+            jurisdiction=JurisdictionEnum.INDIA,
+            language=LanguageEnum.EN,
+            require_approved_evidence=True,
+        )
+        result = adapter.generate_answer(req)
+        assert result.status == AnswerStatusEnum.ANSWERED
+        assert result.evidence_status == EvidenceStatusEnum.SUPPORTED
+        assert result.is_synthetic_fixture is False
+        assert len(result.claims) > 0
+        assert any(p.passage_id == "REAL-PASS-001" for p in result.evidence)
+        assert any("REAL-PASS-001" in c.evidence_ids for c in result.claims)
+    finally:
+        cur.execute("DELETE FROM passages WHERE passage_id = 'REAL-PASS-001'")
+        cur.execute("DELETE FROM sources WHERE source_id = 'REAL-SRC-001'")
+        db_conn.commit()
 
 
 def test_fts5_adapter_handles_special_characters_gracefully(db_conn: sqlite3.Connection):

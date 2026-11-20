@@ -240,6 +240,10 @@ class AnswerRequest(BaseModel):
         default=None,
         description="Optional accompanying formulation intake."
     )
+    require_approved_evidence: bool = Field(
+        default=False,
+        description="Whether to require non-synthetic, reviewed approved evidence (abstaining if only synthetic fixtures exist)."
+    )
 
     model_config = ConfigDict(
         json_schema_extra={

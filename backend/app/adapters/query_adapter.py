@@ -9,9 +9,16 @@ Key architectural invariants:
    International queries only search International passages.
 2. Strict activation gate: Only approved/activated corpus rows (activated = 1)
    can be retrieved for answer synthesis.
-3. Grounded claims: Every emitted claim's evidence_ids strictly map to retrieved
+3. Answerability gate: Verifies that candidate retrieved passages materially support
+   the substantive subject matter of the query, rather than merely sharing generic
+   legal/procedural tokens (e.g. 'patent', 'india'). Mixed irrelevant queries cleanly abstain.
+4. Synthetic fixture isolation: Synthetic demo passages are NEVER marked as 'supported'
+   legal evidence. Responses derived from synthetic fixtures are explicitly labelled mock/demo
+   and receive evidence_status='partial'. Normal answer use requiring approved non-synthetic
+   evidence (require_approved_evidence=True) abstains if only synthetic fixtures exist.
+5. Grounded claims: Every emitted claim's evidence_ids strictly map to retrieved
    and cited passages.
-4. Safe abstention: Zero approved evidence matches result in clean abstention
+6. Safe abstention: Zero approved evidence matches result in clean abstention
    (status="abstained", evidence_status="insufficient", empty claims).
 """
 
@@ -39,6 +46,20 @@ _STOPWORDS = {
     "what", "how", "where", "when", "why", "which", "who", "under", "about",
     "with", "be", "are", "do", "does", "can", "could", "should", "would",
     "by", "from", "as", "into", "through", "during", "before", "after",
+    "it", "its", "this", "that", "these", "those", "have", "has", "had",
+}
+
+_PROCEDURAL_TERMS = {
+    "patent", "patents", "patentable", "patenting", "patentability", "patented",
+    "trademark", "trademarks", "copyright", "copyrights",
+    "law", "laws", "act", "acts", "section", "sections", "sec",
+    "rule", "rules", "regulation", "regulations", "provision", "provisions",
+    "india", "indian", "international", "overview", "wipo", "treaty", "treaties",
+    "legal", "statute", "statutory", "query", "question",
+    "product", "products", "formula", "formulas", "formulation", "formulations",
+    "eligible", "eligibility", "govern", "governed", "governing",
+    "applicable", "apply", "requirement", "requirements", "compliance", "comply",
+    "approved", "unapproved", "status", "test", "demo", "sample", "example",
 }
 
 
@@ -49,7 +70,6 @@ def _tokenize_query(query: str) -> List[str]:
     expanded = []
     for t in meaningful:
         expanded.append(f"{t}*")
-        # Add root for common legal/regulatory suffixes
         if t.endswith("able") and len(t) > 5:
             expanded.append(f"{t[:-4]}*")
         elif t.endswith("ability") and len(t) > 8:
@@ -57,6 +77,63 @@ def _tokenize_query(query: str) -> List[str]:
         elif t.endswith("ation") and len(t) > 6:
             expanded.append(f"{t[:-5]}*")
     return expanded[:12]
+
+
+def _extract_substantive_terms(query: str) -> List[str]:
+    """Extracts non-procedural substantive subject matter terms from the query."""
+    words = re.findall(r"\b[a-zA-Z0-9_-]+\b", query.lower())
+    return [w for w in words if w not in _STOPWORDS and w not in _PROCEDURAL_TERMS and len(w) > 2]
+
+
+def _extract_locators(query: str) -> List[str]:
+    """Extracts explicit statutory locators like 3(p), 3(a), 2(b) from query."""
+    return re.findall(r"\b\d+\([a-zA-Z0-9]+\)", query.lower())
+
+
+_DOMAIN_SYNONYMS = {
+    "classical": {"classical", "traditional", "samhita", "heritage", "asu"},
+    "traditional": {"traditional", "classical", "heritage", "indigenous", "folklore"},
+    "ayurvedic": {"ayurvedic", "ayurveda", "herbal", "traditional", "asu"},
+    "ayurveda": {"ayurvedic", "ayurveda", "herbal", "traditional", "asu"},
+    "triphala": {"ayurvedic", "traditional", "herbal", "classical", "plant"},
+    "herbal": {"herbal", "plant", "botanical", "ayurvedic", "traditional"},
+    "genetic": {"genetic", "biological", "dna", "resources", "indigenous"},
+    "disclosure": {"disclosure", "disclose", "source", "origin", "gratk"},
+    "aahara": {"aahara", "food", "dietary", "fssai", "recipe", "recipes"},
+    "food": {"aahara", "food", "dietary", "nutrition", "fssai"},
+    "cosmetic": {"cosmetic", "cosmetics", "skin", "cleansing", "topical"},
+}
+
+
+def _passage_supports_query(
+    passage: EvidencePassage,
+    substantive_terms: List[str],
+    locators: List[str],
+) -> bool:
+    """
+    Answerability Gate: checks if a candidate retrieved passage materially supports
+    the substantive question, rather than just matching generic legal/procedural tokens
+    (e.g. 'patent', 'india').
+    """
+    passage_text = f"{passage.document_title} {passage.locator} {passage.paraphrased_content}".lower()
+
+    # 1. If query specified an explicit statutory locator (e.g. '3(p)'), check if passage locator matches
+    for loc in locators:
+        if loc in passage.locator.lower():
+            return True
+
+    # 2. If substantive domain terms exist, at least one must be grounded in the passage text or domain synonyms
+    if substantive_terms:
+        for term in substantive_terms:
+            synonyms = _DOMAIN_SYNONYMS.get(term, {term})
+            for s in synonyms:
+                stem = s[:4] if len(s) >= 5 else s
+                if stem in passage_text:
+                    return True
+        return False
+
+    # 3. If query had no specific substantive terms and no locators, candidate cannot be verified
+    return True
 
 
 class QueryEngineAdapter(ABC):
@@ -68,6 +145,7 @@ class QueryEngineAdapter(ABC):
         query: str,
         jurisdiction: JurisdictionEnum,
         limit: int = 5,
+        require_approved_evidence: bool = False,
     ) -> List[EvidencePassage]:
         """Retrieves activated evidence passages matching the query and jurisdiction."""
         pass
@@ -92,12 +170,14 @@ class SQLiteFTS5QueryAdapter(QueryEngineAdapter):
         query: str,
         jurisdiction: JurisdictionEnum,
         limit: int = 5,
+        require_approved_evidence: bool = False,
     ) -> List[EvidencePassage]:
         """
         Executes full-text retrieval on passages_fts joined with passages table.
         Strictly enforces:
         - p.jurisdiction = jurisdiction.value
         - p.activated = 1 (preliminary corpus rows are excluded)
+        - If require_approved_evidence=True: p.is_synthetic = 0 AND p.review_status = 'approved'
         """
         terms = _tokenize_query(query)
         if not terms:
@@ -106,10 +186,12 @@ class SQLiteFTS5QueryAdapter(QueryEngineAdapter):
         fts_expression = " OR ".join(terms)
         passages: List[EvidencePassage] = []
 
+        synthetic_filter = "AND p.is_synthetic = 0 AND p.review_status = 'approved'" if require_approved_evidence else ""
+
         try:
             cur = self.conn.cursor()
             cur.execute(
-                """
+                f"""
                 SELECT p.passage_id, p.source_id, p.jurisdiction, p.authority,
                        p.document_title, p.locator, p.paraphrased_content,
                        p.source_url, p.source_type, p.review_status,
@@ -120,6 +202,7 @@ class SQLiteFTS5QueryAdapter(QueryEngineAdapter):
                 WHERE passages_fts MATCH ?
                   AND p.jurisdiction = ?
                   AND p.activated = 1
+                  {synthetic_filter}
                 ORDER BY rank
                 LIMIT ?
                 """,
@@ -145,7 +228,7 @@ class SQLiteFTS5QueryAdapter(QueryEngineAdapter):
                 )
         except sqlite3.OperationalError:
             # Fallback to token LIKE if FTS syntax edge case occurs
-            passages = self._fallback_like_search(terms, jurisdiction, limit)
+            passages = self._fallback_like_search(terms, jurisdiction, limit, require_approved_evidence)
 
         return passages
 
@@ -154,6 +237,7 @@ class SQLiteFTS5QueryAdapter(QueryEngineAdapter):
         terms: List[str],
         jurisdiction: JurisdictionEnum,
         limit: int = 5,
+        require_approved_evidence: bool = False,
     ) -> List[EvidencePassage]:
         """Graceful fallback search when FTS syntax encounters special characters."""
         cur = self.conn.cursor()
@@ -162,6 +246,8 @@ class SQLiteFTS5QueryAdapter(QueryEngineAdapter):
             return []
 
         like_clauses = " OR ".join(["p.paraphrased_content LIKE ? OR p.document_title LIKE ?" for _ in clean_terms])
+        synthetic_filter = "AND p.is_synthetic = 0 AND p.review_status = 'approved'" if require_approved_evidence else ""
+
         params = []
         for ct in clean_terms:
             params.extend([f"%{ct}%", f"%{ct}%"])
@@ -176,6 +262,7 @@ class SQLiteFTS5QueryAdapter(QueryEngineAdapter):
             WHERE ({like_clauses})
               AND p.jurisdiction = ?
               AND p.activated = 1
+              {synthetic_filter}
             LIMIT ?
         """
         cur.execute(sql, tuple(params))
@@ -204,33 +291,45 @@ class SQLiteFTS5QueryAdapter(QueryEngineAdapter):
     ) -> AnswerResult:
         """
         Retrieves matching approved evidence passages and synthesizes a grounded response.
-        Enforces clean abstention if no matching approved passages exist.
+        Enforces:
+        - Answerability Gate: mixed queries with common legal words + unsupported subjects abstain.
+        - Strict evidence gate: synthetic fixtures are never marked as 'supported' legal evidence.
+        - require_approved_evidence=True abstains if only synthetic fixtures are available.
         """
-        passages = self.search_passages(
-            query=request.query,
-            jurisdiction=request.jurisdiction,
-            limit=5,
-        )
-
         provisional_class = (
             request.intake.provisional_route
             if request.intake and hasattr(request.intake, "provisional_route")
             else None
         )
 
-        # --- Case 1: Zero evidence found -> Clean Abstention ---
-        if not passages:
+        # 1. Retrieve candidates from index
+        raw_passages = self.search_passages(
+            query=request.query,
+            jurisdiction=request.jurisdiction,
+            limit=5,
+            require_approved_evidence=request.require_approved_evidence,
+        )
+
+        # 2. Case: Zero passages found in DB
+        if not raw_passages:
+            reason = (
+                f"No reviewed, non-synthetic approved evidence is available in the indexed corpus for this "
+                f"question under {request.jurisdiction.value} jurisdiction. Synthetic test fixtures are excluded "
+                "from production answers per safety policy. The system abstains."
+                if request.require_approved_evidence
+                else (
+                    f"No approved statutory or regulatory evidence was found in the indexed corpus "
+                    f"for the query under {request.jurisdiction.value} jurisdiction. To prevent "
+                    "hallucination and ensure legal safety, the system abstains from answering without "
+                    "verified source provisions."
+                )
+            )
             return AnswerResult(
                 status=AnswerStatusEnum.ABSTAINED,
                 jurisdiction=request.jurisdiction,
                 language=request.language,
                 provisional_class=provisional_class,
-                answer_text=(
-                    f"No approved statutory or regulatory evidence was found in the indexed corpus "
-                    f"for the query under {request.jurisdiction.value} jurisdiction. To prevent "
-                    "hallucination and ensure legal safety, the system abstains from answering without "
-                    "verified source provisions. Please consult an IP attorney or refer to official gazettes."
-                ),
+                answer_text=reason,
                 assumptions=[
                     "No matching passages with activated=1 status exist for this inquiry.",
                     "Strict safety gate prevents ungrounded legal assertions.",
@@ -245,15 +344,55 @@ class SQLiteFTS5QueryAdapter(QueryEngineAdapter):
                 evidence_status=EvidenceStatusEnum.INSUFFICIENT,
                 corpus_version="v0.2-fts5-adapter",
                 model_version="fts5-retrieval-adapter-v1",
-                is_synthetic_fixture=True,
+                is_synthetic_fixture=False if request.require_approved_evidence else True,
             )
 
-        # --- Case 2: Matching Evidence Found -> Evidence-Grounded Answer ---
+        # 3. Answerability Gate: Check whether retrieved passages support the substantive query
+        substantive_terms = _extract_substantive_terms(request.query)
+        locators = _extract_locators(request.query)
+
+        supported_passages = [
+            p for p in raw_passages
+            if _passage_supports_query(p, substantive_terms, locators)
+        ]
+
+        # Mixed query rejection: query has substantive terms, but NONE are addressed by retrieved passages
+        if substantive_terms and not supported_passages:
+            unsupported_subjects = ", ".join(f"'{t}'" for t in substantive_terms[:3])
+            return AnswerResult(
+                status=AnswerStatusEnum.ABSTAINED,
+                jurisdiction=request.jurisdiction,
+                language=request.language,
+                provisional_class=provisional_class,
+                answer_text=(
+                    f"The inquiry concerns subject matter ({unsupported_subjects}) for which no supporting "
+                    f"statutory provisions or approved evidence exist in the indexed corpus under {request.jurisdiction.value} "
+                    f"jurisdiction. While general or procedural patent provisions exist, they do not address this "
+                    "specific subject. The system abstains from generating substantive claims to prevent ungrounded legal advice."
+                ),
+                assumptions=[
+                    f"Query contains substantive subject terms ({unsupported_subjects}) absent from retrieved provisions.",
+                    "Answerability gate prevents lexical overlap on procedural words from creating false support.",
+                ],
+                claims=[],
+                cited_provisions=[],
+                evidence=[],
+                limitations=[
+                    "Abstained: Retrieved passages do not address the query's material subject.",
+                    "Procedural term overlap alone does not establish legal answerability.",
+                ],
+                evidence_status=EvidenceStatusEnum.INSUFFICIENT,
+                corpus_version="v0.2-fts5-adapter",
+                model_version="fts5-retrieval-adapter-v1",
+                is_synthetic_fixture=any(p.is_synthetic for p in raw_passages),
+            )
+
+        # 4. Synthesize Answer from Supported Passages
         claims: List[Claim] = []
         cited_provisions: List[str] = []
         synthesis_points: List[str] = []
 
-        for idx, p in enumerate(passages, start=1):
+        for p in supported_passages:
             claim_id = f"CLAIM-{p.passage_id}"
             claims.append(
                 Claim(
@@ -267,31 +406,47 @@ class SQLiteFTS5QueryAdapter(QueryEngineAdapter):
                 cited_provisions.append(provision_locator)
             synthesis_points.append(f"- Under {p.document_title} ({p.locator}): {p.paraphrased_content}")
 
-        if request.jurisdiction == JurisdictionEnum.INTERNATIONAL:
+        is_synthetic = any(p.is_synthetic for p in supported_passages)
+
+        if is_synthetic:
+            # Synthetic fixtures are NEVER marked as SUPPORTED legal evidence
             evidence_status = EvidenceStatusEnum.PARTIAL
             header = (
-                "[INTERNATIONAL JURISDICTION - RETRIEVED STATUTORY EVIDENCE]\n"
-                "At the international level, multilateral treaties establish traditional knowledge "
-                "and genetic resource disclosure principles:\n\n"
+                "[SYNTHETIC MOCK/DEMO - NOT PRODUCTION EVIDENCE]\n"
+                "Notice: The following citations are synthetic testing fixtures and do not constitute approved "
+                "statutory provisions. These mock citations illustrate retrieval format only:\n\n"
             )
+            limitations = [
+                "MOCK DEMO NOTICE: This response is derived from synthetic Phase 1 fixtures for skeleton testing.",
+                "Synthetic fixtures are NOT approved legal evidence and cannot be relied upon for regulatory or legal decisions.",
+                "Informational guidance only; not formal legal advice, patent certification, or regulatory clearance.",
+            ]
         else:
-            evidence_status = EvidenceStatusEnum.SUPPORTED
-            header = (
-                "[INDIA JURISDICTION - RETRIEVED STATUTORY EVIDENCE]\n"
-                "Under Indian statutory framework, the following relevant provisions were retrieved:\n\n"
-            )
+            # Genuinely approved non-synthetic evidence
+            if request.jurisdiction == JurisdictionEnum.INTERNATIONAL:
+                evidence_status = EvidenceStatusEnum.PARTIAL
+                header = (
+                    "[INTERNATIONAL JURISDICTION - APPROVED MULTILATERAL EVIDENCE]\n"
+                    "At the international level, multilateral treaties establish traditional knowledge "
+                    "and genetic resource disclosure principles:\n\n"
+                )
+            else:
+                evidence_status = EvidenceStatusEnum.SUPPORTED
+                header = (
+                    "[INDIA JURISDICTION - APPROVED STATUTORY EVIDENCE]\n"
+                    "Under the Indian statutory framework, the following approved provisions were retrieved:\n\n"
+                )
+            limitations = [
+                "Informational guidance only; not formal legal advice, patent certification, or regulatory clearance.",
+                "Statutory interpretation depends on official gazette notifications and court precedents.",
+                "Synthesized from reviewed, non-synthetic approved passages via the Su-02 retrieval adapter.",
+            ]
 
         answer_text = header + "\n\n".join(synthesis_points)
 
         assumptions = [
-            f"Query matched {len(passages)} activated statutory evidence passage(s) in local index.",
+            f"Query matched {len(supported_passages)} activated statutory evidence passage(s) in local index.",
             "Evidence is constrained strictly to the selected jurisdiction.",
-        ]
-
-        limitations = [
-            "Informational guidance only; not formal legal advice, patent certification, or regulatory clearance.",
-            "Statutory interpretation depends on official gazette notifications and court precedents.",
-            "Synthesized from activated passages via the Su-02 retrieval adapter.",
         ]
 
         return AnswerResult(
@@ -303,12 +458,12 @@ class SQLiteFTS5QueryAdapter(QueryEngineAdapter):
             assumptions=assumptions,
             claims=claims,
             cited_provisions=cited_provisions,
-            evidence=passages,
+            evidence=supported_passages,
             limitations=limitations,
             evidence_status=evidence_status,
             corpus_version="v0.2-fts5-adapter",
             model_version="fts5-retrieval-adapter-v1",
-            is_synthetic_fixture=any(p.is_synthetic for p in passages),
+            is_synthetic_fixture=is_synthetic,
         )
 
 

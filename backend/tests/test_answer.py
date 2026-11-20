@@ -20,6 +20,9 @@ def test_answer_india_patent_query_success(client: TestClient):
     assert data["status"] == "answered"
     assert data["jurisdiction"] == "India"
     assert data["is_synthetic_fixture"] is True
+    # Synthetic demo fixtures are NEVER marked as supported legal evidence
+    assert data["evidence_status"] == "partial"
+    assert "SYNTHETIC MOCK/DEMO" in data["answer_text"]
     assert len(data["claims"]) > 0
     assert any("Section 3(p)" in p for p in data["cited_provisions"])
     assert len(data["limitations"]) > 0
@@ -79,7 +82,7 @@ def test_answer_malformed_short_query_fails_validation(client: TestClient):
 
 
 def test_answer_privacy_audit_logging(client: TestClient, test_db_path: Path):
-    secret_query = "Confidential formulation patent query about SecretIngredientX"
+    secret_query = "Confidential classical formulation patent query about SecretIngredientX"
     payload = {
         "query": secret_query,
         "jurisdiction": "India",
@@ -104,7 +107,7 @@ def test_answer_privacy_audit_logging(client: TestClient, test_db_path: Path):
     assert row["jurisdiction"] == "India"
     assert row["status"] == "answered"
     assert "SecretIngredientX" not in all_audit_text
-    assert "Confidential formulation" not in all_audit_text
+    assert "Confidential classical formulation" not in all_audit_text
 
 
 def test_answer_unsupported_query_abstains_cleanly(client: TestClient):
@@ -123,3 +126,46 @@ def test_answer_unsupported_query_abstains_cleanly(client: TestClient):
     assert len(data["cited_provisions"]) == 0
     assert "abstains" in data["answer_text"].lower()
 
+
+def test_answer_mixed_legal_term_with_unsupported_subject_abstains(client: TestClient):
+    """
+    Answerability Gate Regression: Mixed query with a common procedural legal word
+    ('patentable', 'India') plus an unsupported subject ('quantum cryptography')
+    must abstain and not generate claims or false 'supported' legal answers.
+    """
+    payload = {
+        "query": "Is quantum cryptography patentable in India?",
+        "jurisdiction": "India",
+        "language": "en"
+    }
+    response = client.post("/api/v1/answer", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "abstained"
+    assert data["evidence_status"] == "insufficient"
+    assert len(data["claims"]) == 0
+    assert len(data["cited_provisions"]) == 0
+    assert len(data["evidence"]) == 0
+    assert "quantum cryptography" in data["answer_text"].lower() or "abstains" in data["answer_text"].lower()
+
+
+def test_answer_production_mode_abstains_when_only_synthetic_fixtures_exist(client: TestClient):
+    """
+    Synthetic Gate: When require_approved_evidence=True is set, synthetic test fixtures
+    are excluded. If no reviewed non-synthetic evidence exists, the endpoint must abstain.
+    """
+    payload = {
+        "query": "Is a classical Triphala formulation patentable in India?",
+        "jurisdiction": "India",
+        "language": "en",
+        "require_approved_evidence": True,
+    }
+    response = client.post("/api/v1/answer", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "abstained"
+    assert data["evidence_status"] == "insufficient"
+    assert data["is_synthetic_fixture"] is False
+    assert len(data["claims"]) == 0
+    assert len(data["evidence"]) == 0
+    assert "synthetic" in data["answer_text"].lower() or "abstains" in data["answer_text"].lower()
