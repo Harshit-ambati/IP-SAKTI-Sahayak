@@ -104,6 +104,7 @@ def verify_glossary(file_path: Path) -> bool:
             return False
 
         print("SUCCESS: All glossary records validated successfully.")
+        print("Note: This script establishes CSV formatting, column schema, and preservation tags only; it does not verify semantic meaning or translation fidelity.")
         print("Domain breakdown:")
         for dom in sorted(EXPECTED_DOMAINS):
             count = sum(1 for r in rows if r["domain"] == dom)

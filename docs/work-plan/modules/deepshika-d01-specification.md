@@ -3,9 +3,9 @@
 **Task ID:** D-01  
 **Module Owner:** Deepshika Palepu (Multilingual experience, terminology, translation quality, and accessibility)  
 **Target Window:** Weeks 1–2  
-**Status:** Submitted for Review (Draft PR)  
+**Status:** In Review (Draft PR #2 updated in response to peer review findings)  
 **Branch:** `deepshika/d-01-phase-1`  
-**Requested Reviewers:**  
+**Reviewers:**  
 - **Thulasi** (Domain terminology, statutory wording & formulation route definitions)  
 - **Sabeena** (Usability, comprehension rubric & benchmark prompt variant formatting)  
 - **Harshit** (Evidence mapping, citation parity rules & response contract compatibility)  
@@ -17,10 +17,10 @@
 Under the [MASTER_PLAN.md](../MASTER_PLAN.md) and [03-deepshika.md](03-deepshika.md), Task D-01 delivers the foundational multilingual experience and user-flow architecture for IP-SAKTI Sahayak:
 1. **Regional Language Review Feasibility Audit**: Conducts an honest audit of team linguistic proficiencies. Confirms English and Hindi as immediately reviewable, evaluates Telugu as the primary regional candidate based on team composition, and **explicitly reserves the final regional language selection as an open kickoff decision** requiring full team sign-off rather than a silent choice.
 2. **End-to-End User Flow Mapping**: Establishes comprehensive journey maps and state-machine transitions across Intake, Answer, Source, and Referral flows, with rigorous definitions of **Unknown**, **Clarification**, **Safe Abstention**, and **Out-of-Scope** states.
-3. **Controlled Glossary v0**: Delivers 30 foundational bilingual terms with Devanagari script, Roman transliterations, and candidate regional renderings across four critical domains: *Jurisdiction*, *Evidence & Citations*, *Uncertainty & Abstention*, and *Product Categories* ([data/glossary/controlled_glossary_v0.csv](../../data/glossary/controlled_glossary_v0.csv)).
-4. **Translation Feasibility Trial**: Evaluates real statutory text from the corpus (`PASS-002`: Patents Act s. 3(p) and `PASS-004`: FSSAI Ayurveda Aahara reg. 8) to test preservation of legal negation, statutory obligations ("shall"), exceptions, jurisdiction terms, and citation ID stability.
+3. **Controlled Glossary v0**: Delivers 30 foundational bilingual terms with Devanagari script, Roman transliterations, and candidate regional renderings across four critical domains: *Jurisdiction*, *Evidence & Citations*, *Uncertainty & Abstention*, and *Product Categories* ([data/glossary/controlled_glossary_v0.csv](../../data/glossary/controlled_glossary_v0.csv)). Updated to address Harshit's review findings on GLOSS-004, GLOSS-024, GLOSS-025, and GLOSS-030.
+4. **Translation Feasibility Trial (Proposed / Feasibility Stage)**: Evaluates real statutory text from the corpus (`PASS-002`: Patents Act s. 3(p) and `PASS-004`: FSSAI Ayurveda Aahara reg. 8) to test manual preservation of legal negation, statutory obligations ("shall"), exceptions, jurisdiction terms, and citation ID stability. Labelled explicitly as proposed author feasibility checks pending formal independent bilingual/domain sign-off.
 5. **Accessibility & Component Guidelines**: Specifies WCAG 2.1 AA requirements, keyboard tab order, screen-reader semantics, Indic typography, and evidence badge visual contrast for Akshay (Frontend).
-6. **Interface Dependency Audit**: Documents upstream API/schema dependencies (Harshit H-01, Suresh Su-01) and unverified corpus rows honestly, completing independent deliverables without assuming unbuilt integrations.
+6. **Interface Dependency & Phase Gate Boundary**: Documents upstream API/schema dependencies (Harshit H-01, Suresh Su-01) and unverified corpus rows honestly. Explicitly notes that because PR #1 is restricted to T-01 under phase gates, D-01 does not treat T-02/T-03 rules or corpus rows as an approved downstream contract.
 
 ---
 
@@ -82,9 +82,9 @@ The system operates as a finite-state sequence ensuring that legal conclusions a
    ▼
 [Provisional Classification Router]
    │
-   ├──(Novel / Non-Classical / Phytopharmaceutical)──► [Default Referral State]
+   ├──(Novel / Phytopharmaceutical)────────► [Default Referral State]
    │
-   ├──(Out-of-Scope / Foreign Export Law)───────────► [Out-of-Scope Abstention State]
+   ├──(Out-of-Scope / Foreign Export Law)──► [Out-of-Scope Abstention State]
    │
    ▼
 [Evidence Retrieval & Claim-Evidence Verification]
@@ -126,17 +126,17 @@ The system operates as a finite-state sequence ensuring that legal conclusions a
 #### State 4: Clarification Required State (RULE-07)
 - **Trigger**: Missing ingredient origin, unstated intended use, or mutually contradictory claims (e.g., claiming food use while claiming disease cure).
 - **UX Presentation**: Highlight missing fields with localized helper text: *"Please specify whether ingredients are mentioned in First Schedule authoritative texts to evaluate classical status."*
-- **Behavior**: Substantive classification and answer generation are blocked.
+- **Behavior**: Substantive classification and answer generation are blocked. Unknown cases remain clarification or referral.
 
 #### State 5: Provisional Classification Output
 - **Routes**:
   - `Route 1: Classical ASU Drug` (D&C Act s. 3(a))
-  - `Route 2: Patent or Proprietary Medicine` (D&C Act s. 3(h))
-  - `Route 3: Novel / Non-Classical Formulation` (Default Referral)
-  - `Route 4: Phytopharmaceutical Drug` (Drugs Rules r. 2(eb) - Default Referral)
+  - `Route 2: Patent or Proprietary Medicine` (D&C Act s. 3(h)) — Formulations containing ingredients listed in First Schedule authoritative texts but prepared according to proprietary formulae (strictly non-parenteral). **Crucial note:** New combinations of classical ingredients from First Schedule texts remain evaluated under Route 2, not Route 3.
+  - `Route 3: Novel / Non-Classical Formulation` (Default Referral) — Strictly narrowed to formulations containing botanical or mineral ingredients unlisted in First Schedule authoritative texts, non-classical synthetic delivery systems, or other characteristics outside supported ASU statutory definitions. Defaults to safe referral.
+  - `Route 4: Phytopharmaceutical Drug` (Drugs Rules r. 2(eb) - Default Referral) — Purified, standardized plant fractions with at least four bioactive/phytochemical markers (strictly non-parenteral). Defaults to referral.
   - `Route 5: Ayurveda Aahara` (FSSAI Regs 2022 reg. 2(b))
   - `Route 6: Ayurvedic Cosmetic` (D&C Act s. 3(aaa))
-  - `Route 7: Unknown / Ambiguous` (Mandatory Referral)
+  - `Route 7: Unknown / Ambiguous` (Mandatory Clarification / Referral)
 - **Visual Badge**: Clearly labelled with an "Informational / Provisional" prefix.
 
 #### State 6: Cited Answer View
@@ -194,38 +194,38 @@ The controlled glossary establishes 30 immutable terms across four domains. The 
 
 ### 4.1 Summary of Controlled Domains & Terms
 
-| Term ID | Domain | English Term | Hindi Statutory Rendering | Devanagari Script | Preservation Rule |
-|---|---|---|---|---|---|
-| `GLOSS-001` | `jurisdiction` | India Jurisdiction | Bharat Kshetrahikar | भारत क्षेत्राधिकार | `STRICT_STATUTORY_EQUIVALENT` |
-| `GLOSS-002` | `jurisdiction` | International Overview | Antarrashtriya Avalokan | अंतर्राष्ट्रीय अवलोकन | `STRICT_STATUTORY_EQUIVALENT` |
-| `GLOSS-003` | `jurisdiction` | Territorial Scope | Pradeshik Kshetra | प्रादेशिक क्षेत्र | `STRICT_STATUTORY_EQUIVALENT` |
-| `GLOSS-004` | `jurisdiction` | WIPO Treaty Party | WIPO Sandhi Paksh | डब्ल्यूआईपीओ संधि पक्ष | `ACRONYM_IMMUTABLE` |
-| `GLOSS-005` | `jurisdiction` | Domestic Enactment | Gharelu Adhiniyaman | घरेलू अधिनियमन | `STRICT_STATUTORY_EQUIVALENT` |
-| `GLOSS-006` | `jurisdiction` | Substantive Law | Mool Vidhi | मूल विधि | `STRICT_STATUTORY_EQUIVALENT` |
-| `GLOSS-007` | `evidence_citation` | Statutory Provision | Vaidhanik Pravadhan | वैधानिक प्रावधान | `STRICT_STATUTORY_EQUIVALENT` |
-| `GLOSS-008` | `evidence_citation` | Locator | Vishisht Sandika | विशिष्ट संदिका (धारा/नियम/विनियम) | `NUMBER_IMMUTABLE` |
-| `GLOSS-009` | `evidence_citation` | Passage ID | Anuchhed Pehchan | अनुच्छेद पहचान (Passage ID) | `ID_IMMUTABLE` |
-| `GLOSS-010` | `evidence_citation` | Source ID | Srot Pehchan | स्रोत पहचान (Source ID) | `ID_IMMUTABLE` |
-| `GLOSS-011` | `evidence_citation` | Issuing Authority | Jarikarta Pradhikari | जारीकर्ता प्राधिकारी | `STRICT_STATUTORY_EQUIVALENT` |
-| `GLOSS-012` | `evidence_citation` | Official Gazette | Bharat Ka Rajpatra | भारत का राजपत्र | `STRICT_STATUTORY_EQUIVALENT` |
-| `GLOSS-013` | `evidence_citation` | Claim Support | Dawa Sakshya Samarthan | दावा साक्ष्य समर्थन | `STRICT_STATUTORY_EQUIVALENT` |
-| `GLOSS-014` | `evidence_citation` | Citation Parity | Uddharan Samtulyata | उद्धरण समतुल्यता (Citation Parity) | `ID_IMMUTABLE` |
-| `GLOSS-015` | `uncertainty_abstention` | Safe Abstention | Surakshit Sanyam | सुरक्षित संयम (उत्तर अस्वीकृति) | `STRICT_STATUTORY_EQUIVALENT` |
-| `GLOSS-016` | `uncertainty_abstention` | Clarification Required | Spashtikaran Apekshit | स्पष्टीकरण अपेक्षित | `STRICT_STATUTORY_EQUIVALENT` |
-| `GLOSS-017` | `uncertainty_abstention` | Missing Mandatory Facts | Anivarya Tathyon Ka Abhav | अनिवार्य तथ्यों का अभाव | `STRICT_STATUTORY_EQUIVALENT` |
-| `GLOSS-018` | `uncertainty_abstention` | Conflicting Evidence | Virodhabhasi Sakshya | विरोधाभासी साक्ष्य | `STRICT_STATUTORY_EQUIVALENT` |
-| `GLOSS-019` | `uncertainty_abstention` | Provisional Classification | Anantim Vargeekaran | अनंतिम वर्गीकरण | `STRICT_STATUTORY_EQUIVALENT` |
-| `GLOSS-020` | `uncertainty_abstention` | Referral Packet | Manav Visheshagya Paramarsh Packet | मानव विशेषज्ञ परामर्श पैकेट | `STRICT_STATUTORY_EQUIVALENT` |
-| `GLOSS-021` | `uncertainty_abstention` | Unverified Translation Fallback | Asatyapit Anuvad Suraksha Chetavani | असत्यापित अनुवाद सुरक्षा चेतावनी | `SAFETY_FALLBACK_BANNER` |
-| `GLOSS-022` | `product_category` | Classical ASU Drug | Paramparik Ayurveda, Siddha ya Unani Aushadhi | पारंपरिक आयुर्वेद, सिद्ध या यूनानी औषधि | `STRICT_STATUTORY_EQUIVALENT` |
-| `GLOSS-023` | `product_category` | Patent or Proprietary Medicine | Patent ya Swatvadhari Aushadhi | पेटेंट या स्वत्वधारी औषधि | `STRICT_STATUTORY_EQUIVALENT` |
-| `GLOSS-024` | `product_category` | Novel / Non-Classical Formulation | Naveen / Aparamparik Formulation | नवीन / अपारंपरिक फॉर्मूलेशन | `STRICT_STATUTORY_EQUIVALENT` |
-| `GLOSS-025` | `product_category` | Phytopharmaceutical Drug | Padap-Aushadh | पादप-औषध (Phytopharmaceutical Drug) | `ACRONYM_IMMUTABLE` |
-| `GLOSS-026` | `product_category` | Ayurveda Aahara | Ayurveda Aahara | आयुर्वेद आहार (Ayurveda Aahara) | `NAME_IMMUTABLE` |
-| `GLOSS-027` | `product_category` | Ayurvedic Cosmetic | Ayurvedic Prasadan Samagri | आयुर्वेदिक प्रसाधन सामग्री | `STRICT_STATUTORY_EQUIVALENT` |
-| `GLOSS-028` | `product_category` | Traditional Knowledge Aggregation | Paramparik Gyan Ka Sankalan / Matra Samucchay | पारंपरिक ज्ञान का संकलन / मात्र समुच्चय | `PRESERVE_NEGATION` |
-| `GLOSS-029` | `product_category` | Mere Admixture | Matra Mishran | मात्र मिश्रण | `PRESERVE_NEGATION` |
-| `GLOSS-030` | `product_category` | Surprising Synergistic Effect | Apratyashit Sahakriyatmak Prabhav | अप्रत्याशित सहक्रियात्मक प्रभाव (Synergy) | `STRICT_STATUTORY_EQUIVALENT` |
+| Term ID | Domain | English Term | Hindi Statutory Rendering | Devanagari Script | Preservation Rule | Review Adjustments & Statutory Context |
+|---|---|---|---|---|---|---|
+| `GLOSS-001` | `jurisdiction` | India Jurisdiction | Bharat Kshetrahikar | भारत क्षेत्राधिकार | `STRICT_STATUTORY_EQUIVALENT` | Domestic Indian legislation filter |
+| `GLOSS-002` | `jurisdiction` | International Overview | Antarrashtriya Avalokan | अंतर्राष्ट्रीय अवलोकन | `STRICT_STATUTORY_EQUIVALENT` | Treaty & multilateral framework filter |
+| `GLOSS-003` | `jurisdiction` | Territorial Scope | Pradeshik Kshetra | प्रादेशिक क्षेत्र | `STRICT_STATUTORY_EQUIVALENT` | Sovereign territorial boundary of statutes |
+| `GLOSS-004` | `jurisdiction` | WIPO Treaty Party | WIPO (WIPO) Sandhi Paksh | WIPO (डब्ल्यूआईपीओ) संधि पक्ष | `ACRONYM_IMMUTABLE` | **Updated per Harshit Review:** Latin acronym `WIPO` preserved directly in localized value |
+| `GLOSS-005` | `jurisdiction` | Domestic Enactment | Gharelu Adhiniyaman | घरेलू अधिनियमन | `STRICT_STATUTORY_EQUIVALENT` | Formal domestic legislative enactment |
+| `GLOSS-006` | `jurisdiction` | Substantive Law | Mool Vidhi | मूल विधि | `STRICT_STATUTORY_EQUIVALENT` | Rights/obligations law vs procedural law |
+| `GLOSS-007` | `evidence_citation` | Statutory Provision | Vaidhanik Pravadhan | वैधानिक प्रावधान | `STRICT_STATUTORY_EQUIVALENT` | Specific section, rule, or regulation |
+| `GLOSS-008` | `evidence_citation` | Locator | Vishisht Sandika | विशिष्ट संदिका (धारा/नियम/विनियम) | `NUMBER_IMMUTABLE` | Section/rule structural pointer |
+| `GLOSS-009` | `evidence_citation` | Passage ID | Anuchhed Pehchan | अनुच्छेद पहचान (Passage ID) | `ID_IMMUTABLE` | Primary key in passages.csv (e.g. PASS-002) |
+| `GLOSS-010` | `evidence_citation` | Source ID | Srot Pehchan | स्रोत पहचान (Source ID) | `ID_IMMUTABLE` | Primary key in documents.csv (e.g. REAL-001) |
+| `GLOSS-011` | `evidence_citation` | Issuing Authority | Jarikarta Pradhikari | जारीकर्ता प्राधिकारी | `STRICT_STATUTORY_EQUIVALENT` | Governmental issuing body |
+| `GLOSS-012` | `evidence_citation` | Official Gazette | Bharat Ka Rajpatra | भारत का राजपत्र | `STRICT_STATUTORY_EQUIVALENT` | Official public record for notifications |
+| `GLOSS-013` | `evidence_citation` | Claim Support | Dawa Sakshya Samarthan | दावा साक्ष्य समर्थन | `STRICT_STATUTORY_EQUIVALENT` | RAG grounding metric against passage text |
+| `GLOSS-014` | `evidence_citation` | Citation Parity | Uddharan Samtulyata | उद्धरण समतुल्यता (Citation Parity) | `ID_IMMUTABLE` | Runtime citation-ID equivalence across languages |
+| `GLOSS-015` | `uncertainty_abstention` | Safe Abstention | Surakshit Sanyam | सुरक्षित संयम (उत्तर अस्वीकृति) | `STRICT_STATUTORY_EQUIVALENT` | Refusal when evidence is insufficient/conflicting |
+| `GLOSS-016` | `uncertainty_abstention` | Clarification Required | Spashtikaran Apekshit | स्पष्टीकरण अपेक्षित | `STRICT_STATUTORY_EQUIVALENT` | Prompting for missing essential facts |
+| `GLOSS-017` | `uncertainty_abstention` | Missing Mandatory Facts | Anivarya Tathyon Ka Abhav | अनिवार्य तथ्यों का अभाव | `STRICT_STATUTORY_EQUIVALENT` | Absence of required classification inputs |
+| `GLOSS-018` | `uncertainty_abstention` | Conflicting Evidence | Virodhabhasi Sakshya | विरोधाभासी साक्ष्य | `STRICT_STATUTORY_EQUIVALENT` | Contradictory statutory directives |
+| `GLOSS-019` | `uncertainty_abstention` | Provisional Classification | Anantim Vargeekaran | अनंतिम वर्गीकरण | `STRICT_STATUTORY_EQUIVALENT` | Preliminary non-binding routing label |
+| `GLOSS-020` | `uncertainty_abstention` | Referral Packet | Manav Visheshagya Paramarsh Packet | मानव विशेषज्ञ परामर्श पैकेट | `STRICT_STATUTORY_EQUIVALENT` | Exportable dossier for human professional |
+| `GLOSS-021` | `uncertainty_abstention` | Unverified Translation Fallback | Asatyapit Anuvad Suraksha Chetavani | असत्यापित अनुवाद सुरक्षा चेतावनी | `SAFETY_FALLBACK_BANNER` | Fallback banner on translation uncertainty |
+| `GLOSS-022` | `product_category` | Classical ASU Drug | Shastriya / Paramparik Ayurveda, Siddha ya Unani Aushadhi | शास्त्रीय / पारंपरिक आयुर्वेद, सिद्ध या यूनानी औषधि | `STRICT_STATUTORY_EQUIVALENT` | **Updated per Thulasi Review:** D&C Act s. 3(a); First Schedule texts; notes both `शास्त्रीय` (AYUSH circulars) and `पारंपरिक` |
+| `GLOSS-023` | `product_category` | Patent or Proprietary Medicine | Patent ya Swatvadhari Aushadhi | पेटेंट या स्वत्वधारी औषधि | `STRICT_STATUTORY_EQUIVALENT` | **Updated per Thulasi Review:** D&C Act s. 3(h); added mandatory negative condition: strictly non-parenteral |
+| `GLOSS-024` | `product_category` | Novel / Non-Classical Formulation | Naveen / Aparamparik Formulation | नवीन / अपारंपरिक फॉर्मूलेशन | `STRICT_STATUTORY_EQUIVALENT` | **Updated per Harshit Review:** Narrowed to unlisted ingredients/non-classical delivery systems; First Schedule ingredient combinations remain in Route 2 |
+| `GLOSS-025` | `product_category` | Phytopharmaceutical Drug | Padap-Aushadh | पादप-औषध (Phytopharmaceutical Drug) | `NAME_IMMUTABLE` | **Updated per Harshit & Thulasi Reviews:** Rule changed from `ACRONYM_IMMUTABLE` to `NAME_IMMUTABLE`; added minimum 4 bioactive markers & non-parenteral |
+| `GLOSS-026` | `product_category` | Ayurveda Aahara | Ayurveda Aahara | आयुर्वेद आहार (Ayurveda Aahara) | `NAME_IMMUTABLE` | FSSAI Regs 2022 reg. 2(b); disease cure claims prohibited |
+| `GLOSS-027` | `product_category` | Ayurvedic Cosmetic | Ayurvedic Prasadan Samagri | आयुर्वेदिक प्रसाधन सामग्री | `STRICT_STATUTORY_EQUIVALENT` | D&C Act s. 3(aaa); external application without disease cure claims |
+| `GLOSS-028` | `product_category` | Traditional Knowledge Aggregation | Paramparik Gyan Ka Sankalan / Matra Samucchay | पारंपरिक ज्ञान का संकलन / मात्र समुच्चय | `PRESERVE_NEGATION` | Patents Act s. 3(p); statutory exclusion from patentability |
+| `GLOSS-029` | `product_category` | Mere Admixture | Matra Mishran | मात्र मिश्रण | `PRESERVE_NEGATION` | Patents Act s. 3(e); aggregation of component properties |
+| `GLOSS-030` | `product_category` | Surprising Synergistic Effect | Sahakriyatmak Prabhav (Synergy) | सहक्रियात्मक प्रभाव (Synergy) | `STRICT_STATUTORY_EQUIVALENT` | **Updated per Harshit Review:** Replaced "s.3(e) exception" with "examination consideration under IP India Patent Guidelines for s.3(e)"; does not guarantee patentability |
 
 ---
 
@@ -233,15 +233,19 @@ The controlled glossary establishes 30 immutable terms across four domains. The 
 
 1. **`ID_IMMUTABLE`**: Database keys such as `PASS-001`, `REAL-001`, `DOC-003` must NEVER be translated, phonetically altered, or transliterated. They must appear in Latin characters identically across all languages.
 2. **`NUMBER_IMMUTABLE`**: Statutory section, sub-section, rule, and regulation numbers (e.g. `3(p)`, `3(h)`, `2(eb)`, `8`) must retain their standard legal format. They must never be converted to Devanagari numerals or localized letters in citations.
-3. **`NAME_IMMUTABLE`**: Statutory proper names created by legislative definitions (e.g. `Ayurveda Aahara`, `WIPO`) must retain their recognized statutory spelling.
-4. **`PRESERVE_NEGATION`**: Absolute statutory exclusions (e.g. *"not an invention"*, *"must not claim prevention or cure"*) must be rendered using unequivocal statutory negative terms (e.g. *"पेटेंट योग्य आविष्कार नहीं है"*, *"कदापि दावा नहीं किया जाएगा"*). Discretionary translations (e.g. *"दावा करने से बचना चाहिए"*) are strictly prohibited.
-5. **`STRICT_STATUTORY_EQUIVALENT`**: Technical legal phrases must use recognized Hindi legal glossary terminology established in the India Code or Official Gazette, rather than casual vernacular expressions.
+3. **`ACRONYM_IMMUTABLE`**: Official institutional acronyms (e.g. `WIPO`) must maintain Latin script directly in localized strings (e.g., `"WIPO (डब्ल्यूआईपीओ) संधि पक्ष"`).
+4. **`NAME_IMMUTABLE`**: Statutory category names without acronyms created by legislative enactments (e.g. `Ayurveda Aahara` under FSSAI, `Phytopharmaceutical Drug` under Drugs Rules r. 2(eb)) must retain their recognized statutory terminology alongside localized equivalents.
+5. **`PRESERVE_NEGATION`**: Absolute statutory exclusions (e.g. *"not an invention"*, *"must not claim prevention or cure"*) must be rendered using unequivocal statutory negative terms (e.g. *"पेटेंट योग्य आविष्कार नहीं है"*, *"कदापि दावा नहीं किया जाएगा"*). Discretionary translations (e.g. *"दावा करने से बचना चाहिए"*) are strictly prohibited.
+6. **`STRICT_STATUTORY_EQUIVALENT`**: Technical legal phrases must use recognized Hindi legal glossary terminology established in the India Code or Official Gazette, rather than casual vernacular expressions.
 
 ---
 
-## 5. Translation Trial for Preserved Legal Meaning
+## 5. Proposed Translation Feasibility Trials (Pending Independent Bilingual & Domain Sign-off)
 
-To evaluate whether translation risks altering legal force, rights, or obligations, two real statutory passages from [passages.csv](../../data/corpus/passages.csv) were audited.
+To evaluate whether manual translation preserves legal force, rights, and obligations, two real statutory passages from [passages.csv](../../data/corpus/passages.csv) were audited as initial feasibility samples.
+
+> [!NOTE]
+> **Evaluation Status:** These trials represent manual feasibility samples authored during Phase 1. They are labelled as **proposed translations pending independent bilingual and domain sign-off** (by Thulasi and qualified reviewers). Formal acceptance-gate claims are reserved for measured benchmark runs on frozen test cases.
 
 ### 5.1 Trial Case 1: Indian Patent Law — Traditional Knowledge Exclusion
 
@@ -249,18 +253,18 @@ To evaluate whether translation risks altering legal force, rights, or obligatio
 - **Statutory Provision**: Section 3(p)
 - **Source English Passage**:  
   > *"Section 3(p) addresses inventions that in effect are traditional knowledge or aggregate known properties of traditionally known components."*
-- **Hindi Translation Trial**:  
+- **Proposed Hindi Translation Trial**:  
   > *"धारा 3(p) उन आविष्कारों को संबोधित करती है जो वास्तव में पारंपरिक ज्ञान हैं या पारंपरिक रूप से ज्ञात घटकों के ज्ञात गुणों का मात्र समुच्चय या दोहराव हैं, और इस प्रकार वे पेटेंट योग्य आविष्कार नहीं हैं।"*
 
 #### Detailed Linguistic & Legal Meaning Audit:
 
-| Dimension | Source English Statutory Construct | Hindi Translation Rendering | Evaluation & Meaning Preservation |
+| Dimension | Source English Statutory Construct | Hindi Translation Rendering | Feasibility Assessment & Review Status |
 |---|---|---|---|
-| **Negation Preservation** | Excluded subject matter (*"not an invention"* under opening words of s. 3) | *"पेटेंट योग्य आविष्कार नहीं हैं"* | **PRESERVED**. The Hindi translation maintains the definitive statutory exclusion from patentability without ambiguity. |
-| **Statutory Obligation / Duty** | Operative exclusionary mandate | *"संबोधित करती है ... पेटेंट योग्य आविष्कार नहीं हैं"* | **PRESERVED**. Maintains the non-discretionary standard of Section 3. |
-| **Component Aggregation** | *"aggregate known properties of traditionally known components"* | *"पारंपरिक रूप से ज्ञात घटकों के ज्ञात गुणों का मात्र समुच्चय"* | **PRESERVED**. Uses the precise statutory concept of "mere aggregation" (*मात्र समुच्चय*) reflecting Section 3(p) and 3(e). |
-| **Statutory Locator & ID** | `PASS-002`, `REAL-001`, `Section 3(p)` | `[PASS-002 / REAL-001] धारा 3(p)` | **PRESERVED (100% Parity)**. Latin script ID and alphanumeric section designation retained. |
-| **Risk Identified** | Casual machine translation often renders *"in effect are traditional knowledge"* as *"पारंपरिक ज्ञान का प्रभाव हैं"* (causing confusion between causation and substance). | Controlled glossary forces *"वास्तव में पारंपरिक ज्ञान हैं"* (in effect / substantive identity). | **RESOLVED** via Controlled Glossary Rule `GLOSS-028`. |
+| **Negation Preservation** | Excluded subject matter (*"not an invention"* under opening words of s. 3) | *"पेटेंट योग्य आविष्कार नहीं हैं"* | **Proposed Feasibility Check:** Maintains statutory exclusion in author sample. Pending formal independent bilingual/domain review. |
+| **Statutory Obligation / Duty** | Operative exclusionary mandate | *"संबोधित करती है ... पेटेंट योग्य आविष्कार नहीं हैं"* | **Proposed Feasibility Check:** Reflects non-discretionary standard of Section 3. |
+| **Component Aggregation** | *"aggregate known properties of traditionally known components"* | *"पारंपरिक रूप से ज्ञात घटकों के ज्ञात गुणों का मात्र समुच्चय"* | **Proposed Feasibility Check:** Uses the precise statutory concept of "mere aggregation" (*मात्र समुच्चय*) reflecting Section 3(p) and 3(e). |
+| **Statutory Locator & ID** | `PASS-002`, `REAL-001`, `Section 3(p)` | `[PASS-002 / REAL-001] धारा 3(p)` | **Proposed Parity Check:** Alphanumeric section designation and Latin IDs preserved in author sample. Runtime citation-ID parity across paired system responses will be measured on benchmark runs. |
+| **Risk Identified & Mitigated** | Machine translation often renders *"in effect are traditional knowledge"* as *"पारंपरिक ज्ञान का प्रभाव हैं"* (causal confusion). | Controlled glossary forces *"वास्तव में पारंपरिक ज्ञान हैं"* (in effect / substantive identity). | Mitigated via Controlled Glossary Rule `GLOSS-028`. |
 
 ---
 
@@ -270,17 +274,17 @@ To evaluate whether translation risks altering legal force, rights, or obligatio
 - **Statutory Provision**: Regulation 8
 - **Source English Passage**:  
   > *"Ayurveda Aahara labelling presentation and advertising must not claim prevention treatment or cure of human disease."*
-- **Hindi Translation Trial**:  
+- **Proposed Hindi Translation Trial**:  
   > *"आयुर्वेद आहार के लेबलन, प्रस्तुतिकरण एवं विज्ञापन में मानव रोग की रोकथाम, उपचार या निवारण (इलाज) का दावा कदापि नहीं किया जाएगा।"*
 
 #### Detailed Linguistic & Legal Meaning Audit:
 
-| Dimension | Source English Statutory Construct | Hindi Translation Rendering | Evaluation & Meaning Preservation |
+| Dimension | Source English Statutory Construct | Hindi Translation Rendering | Feasibility Assessment & Review Status |
 |---|---|---|---|
-| **Absolute Negative Duty** | *"must not claim"* | *"दावा कदापि नहीं किया जाएगा"* | **PRESERVED**. Strict negative imperative (*कदापि नहीं किया जाएगा*) preserves mandatory statutory bar. A casual rendering (*दावा नहीं करना चाहिए*) would introduce advisory ambiguity and is forbidden. |
-| **Tripartite Medical Scope** | *"prevention, treatment or cure"* | *"रोकथाम, उपचार या निवारण (इलाज)"* | **PRESERVED**. Captures prophylactic (*रोकथाम*), therapeutic (*उपचार*), and curative (*निवारण*) statutory limbs without omission. |
-| **Category Name** | *"Ayurveda Aahara"* | *"आयुर्वेद आहार (Ayurveda Aahara)"* | **PRESERVED**. Retains statutory term in Devanagari and Latin script. |
-| **Statutory Locator & ID** | `PASS-004`, `REAL-003`, `Regulation 8` | `[PASS-004 / REAL-003] विनियमन 8` | **PRESERVED (100% Parity)**. Numbers and citation IDs unchanged. |
+| **Absolute Negative Duty** | *"must not claim"* | *"दावा कदापि नहीं किया जाएगा"* | **Proposed Feasibility Check:** Strict negative imperative (*कदापि नहीं किया जाएगा*) preserves mandatory statutory bar in author sample; prevents advisory dilution (*नहीं करना चाहिए*). Pending formal review. |
+| **Tripartite Medical Scope** | *"prevention, treatment or cure"* | *"रोकथाम, उपचार या निवारण (इलाज)"* | **Proposed Feasibility Check:** Captures prophylactic (*रोकथाम*), therapeutic (*उपचार*), and curative (*निवारण*) statutory limbs without omission. |
+| **Category Name** | *"Ayurveda Aahara"* | *"आयुर्वेद आहार (Ayurveda Aahara)"* | **Proposed Feasibility Check:** Retains statutory term in Devanagari and Latin script. |
+| **Statutory Locator & ID** | `PASS-004`, `REAL-003`, `Regulation 8` | `[PASS-004 / REAL-003] विनियमन 8` | **Proposed Parity Check:** Locator numbers and citation IDs unchanged in manual sample. System-level parity reserved for benchmark testing. |
 
 ---
 
@@ -291,6 +295,14 @@ Every translated prompt and answer variant must be scored against this 4-point r
 - **Score 3 (Substantive Preservation with Minor Stylistic Variation)**: Legal meaning and obligations are intact; minor non-statutory phrasing variation.
 - **Score 2 (Ambiguity Introduced)**: Mandatory duty rendered as permissive advice, or technical term translated using generic colloquial word. **Blocks release.**
 - **Score 1 (Critical Semantic Reversal / Fabricated Term)**: Negation dropped, exemption flipped, or citation ID corrupted. **Immediate critical block.**
+
+---
+
+### 5.4 Distinction Between CSV Validator Scope and Translation Quality Gates
+
+To prevent any misunderstanding of test boundaries:
+1. **Automated Validation Script (`scripts/verify_glossary.py`) Scope:** Validates CSV structure, column header schema, non-empty fields, domain grouping, unique IDs, and valid preservation rule tags only. **It does NOT evaluate translation fidelity, legal accuracy, or live runtime citation-ID parity.**
+2. **Acceptance-Gate Claims:** Claims regarding system-level metrics (such as 100% citation-ID parity on paired cases, zero unresolved critical semantic reversals across 30 paired cases, and average comprehension rating >= 4/5) are reserved for measured benchmark runs on frozen test sets (scheduled for Task D-04, Week 10 in coordination with Sabeena's benchmark suite).
 
 ---
 
@@ -317,15 +329,15 @@ To ensure compliance with Master Plan Section 6 and enable Akshay (A-01 / A-02) 
 
 ---
 
-## 7. Interface Dependencies and Blocker Audit
+## 7. Interface Dependencies, Phase Gate Boundaries, and Blocker Audit
 
-In accordance with project integrity guidelines, all upstream dependencies are explicitly documented:
+In accordance with project integrity guidelines, all upstream dependencies and phase boundaries are explicitly documented:
 
 | Dependency | Owner | Phase Target | Current Repository Status | Deepshika Module Impact & Workaround |
 |---|---|---|---|---|
 | **Response & Ingestion Schemas** | Harshit (`H-01`) | Weeks 1–2 | In development; no JSON schemas committed to `main` yet. | Deepshika designed UI state machine and glossary independently; contracts provide target field specifications. |
 | **Stub Endpoints & Fixtures** | Suresh (`Su-01`) | Weeks 1–2 | In development; no API service or fixture files committed to `main`. | Component specifications and translation trials use standalone Markdown and CSV fixtures. |
-| **Corpus Activation** | Thulasi (`T-01`) | Weeks 1–2 | Submitted on branch `thulasi/t-01-phase-1`; rows on `main` remain marked `source_checked_domain_review_pending`. | Trial translations use verified excerpts from Thulasi's audit note; no unverified corpus claims are presented as final law. |
+| **Corpus Activation & Phase Gate Boundary** | Thulasi (`T-01`) | Weeks 1–2 | Submitted on PR #1; rows on `main` remain marked `source_checked_domain_review_pending`. | **Phase Gate Boundary:** Since PR #1 must be narrowed to T-01 under the phase gate, D-01 does not treat T-02 or T-03 decision rules or corpus rows as an approved downstream contract. D-01 relies solely on the verified baseline statutory text and the 6 provisional routes agreed for Phase 1. |
 | **Benchmark Scenarios** | Sabeena (`Sa-01`) | Weeks 1–2 | Protocol defined; scenarios pending. | Glossary v0 and semantic fidelity rubric provide the foundation for Sabeena's 30 translated benchmark variants. |
 
 ---
@@ -333,12 +345,13 @@ In accordance with project integrity guidelines, all upstream dependencies are e
 ## 8. Progress Record & Verification Evidence
 
 ### 8.1 Automated Verification Check
-A Python validation script (`scripts/verify_glossary.py`) was developed and executed inside the workspace:
+A Python validation script (`scripts/verify_glossary.py`) was executed inside the workspace:
 - **Command**: `python scripts/verify_glossary.py`
 - **Result**:
   ```text
   Loaded 30 glossary records from controlled_glossary_v0.csv.
   SUCCESS: All glossary records validated successfully.
+  Note: This script establishes CSV formatting, column schema, and preservation tags only; it does not verify semantic meaning or translation fidelity.
   Domain breakdown:
     - evidence_citation: 8 terms
     - jurisdiction: 6 terms
@@ -351,18 +364,33 @@ A Python validation script (`scripts/verify_glossary.py`) was developed and exec
 
 - [x] Intake and answer-flow specifications for Akshay (Sections 3 & 6 of this document)
 - [x] Controlled glossary v0 of 30 terms across 4 mandatory domains ([data/glossary/controlled_glossary_v0.csv](../../data/glossary/controlled_glossary_v0.csv))
-- [x] Translation feasibility trial preserving legal meaning and negation (Section 5)
+- [x] Proposed translation feasibility trial checking legal meaning and negation preservation (Section 5)
 - [x] Regional language capability audit and explicit decision framing (Section 2)
 - [x] Accessibility and typography guidelines for frontend components (Section 6)
 - [ ] English, Hindi, and regional UI strings (Scheduled for Task D-02, Weeks 3–4)
 - [ ] 80–120 term expanded glossary v1 (Scheduled for Task D-03, Weeks 5–8)
 - [ ] Paired-language benchmark citation parity checks (Scheduled for Task D-04, Weeks 9–10)
-- [ ] Independent peer review completed (Pending Thulasi, Sabeena, Harshit review)
+- [ ] Independent peer review completed (Pending Thulasi, Sabeena, Harshit review sign-off)
 
 ---
 
-## 9. Review Requests & Next Actions
+## 9. Resolution of Peer Review Findings & Re-Review Requests
 
-1. **Thulasi**: Please review the 30 controlled terms in `controlled_glossary_v0.csv` (especially `GLOSS-022` through `GLOSS-030`) for alignment with the classification rules in `thulasi-t01-specification.md`.
-2. **Sabeena**: Please verify the 4-point semantic fidelity rubric (Section 5.3) for adoption in benchmark prompt variant evaluations.
-3. **Harshit**: Please review the `preservation_rule` definitions (`ID_IMMUTABLE`, `NUMBER_IMMUTABLE`) to ensure compatibility with your RAG response assembly and citation validator schemas.
+### 9.1 Addressed Findings from Harshit's Review:
+1. **GLOSS-024 Narrowed Scope:** Removed overly broad "novel combinations" phrasing. Explicitly stated that new combinations of ingredients from First Schedule texts remain evaluated under Route 2 (Patent or Proprietary ASU, s. 3(h)). Route 3 is narrowed strictly to formulations with unlisted/non-classical ingredients or facts outside supported statutory ASU routes.
+2. **GLOSS-004 & GLOSS-025 Preservation Rules:**
+   - `GLOSS-004` (WIPO Treaty Party): Updated Hindi term to `"WIPO (डब्ल्यूआईपीओ) संधि पक्ष"`, embedding the Latin acronym `WIPO` directly in the localized string in accordance with `ACRONYM_IMMUTABLE`.
+   - `GLOSS-025` (Phytopharmaceutical Drug): Replaced `ACRONYM_IMMUTABLE` with `NAME_IMMUTABLE`, accurately reflecting that the term is a statutory defined name without an acronym.
+3. **GLOSS-030 Framing:** Replaced unsupported "s.3(e) exception" label with "examination consideration under IP India Patent Office Guidelines for Section 3(e)". Clarified that demonstrating synergistic efficacy is an examination factor when evaluating mere admixture, without implying that synergy alone guarantees patentability.
+4. **Translation Samples Framing & Acceptance Gates:** Re-labelled the two Hindi samples as proposed manual feasibility checks. Removed unqualified claims of "100% parity" and "PRESERVED" prior to independent bilingual/domain sign-off or runtime paired-model testing. Clarified that the CSV validator verifies structure only.
+5. **Phase Gate Boundary:** Explicitly noted that D-01 does not treat T-02 or T-03 rules or corpus rows as an approved downstream contract, respecting the phase gate narrowing of PR #1.
+
+### 9.2 Addressed Findings from Thulasi's Review:
+1. **GLOSS-022 (Classical ASU):** Added note recognizing both `शास्त्रीय` (formal AYUSH circular term) and `पारंपरिक`.
+2. **GLOSS-023 (Patent or Proprietary ASU):** Added mandatory statutory negative condition `(strictly non-parenteral)` under Section 3(h).
+3. **GLOSS-025 (Phytopharmaceutical Drug):** Added statutory threshold of `minimum four bioactive or phytochemical compounds` under Rule 2(eb).
+
+### 9.3 Review Sign-Off Requests:
+- [ ] **Harshit (@Harshit-ambati)**: Re-review the updated glossary definitions, preservation rules, and feasibility trial framing.
+- [ ] **Thulasi (@Nagathulasi01)**: Confirm statutory alignment of updated definitions for GLOSS-022, GLOSS-023, GLOSS-024, and GLOSS-025.
+- [ ] **Sabeena**: Confirm adoption of the 4-point semantic fidelity rubric for benchmark prompt variants.
