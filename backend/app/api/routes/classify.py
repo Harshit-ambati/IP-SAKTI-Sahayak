@@ -20,6 +20,31 @@ from ...models.schemas import (
 router = APIRouter(prefix="/api/v1", tags=["Classification"])
 
 _KNOWN_INTENDED_USES = {"medicinal", "food_dietary", "cosmetic"}
+_UNVERIFIABLE_KEYWORDS = {
+    "mystery",
+    "unknown",
+    "unverified",
+    "unidentified",
+    "unspecified",
+    "tbd",
+    "n/a",
+    "na",
+    "?",
+}
+
+
+def _has_unidentifiable_ingredient(ingredients: list[str]) -> bool:
+    """Checks if any ingredient is explicitly unknown, unverified, or unidentifiable."""
+    for ing in ingredients:
+        cleaned = ing.strip().lower()
+        if not cleaned:
+            return True
+        words = set(cleaned.replace("-", " ").replace("_", " ").split())
+        if words & _UNVERIFIABLE_KEYWORDS:
+            return True
+        if any(token in cleaned for token in ("mystery", "unverified", "unidentified")):
+            return True
+    return False
 
 
 @router.post(
@@ -200,17 +225,42 @@ def classify_formulation(intake: Intake) -> ClassificationResult:
             is_synthetic_fixture=True,
         )
 
-    # --- Rule 02: Patent or Proprietary ASU Drug ---
+    # --- Gate 6: Explicitly unidentifiable ingredients in proprietary formulation ---
+    # Section 3(h) of the Drugs and Cosmetics Act 1940 strictly defines Patent or Proprietary
+    # ASU medicines as containing ONLY ingredients mentioned in First Schedule authoritative books.
+    # If any ingredient is explicitly unknown, unverified, or a mystery substance, the formulation
+    # cannot receive a provisional patent_proprietary route. It must return unknown_ambiguous with
+    # referral_required=True and a clarification request.
+    if intake.intended_use == "medicinal" and intake.is_proprietary_branded:
+        if _has_unidentifiable_ingredient(intake.ingredients):
+            return ClassificationResult(
+                provisional_route=ProvisionalRouteEnum.UNKNOWN_AMBIGUOUS,
+                confidence_label="synthetic_mock_uncertain",
+                governing_provisions=["Drugs and Cosmetics Act 1940, Section 3(h)"],
+                missing_facts=[
+                    "Under Section 3(h) of the Drugs and Cosmetics Act 1940, a Patent or Proprietary "
+                    "ASU medicine must contain ONLY ingredients documented in First Schedule "
+                    "authoritative books. The formulation contains explicitly unknown, unverified, "
+                    "or mystery ingredients whose identities cannot be assessed. Please clarify each "
+                    "ingredient's exact botanical, mineral, or classical identity before a provisional "
+                    "proprietary route can be evaluated."
+                ],
+                referral_required=True,
+                disclaimer="Provisional classification only; does not constitute legal or regulatory approval.",
+                is_synthetic_fixture=True,
+            )
+
+    # --- Rule 02: Patent or Proprietary ASU Drug (Plausible Ingredients) ---
     # Explicitly declared as proprietary/branded ASU drug, without classical text reference,
     # without novel synthetic chemicals or standardized fraction.
     #
     # DESIGN: Section 3(h) of the Drugs and Cosmetics Act 1940 requires that ALL ingredients
     # appear in First Schedule authoritative books. This system CANNOT independently verify
     # ingredient botanical identities or origins — that judgement belongs to a qualified
-    # Ayurvedic pharmacist or regulatory expert. Therefore the proprietary route is ALWAYS
-    # provisional and ALWAYS requires referral. The caller-supplied flag approach was removed
-    # because a caller could assert True for any unverified ingredient, making the check
-    # semantically meaningless. The system is the safety gate, not the caller.
+    # Ayurvedic pharmacist or regulatory expert. Therefore:
+    # 1. confidence_label reflects uncertainty ("synthetic_mock_uncertain") until authoritative verification.
+    # 2. referral_required is ALWAYS True.
+    # 3. missing_facts carries an explicit advisory that independent verification is required.
     if (
         intake.intended_use == "medicinal"
         and intake.is_proprietary_branded
@@ -220,7 +270,7 @@ def classify_formulation(intake: Intake) -> ClassificationResult:
     ):
         return ClassificationResult(
             provisional_route=ProvisionalRouteEnum.PATENT_PROPRIETARY,
-            confidence_label="synthetic_mock_rule_match",
+            confidence_label="synthetic_mock_uncertain",
             governing_provisions=["Drugs and Cosmetics Act 1940, Section 3(h)"],
             missing_facts=[
                 "PROVISIONAL ONLY: Section 3(h) of the Drugs and Cosmetics Act 1940 requires that "

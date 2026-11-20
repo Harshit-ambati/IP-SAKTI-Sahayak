@@ -186,13 +186,12 @@ def test_classify_empty_ingredients_fails_validation(client: TestClient):
 
 
 def test_classify_patent_proprietary_always_requires_referral(client: TestClient):
-    """Rule 02: Proprietary branded ASU medicine always returns patent_proprietary with referral_required=True.
+    """Rule 02: Proprietary branded ASU medicine with plausible ingredients returns patent_proprietary
+    with referral_required=True and confidence_label='synthetic_mock_uncertain'.
 
     The system cannot independently verify ingredient botanical identities against First Schedule
-    authoritative books. The proprietary route is always provisional and always requires human
-    expert verification before any regulatory submission. The caller-supplied flag approach was
-    removed because it allowed a caller to bypass the check by setting the flag to True for any
-    unverified ingredient.
+    authoritative books. The proprietary route is always provisional, confidence reflects uncertainty,
+    and it always requires human expert verification before any regulatory submission.
     """
     payload = {
         "formulation_title": "Synthetic Proprietary Brahmi Capsule",
@@ -210,6 +209,7 @@ def test_classify_patent_proprietary_always_requires_referral(client: TestClient
     assert response.status_code == 200
     data = response.json()
     assert data["provisional_route"] == "patent_proprietary"
+    assert data["confidence_label"] == "synthetic_mock_uncertain"
     assert any("Section 3(h)" in p for p in data["governing_provisions"])
     # ALWAYS requires referral — the system cannot independently verify First Schedule membership
     assert data["referral_required"] is True
@@ -218,10 +218,10 @@ def test_classify_patent_proprietary_always_requires_referral(client: TestClient
     assert data["is_synthetic_fixture"] is True
 
 
-def test_classify_proprietary_branded_with_mystery_ingredient_still_requires_referral(client: TestClient):
-    """Rule 02: Even an explicitly unverifiable ingredient with is_proprietary_branded=True gets
-    patent_proprietary + referral_required=True. The system is the safety gate, not the caller.
-    A malicious caller cannot bypass referral by any flag setting."""
+def test_classify_proprietary_branded_with_mystery_ingredient_is_unknown_ambiguous(client: TestClient):
+    """Gate 6: Explicitly unknown/unidentifiable ingredients (e.g. 'Mystery Extract X') cannot be
+    evaluated under Section 3(h) and must return unknown_ambiguous with referral_required=True
+    and confidence_label='synthetic_mock_uncertain'."""
     payload = {
         "formulation_title": "Synthetic Mystery Extract Proprietary Tonic",
         "ingredients": ["Mystery Extract X"],
@@ -237,7 +237,33 @@ def test_classify_proprietary_branded_with_mystery_ingredient_still_requires_ref
     response = client.post("/api/v1/classify", json=payload)
     assert response.status_code == 200
     data = response.json()
-    assert data["provisional_route"] == "patent_proprietary"
+    assert data["provisional_route"] == "unknown_ambiguous"
+    assert data["confidence_label"] == "synthetic_mock_uncertain"
+    assert data["referral_required"] is True
+    assert len(data["missing_facts"]) > 0
+    assert any("Section 3(h)" in p for p in data["governing_provisions"])
+    assert any("first schedule" in f.lower() or "unknown" in f.lower() or "mystery" in f.lower() for f in data["missing_facts"])
+
+
+def test_classify_proprietary_branded_with_unverified_ingredient_is_unknown_ambiguous(client: TestClient):
+    """Gate 6: Formulation with explicitly unverified ingredients ('Unverified Herb Extract') returns unknown_ambiguous."""
+    payload = {
+        "formulation_title": "Synthetic Unverified Proprietary Capsule",
+        "ingredients": ["Unverified Herb Extract"],
+        "intended_use": "medicinal",
+        "classical_text_reference": None,
+        "is_proprietary_branded": True,
+        "has_novel_ingredient": False,
+        "standardized_fraction": False,
+        "external_application_only": False,
+        "jurisdiction": "India",
+        "language": "en"
+    }
+    response = client.post("/api/v1/classify", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["provisional_route"] == "unknown_ambiguous"
+    assert data["confidence_label"] == "synthetic_mock_uncertain"
     assert data["referral_required"] is True
     assert len(data["missing_facts"]) > 0
 
