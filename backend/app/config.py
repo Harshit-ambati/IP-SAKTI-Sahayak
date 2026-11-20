@@ -10,7 +10,11 @@ DB_PATH = Path(os.getenv("IPSAKTI_DB_PATH", str(DEFAULT_DB_PATH)))
 # Service Metadata
 API_V1_STR = "/api/v1"
 PROJECT_NAME = "IP-SAKTI Sahayak API"
-VERSION = "0.1.0-su01"
+VERSION = "0.2.0-su02"
+
+# Query Engine Adapter Configuration (Su-02)
+# Supports 'fts5' for local SQLite full-text search adapter.
+QUERY_ADAPTER_TYPE = os.getenv("QUERY_ADAPTER_TYPE", "fts5")
 
 # Privacy & Storage Policy Defaults (Enforced by Master Plan & Module 04)
 # Persistent user case storage is DISABLED by default.

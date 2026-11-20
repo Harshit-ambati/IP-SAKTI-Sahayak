@@ -105,3 +105,21 @@ def test_answer_privacy_audit_logging(client: TestClient, test_db_path: Path):
     assert row["status"] == "answered"
     assert "SecretIngredientX" not in all_audit_text
     assert "Confidential formulation" not in all_audit_text
+
+
+def test_answer_unsupported_query_abstains_cleanly(client: TestClient):
+    """Zero approved statutory evidence yields clean abstention with empty claims (Task Su-02)."""
+    payload = {
+        "query": "Superconducting quantum computing orbital hardware protocol",
+        "jurisdiction": "India",
+        "language": "en"
+    }
+    response = client.post("/api/v1/answer", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "abstained"
+    assert data["evidence_status"] == "insufficient"
+    assert len(data["claims"]) == 0
+    assert len(data["cited_provisions"]) == 0
+    assert "abstains" in data["answer_text"].lower()
+

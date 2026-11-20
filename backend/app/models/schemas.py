@@ -288,6 +288,10 @@ class AnswerResult(BaseModel):
         default_factory=list,
         description="List of cited statutory provision locators."
     )
+    evidence: List[EvidencePassage] = Field(
+        default_factory=list,
+        description="Retrieved evidence passages grounding the answer claims."
+    )
     limitations: List[str] = Field(
         default_factory=list,
         description="Caveats and non-legal advice limitations."
