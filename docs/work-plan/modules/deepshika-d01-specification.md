@@ -221,7 +221,7 @@ The controlled glossary establishes 30 immutable terms across four domains. The 
 | `GLOSS-023` | `product_category` | Patent or Proprietary Medicine | Patent ya Swatvadhari Aushadhi | पेटेंट या स्वत्वधारी औषधि | `STRICT_STATUTORY_EQUIVALENT` | **Updated per Thulasi Review:** D&C Act s. 3(h); added mandatory negative condition: strictly non-parenteral |
 | `GLOSS-024` | `product_category` | Novel / Non-Classical Formulation | Naveen / Aparamparik Formulation | नवीन / अपारंपरिक फॉर्मूलेशन | `STRICT_STATUTORY_EQUIVALENT` | **Updated per Harshit Review:** Narrowed to unlisted ingredients/non-classical delivery systems; First Schedule ingredient combinations remain in Route 2 |
 | `GLOSS-025` | `product_category` | Phytopharmaceutical Drug | Padap-Aushadh | पादप-औषध (Phytopharmaceutical Drug) | `NAME_IMMUTABLE` | **Updated per Harshit & Thulasi Reviews:** Rule changed from `ACRONYM_IMMUTABLE` to `NAME_IMMUTABLE`; added minimum 4 bioactive markers & non-parenteral |
-| `GLOSS-026` | `product_category` | Ayurveda Aahara | Ayurveda Aahara | आयुर्वेद आहार (Ayurveda Aahara) | `NAME_IMMUTABLE` | FSSAI Regs 2022 reg. 2(b); disease cure claims prohibited |
+| `GLOSS-026` | `product_category` | Ayurveda Aahara | Ayurveda Aahara | आयुर्वेद आहार (Ayurveda Aahara) | `NAME_IMMUTABLE` | **Updated per Harshit Review:** FSSAI Regs 2022 reg. 2(b); strictly prohibited from claiming the prevention, treatment or cure of any human disease or disorder (reg. 8) |
 | `GLOSS-027` | `product_category` | Ayurvedic Cosmetic | Ayurvedic Prasadan Samagri | आयुर्वेदिक प्रसाधन सामग्री | `STRICT_STATUTORY_EQUIVALENT` | D&C Act s. 3(aaa); external application without disease cure claims |
 | `GLOSS-028` | `product_category` | Traditional Knowledge Aggregation | Paramparik Gyan Ka Sankalan / Matra Samucchay | पारंपरिक ज्ञान का संकलन / मात्र समुच्चय | `PRESERVE_NEGATION` | Patents Act s. 3(p); statutory exclusion from patentability |
 | `GLOSS-029` | `product_category` | Mere Admixture | Matra Mishran | मात्र मिश्रण | `PRESERVE_NEGATION` | Patents Act s. 3(e); aggregation of component properties |
@@ -335,9 +335,9 @@ In accordance with project integrity guidelines, all upstream dependencies and p
 
 | Dependency | Owner | Phase Target | Current Repository Status | Deepshika Module Impact & Workaround |
 |---|---|---|---|---|
-| **Response & Ingestion Schemas** | Harshit (`H-01`) | Weeks 1–2 | In development; no JSON schemas committed to `main` yet. | Deepshika designed UI state machine and glossary independently; contracts provide target field specifications. |
-| **Stub Endpoints & Fixtures** | Suresh (`Su-01`) | Weeks 1–2 | In development; no API service or fixture files committed to `main`. | Component specifications and translation trials use standalone Markdown and CSV fixtures. |
-| **Corpus Activation & Phase Gate Boundary** | Thulasi (`T-01`) | Weeks 1–2 | Submitted on PR #1; rows on `main` remain marked `source_checked_domain_review_pending`. | **Phase Gate Boundary:** Since PR #1 must be narrowed to T-01 under the phase gate, D-01 does not treat T-02 or T-03 decision rules or corpus rows as an approved downstream contract. D-01 relies solely on the verified baseline statutory text and the 6 provisional routes agreed for Phase 1. |
+| **FastAPI Backend & Mock Endpoints** | Suresh (`Su-01`) | Weeks 1–2 | **Merged into `main`** via PR #3 (commit `7cf0f55`). | Provides runnable service skeleton, database migration, and explicit mock endpoints (`/api/v1/classify`, `/api/v1/answer`, `/api/v1/referral`). |
+| **Corpus Baseline & Classification Rules** | Thulasi (`T-01`) | Weeks 1–2 | **Merged into `main`** via PR #1 (commit `1a7cae4`). | 3 verified instruments (`REAL-001` to `REAL-003`) and 10 provision passages (`PASS-002`, `PASS-003`, `PASS-004`, `PASS-009` to `PASS-014`) committed under `reviewed_t01_pending_activation` with checksums `pending_w8_file_ingestion`. **Phase Gate Boundary:** D-01 relies solely on merged T-01 provisions and the 6 provisional routes; T-02 and T-03 rules or corpus rows are strictly excluded from the approved contract. |
+| **Response & Ingestion Schemas** | Harshit (`H-01`) | Weeks 1–2 | In review via PR #5 (commit `c41497a`). | Schema `contracts/v1/sahayak.schema.json` establishes v1 exchange contracts. Multilingual parameters and citation invariants are verified compatible. |
 | **Benchmark Scenarios** | Sabeena (`Sa-01`) | Weeks 1–2 | Protocol defined; scenarios pending. | Glossary v0 and semantic fidelity rubric provide the foundation for Sabeena's 30 translated benchmark variants. |
 
 ---
@@ -370,13 +370,13 @@ A Python validation script (`scripts/verify_glossary.py`) was executed inside th
 - [ ] English, Hindi, and regional UI strings (Scheduled for Task D-02, Weeks 3–4)
 - [ ] 80–120 term expanded glossary v1 (Scheduled for Task D-03, Weeks 5–8)
 - [ ] Paired-language benchmark citation parity checks (Scheduled for Task D-04, Weeks 9–10)
-- [ ] Independent peer review completed (Pending Thulasi, Sabeena, Harshit review sign-off)
+- [ ] Independent peer review completed (Thulasi approved; Harshit re-review pending; Sabeena pending)
 
 ---
 
 ## 9. Resolution of Peer Review Findings & Re-Review Requests
 
-### 9.1 Addressed Findings from Harshit's Review:
+### 9.1 Addressed Findings from Harshit's 14 Nov Review:
 1. **GLOSS-024 Narrowed Scope:** Removed overly broad "novel combinations" phrasing. Explicitly stated that new combinations of ingredients from First Schedule texts remain evaluated under Route 2 (Patent or Proprietary ASU, s. 3(h)). Route 3 is narrowed strictly to formulations with unlisted/non-classical ingredients or facts outside supported statutory ASU routes.
 2. **GLOSS-004 & GLOSS-025 Preservation Rules:**
    - `GLOSS-004` (WIPO Treaty Party): Updated Hindi term to `"WIPO (डब्ल्यूआईपीओ) संधि पक्ष"`, embedding the Latin acronym `WIPO` directly in the localized string in accordance with `ACRONYM_IMMUTABLE`.
@@ -385,12 +385,16 @@ A Python validation script (`scripts/verify_glossary.py`) was executed inside th
 4. **Translation Samples Framing & Acceptance Gates:** Re-labelled the two Hindi samples as proposed manual feasibility checks. Removed unqualified claims of "100% parity" and "PRESERVED" prior to independent bilingual/domain sign-off or runtime paired-model testing. Clarified that the CSV validator verifies structure only.
 5. **Phase Gate Boundary:** Explicitly noted that D-01 does not treat T-02 or T-03 rules or corpus rows as an approved downstream contract, respecting the phase gate narrowing of PR #1.
 
-### 9.2 Addressed Findings from Thulasi's Review:
+### 9.2 Addressed Findings from Harshit's 21 Nov Re-Review:
+1. **GLOSS-026 All Three Statutory Limbs of Regulation 8:** Updated `GLOSS-026` in `controlled_glossary_v0.csv` and Section 4.1 to explicitly include all three statutory limbs: strictly prohibiting claims to prevent, **treat**, or cure any human disease or disorder, matching the official FSSAI Gazette text.
+2. **Alignment of PR Body and Dependency Status:** Updated Section 7 dependency table to reflect that Suresh's Su-01 (PR #3) and Thulasi's T-01 (PR #1) are merged on `main`. Clarified that T-01 rows remain pending activation (`reviewed_t01_pending_activation`, checksum `pending_w8_file_ingestion`) and reaffirmed that T-02/T-03 rules remain excluded from the D-01 approved contract. Refreshed PR #2 body to align strictly with Section 5 feasibility framing.
+
+### 9.3 Addressed Findings from Thulasi's Review (Approved):
 1. **GLOSS-022 (Classical ASU):** Added note recognizing both `शास्त्रीय` (formal AYUSH circular term) and `पारंपरिक`.
 2. **GLOSS-023 (Patent or Proprietary ASU):** Added mandatory statutory negative condition `(strictly non-parenteral)` under Section 3(h).
 3. **GLOSS-025 (Phytopharmaceutical Drug):** Added statutory threshold of `minimum four bioactive or phytochemical compounds` under Rule 2(eb).
 
-### 9.3 Review Sign-Off Requests:
-- [ ] **Harshit (@Harshit-ambati)**: Re-review the updated glossary definitions, preservation rules, and feasibility trial framing.
-- [ ] **Thulasi (@Nagathulasi01)**: Confirm statutory alignment of updated definitions for GLOSS-022, GLOSS-023, GLOSS-024, and GLOSS-025.
-- [ ] **Sabeena**: Confirm adoption of the 4-point semantic fidelity rubric for benchmark prompt variants.
+### 9.4 Review Sign-Off Requests:
+- [ ] **Harshit (@Harshit-ambati)**: Re-review updated GLOSS-026 three-limb phrasing, updated Section 7 dependency table, and aligned PR body.
+- [x] **Thulasi (@Nagathulasi01)**: Formally approved on 20 Nov 2026.
+- [ ] **Sabeena (@syed-sabeena-s)**: Review user flows and confirm adoption of the 4-point semantic fidelity rubric.
