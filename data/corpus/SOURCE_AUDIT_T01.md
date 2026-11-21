@@ -95,8 +95,8 @@ The seven document records in `documents.csv` and eight paraphrases in `passages
   - Recorded as `pending_w8_file_ingestion` in `source_register.csv` pending captured PDF file ingestion in Week 8.
 - **Operative Provisions Verified:**
   - **Regulation 2(b):** Defines *Ayurveda Aahara* as food prepared in accordance with authoritative books in Schedule A; explicitly excludes Ayurvedic drugs, proprietary medicines, and cosmetics. (Mandatory non-parenteral warning 'FOR ORAL CONSUMPTION ONLY, NOT FOR PARENTERAL USE' is enacted separately under Regulation 13(f)).
-  - **Regulation 3(4):** Strictly prohibits the addition of vitamins, minerals, or amino acids to Ayurveda Aahara formulations.
-  - **Regulation 8:** Strictly prohibits any label or advertisement claim that Ayurveda Aahara prevents, treats or cures any human disease or disorder (narrowed strictly to the three statutory limbs: prevent, treat or cure).
+  - **Regulation 3(4):** Strictly prohibits the addition of vitamins, minerals, or amino acids to Ayurveda Aahara formulations (an unqualified statutory bar covering all added nutrients, regardless of whether synthetic or naturally sourced).
+  - **Regulation 8:** Strictly prohibits any label or advertisement claim that Ayurveda Aahara prevents, treats or cures any human disease or disorder (covering all three statutory limbs: prevent, treat, or cure).
   - **Regulation 13(a):** Mandates front-of-pack display of the official Ayurveda Aahara logo on the principal display panel.
   - **Schedule A:** Lists authoritative classical texts recognized for Ayurveda Aahara recipes.
 - **Audit Decision:** Verified for intake and classification rule grounding. Submitted as `reviewed_t01_pending_activation`.
@@ -147,7 +147,7 @@ The following six new passage rows have been extracted with precise provision lo
 
 In accordance with peer review findings:
 1. **Evidentiary Fallback (RULE-01):** When an applicant claims a classical Ayurvedic medicine but cannot provide an authoritative book citation listed in the First Schedule, the system must **never** default or demote the product to Patent or Proprietary medicine (Route 2). Missing classical evidence is an evidentiary gap requiring clarification or expert referral (Route 7: `needs_expert_referral`), not proof that the product qualifies as a proprietary formulation.
-2. **Ayurveda Aahara Boundaries (RULE-05):** Products carrying added vitamins, minerals, or amino acids violate Regulation 3(4) and are excluded from Ayurveda Aahara under Regulation 2(b). Claims to prevent, treat or cure diseases violate Regulation 8 (strictly three statutory limbs). Front-of-pack display of the logo is required under Regulation 13(a), and oral-only consumption is mandated under Regulation 13(f).
+2. **Ayurveda Aahara Boundaries (RULE-05):** Products carrying added vitamins, minerals, or amino acids (irrespective of synthetic or natural source) violate Regulation 3(4) and are excluded from Ayurveda Aahara under Regulation 2(b). Claims to prevent, treat, or cure diseases (covering all three limbs of Regulation 8) violate Regulation 8. Front-of-pack display of the logo is required under Regulation 13(a), and oral-only consumption is mandated under Regulation 13(f).
 3. **Patentability Examination Framing (RULE-08):** Section 3(e) excludes mere admixtures resulting in the aggregation of component properties. Under IP India's *Guidelines for Examination of Patent Applications in the Field of Pharmaceuticals and Ayush*, demonstrating synergistic effect is an examination consideration when assessing whether a combination is more than a mere aggregation of known properties, but does not constitute an automatic statutory exception or guaranteed grant of patentability.
 
 ---
