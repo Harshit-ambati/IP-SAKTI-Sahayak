@@ -69,7 +69,9 @@ Weeks 15-16 are reserved for testing, repairs, packaging and submission; do not 
 - [x] Intake and answer-flow specifications for Akshay ([deepshika-d01-specification.md](deepshika-d01-specification.md))
 - [x] Controlled glossary v0 of 30 foundational terms ([controlled_glossary_v0.csv](../../../data/glossary/controlled_glossary_v0.csv); expanding to 80-120 in v1)
 - [x] Accessibility checklist, semantic-fidelity and translation feasibility results ([deepshika-d01-specification.md](deepshika-d01-specification.md))
-- [ ] English, Hindi and selected regional-language UI strings (Scheduled for Task D-02, Weeks 3–4)
+- [x] English and Hindi UI strings dictionary ([ui_strings_en.json](../../../data/translations/ui_strings_en.json), [ui_strings_hi.json](../../../data/translations/ui_strings_hi.json), [README.md](../../../data/translations/README.md))
+- [x] Accessible source-view and component specifications for Akshay ([deepshika-d02-specification.md](deepshika-d02-specification.md))
+- [x] Automated string parity and statutory preservation verification ([verify_strings.py](../../../scripts/verify_strings.py))
 - [ ] Reviewed translated answer fixtures and citation-parity checks (Scheduled for Tasks D-03/D-04)
 - [ ] Relevant master-plan acceptance gates met and actual evidence recorded.
 - [ ] Independent peer review completed and all critical findings resolved (Pending Thulasi, Sabeena, and Harshit review).
@@ -78,8 +80,8 @@ Weeks 15-16 are reserved for testing, repairs, packaging and submission; do not 
 ## Start here
 
 1. Name available Hindi and regional-language reviewers at kickoff. (Completed in Phase 1: see [deepshika-d01-specification.md](deepshika-d01-specification.md) Section 2; Telugu identified as leading candidate, maintained as an explicit kickoff decision awaiting team sign-off).
-2. Define reviewed translations for jurisdiction, uncertainty, abstention and referral. (Completed in Phase 1: 30 terms in [controlled_glossary_v0.csv](../../../data/glossary/controlled_glossary_v0.csv)).
-3. Specify how original legal names, section numbers and source IDs remain visible. (Completed in Phase 1: preservation rules `ID_IMMUTABLE`, `NUMBER_IMMUTABLE`, `NAME_IMMUTABLE` in [deepshika-d01-specification.md](deepshika-d01-specification.md)).
+2. Define reviewed translations for jurisdiction, uncertainty, abstention and referral. (Completed in Phase 1: 30 terms in [controlled_glossary_v0.csv](../../../data/glossary/controlled_glossary_v0.csv); applied to 182 UI strings in Phase 2).
+3. Specify how original legal names, section numbers and source IDs remain visible. (Completed in Phase 2: dual-script presentation and statutory preservation rules in [deepshika-d02-specification.md](deepshika-d02-specification.md)).
 
 ## Progress record
 
@@ -88,3 +90,4 @@ Use task IDs in issues and PRs. Replace the placeholder row only when work start
 | Task ID | Status | Evidence / issue / PR | Reviewer | Blocker / next action |
 |---|---|---|---|---|
 | D-01 | In review (draft PR) | Branch `deepshika/d-01-phase-1`; [Draft PR #2](https://github.com/Harshit-ambati/IP-SAKTI-Sahayak/pull/2); [deepshika-d01-specification.md](deepshika-d01-specification.md), [controlled_glossary_v0.csv](../../../data/glossary/controlled_glossary_v0.csv), [verify_glossary.py](../../../scripts/verify_glossary.py) | Harshit (approved), Thulasi (approved), Sabeena (usability) | Harshit and Thulasi approved; Sabeena usability review pending; regional language kickoff confirmation pending |
+| D-02 | In review (draft PR) | Branch `deepshika/d-02-phase-2`; Draft PR pending; Phase gate exception [Issue #9](https://github.com/Harshit-ambati/IP-SAKTI-Sahayak/issues/9); [deepshika-d02-specification.md](deepshika-d02-specification.md), [ui_strings_en.json](../../../data/translations/ui_strings_en.json), [ui_strings_hi.json](../../../data/translations/ui_strings_hi.json), [verify_strings.py](../../../scripts/verify_strings.py) | Thulasi (terminology), Sabeena (usability & accessibility), Harshit (evidence mapping) | Draft PR open; D-01 PR #2 must merge before D-02 can merge; reviews pending; do not start D-03 |
