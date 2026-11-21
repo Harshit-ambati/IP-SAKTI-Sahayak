@@ -1,10 +1,10 @@
 # Corpus Source Audit Note: Task T-01 (Phase 1)
 
-**Date of Audit:** 14 November 2026 (Updated 15 November 2026; Re-audited 21 November 2026)  
-**Auditor / Reviewer:** Thulasi (Authoritative source corpus, formulation categories and decision rules)  
-**Deliverable:** T-01 Phase 1 Official Source Verification & Initial Reviewed Provision Rows  
-**Target Repository:** `https://github.com/Harshit-ambati/IP-SAKTI-Sahayak`  
-**Review Requests:** Harshit (Provenance verification & RAG activation), Deepshika (Legal-term preservation & glossaries)  
+- **Date of Audit:** 14 November 2026 (Updated 15 November 2026; Re-audited 21 November 2026)
+- **Auditor / Reviewer:** Thulasi (Authoritative source corpus, formulation categories and decision rules)
+- **Deliverable:** T-01 Phase 1 Official Source Verification & Initial Reviewed Provision Rows
+- **Target Repository:** `https://github.com/Harshit-ambati/IP-SAKTI-Sahayak`
+- **Review Requests:** Harshit (Provenance verification & RAG activation), Deepshika (Legal-term preservation & glossaries)
 
 ---
 
@@ -42,7 +42,7 @@ The seven document records in `documents.csv` and eight paraphrases in `passages
 - **Operative Provisions Verified:**
   - **Section 3(p):** Excludes from patentability "an invention which in effect, is traditional knowledge or which is an aggregation or duplication of known properties of traditionally known component or components".
   - **Section 3(e):** Excludes "a substance obtained by a mere admixture resulting only in the aggregation of the properties of the components thereof or a process for producing such substance". (Examined under IP India Guidelines where demonstrating synergistic effect is an evidentiary consideration, not a statutory guarantee).
-  - **Section 3(d):** Excludes "the mere discovery of a new form of a known substance which does not result in the enhancement of the known efficacy of that substance or the mere discovery of any new property or new use for a known substance".
+  - **Section 3(d):** Excludes "the mere discovery of a new form of a known substance which does not result in the enhancement of the known efficacy of that substance or the mere discovery of any new property or new use for a known substance". (Must include the statutory limitation 'for a known substance').
 - **Audit Decision:** Verified for intake and classification rule grounding. Submitted as `reviewed_t01_pending_activation`.
 
 ---
@@ -96,7 +96,7 @@ The seven document records in `documents.csv` and eight paraphrases in `passages
 - **Operative Provisions Verified:**
   - **Regulation 2(b):** Defines *Ayurveda Aahara* as food prepared in accordance with authoritative books in Schedule A; explicitly excludes Ayurvedic drugs, proprietary medicines, and cosmetics. (Mandatory non-parenteral warning 'FOR ORAL CONSUMPTION ONLY, NOT FOR PARENTERAL USE' is enacted separately under Regulation 13(f)).
   - **Regulation 3(4):** Strictly prohibits the addition of vitamins, minerals, or amino acids to Ayurveda Aahara formulations (an unqualified statutory bar covering all added nutrients, regardless of whether synthetic or naturally sourced).
-  - **Regulation 8:** Strictly prohibits any label or advertisement claim that Ayurveda Aahara prevents, treats or cures any human disease or disorder (covering all three statutory limbs: prevent, treat, or cure).
+  - **Regulation 8:** Strictly prohibits any claim in labelling, advertising or presentation that Ayurveda Aahara prevents, treats or cures any human disease (covering all three statutory limbs: prevent, treat, or cure; strictly confined to human disease).
   - **Regulation 13(a):** Mandates front-of-pack display of the official Ayurveda Aahara logo on the principal display panel.
   - **Schedule A:** Lists authoritative classical texts recognized for Ayurveda Aahara recipes.
 - **Audit Decision:** Verified for intake and classification rule grounding. Submitted as `reviewed_t01_pending_activation`.
@@ -118,7 +118,7 @@ The remaining four rows in `documents.csv` and six passage rows in `passages.csv
 - **PASS-001 (REAL-001, Section 3(k)):** Addresses computer programmes per se and algorithms. Kept preliminary. Marked as out-of-scope for Ayurvedic formulation classification; will not be included in formulation routing indexes.
 - **PASS-002 (REAL-001, Section 3(p)):** Verified and updated to `reviewed_t01_pending_activation`.
 - **PASS-003 (REAL-003, Regulation 2(b) & Regulation 3(4)):** Verified and updated to `reviewed_t01_pending_activation`. Paraphrase narrowed strictly to Regulation 2(b) product exclusions (drugs, proprietary medicines, cosmetics) and Regulation 3(4) statutory ban on added vitamins, minerals, or amino acids. Parenteral warning is properly attributed to Regulation 13(f).
-- **PASS-004 (REAL-003, Regulation 8 & Regulation 13(a)):** Verified and updated to `reviewed_t01_pending_activation`. Paraphrase narrowed strictly to Regulation 8's three statutory limbs: prohibiting claims to prevent, treat or cure human disease, and Regulation 13(a) front-of-pack logo requirement.
+- **PASS-004 (REAL-003, Regulation 8 & Regulation 13(a)):** Verified and updated to `reviewed_t01_pending_activation`. Paraphrase narrowed strictly to Regulation 8's Gazette text: prohibiting claims in labelling, advertising, or presentation to prevent, treat or cure any human disease, and Regulation 13(a) front-of-pack logo requirement.
 - **PASS-005 & PASS-006 (REAL-004 & REAL-005):** Kept as `source_checked_domain_review_pending`. Do not activate until Gazette PDF verification in T-03.
 - **PASS-007 & PASS-008 (REAL-006 & REAL-007):** Kept as `source_checked_domain_review_pending` (background overview only).
 
@@ -139,7 +139,7 @@ The following six new passage rows have been extracted with precise provision lo
 5. **`PASS-013`** (Source: `REAL-001`, Locator: `Section 3(e)`):
    - *Statutory Text Content:* "A substance obtained by a mere admixture resulting only in the aggregation of the properties of the components thereof or a process for producing such substance is not an invention within the meaning of this Act."
 6. **`PASS-014`** (Source: `REAL-001`, Locator: `Section 3(d)`):
-   - *Statutory Text Content:* "The mere discovery of a new form of a known substance which does not result in the enhancement of the known efficacy of that substance or the mere discovery of any new property or new use for a known substance or of the mere use of a known process, machine or apparatus unless such known process results in a new product or employs at least one new reactant is not an invention."
+   - *Statutory Text Content:* "The mere discovery of a new form of a known substance which does not result in the enhancement of the known efficacy of that substance or the mere discovery of any new property or new use for a known substance or of the mere use of a known process, machine or apparatus unless such known process results in a new product or employs at least one new reactant is not an invention." (Includes explicit statutory limitation 'for a known substance').
 
 ---
 
@@ -147,7 +147,7 @@ The following six new passage rows have been extracted with precise provision lo
 
 In accordance with peer review findings:
 1. **Evidentiary Fallback (RULE-01):** When an applicant claims a classical Ayurvedic medicine but cannot provide an authoritative book citation listed in the First Schedule, the system must **never** default or demote the product to Patent or Proprietary medicine (Route 2). Missing classical evidence is an evidentiary gap requiring clarification or expert referral (Route 7: `needs_expert_referral`), not proof that the product qualifies as a proprietary formulation.
-2. **Ayurveda Aahara Boundaries (RULE-05):** Products carrying added vitamins, minerals, or amino acids (irrespective of synthetic or natural source) violate Regulation 3(4) and are excluded from Ayurveda Aahara under Regulation 2(b). Claims to prevent, treat, or cure diseases (covering all three limbs of Regulation 8) violate Regulation 8. Front-of-pack display of the logo is required under Regulation 13(a), and oral-only consumption is mandated under Regulation 13(f).
+2. **Ayurveda Aahara Boundaries (RULE-05):** Products carrying added vitamins, minerals, or amino acids (irrespective of synthetic or natural source) violate Regulation 3(4) and are excluded from Ayurveda Aahara under Regulation 2(b). Claims in labelling, advertising, or presentation to prevent, treat, or cure human disease violate Regulation 8 (strictly three limbs: prevent, treat, or cure; confined to human disease). Front-of-pack display of the logo is required under Regulation 13(a), and oral-only consumption is mandated under Regulation 13(f).
 3. **Patentability Examination Framing (RULE-08):** Section 3(e) excludes mere admixtures resulting in the aggregation of component properties. Under IP India's *Guidelines for Examination of Patent Applications in the Field of Pharmaceuticals and Ayush*, demonstrating synergistic effect is an examination consideration when assessing whether a combination is more than a mere aggregation of known properties, but does not constitute an automatic statutory exception or guaranteed grant of patentability.
 
 ---
