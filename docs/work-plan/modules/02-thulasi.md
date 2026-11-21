@@ -8,14 +8,14 @@
 
 **Capacity:** 10 hours/week; 125 planned hours over 16 weeks, with remaining capacity reserved for review, rework and integration.
 
-**Status:** in progress; T-01 submitted for activation review in draft PR.
+**Status:** in progress; T-01 merged in main; T-02 submitted for activation review in draft PR.
 
 ## Module specification
 
 - **Primary tasks:** research public official sources; record provenance and access rights; extract provision locators; build formulation questions, category rules and bounded IP/ABS/TK routing tables.
 - **Supporting tasks:** create source-grounded expected answers, verify corpus revisions, review citation support, document unresolved interpretations and international scope boundaries.
 - **Inputs needed:** frozen MVP topic list, the existing [corpus documents and passages](../../../data/corpus/README.md), and ingestion feedback; public source portals, not private datasets.
-- **Outputs:** reviewed and expanded corpus CSVs, approved provision extracts, version/change log, rule table with question/condition/route/source fields, coverage map and expected-evidence annotations. The present eight paraphrases still need domain and amendment review.
+- **Outputs:** reviewed and expanded corpus CSVs, approved provision extracts, version/change log, rule table with question/condition/route/source fields, coverage map and expected-evidence annotations.
 - **Acceptance:** at least 25 useful approved documents or a documented smaller corpus covering every supported topic; every source has URL, authority, jurisdiction, publication/effective date and version where available, capture date, checksum status, access/reuse status and reviewer. Missing dates are explicitly unknown, never invented; uncertain legal status excludes an item from definitive guidance. Every decision rule cites a provision; ambiguity produces clarification/referral.
 - **Dependencies and handoff:** deliver three records in week 2, 10 approved sources in week 4, around 20 in week 6 and baseline coverage in week 8. One reviewer checks a sample from each batch before activation.
 - **Effort:** 125 hours: research 45; metadata/extraction 25; rules 25; evidence annotation 20; freshness/report review 10.
@@ -29,8 +29,6 @@ Harshit reviews provenance integration and activates corpus versions; Deepshika 
 Harshit has project-wide technical review and integration access. Each member remains accountable for their own deliverables. Routine work proceeds through the designated peer reviewer; access settings must be configured separately by the repository owner.
 
 ## Task packages
-
-**Phase entry rule:** Do not create a branch, files, implementation or PR for the next task package until the previous package is complete and its phase PR is merged. Verify and record the merged PR URL and merge commit. Read-only preparation is allowed. An early start requires Harshit's explicit written permission naming this member, next phase, reason and permitted scope; link it in the issue and next PR. The previous phase stays open until merged. For Harshit's own exception, record his decision and obtain Suresh's independent review. Week targets do not override this rule.
 
 | Task | Target | Deliverable |
 |---|---|---|
@@ -66,11 +64,11 @@ Weeks 15-16 are reserved for testing, repairs, packaging and submission; do not 
 
 ## Deliverable checklist
 
-- [x] Source register and access/reuse metadata ([source_register.csv](../../../data/corpus/source_register.csv), [SOURCE_AUDIT_T01.md](../../../data/corpus/SOURCE_AUDIT_T01.md))
-- [x] Approved provision excerpts with locators and version manifest ([passages.csv](../../../data/corpus/passages.csv): PASS-002, PASS-003, PASS-004, PASS-009 to PASS-014 submitted for activation)
-- [x] Formulation intake questions and source-backed routing table ([thulasi-t01-specification.md](thulasi-t01-specification.md))
-- [x] Topic coverage map, exclusions and supersession/change log ([thulasi-t01-specification.md](thulasi-t01-specification.md) Section 2, [SOURCE_AUDIT_T01.md](../../../data/corpus/SOURCE_AUDIT_T01.md))
-- [ ] Expected evidence and claim-support annotations (scheduled for T-02 through T-05)
+- [x] Source register and access/reuse metadata ([source_register.csv](../../../data/corpus/source_register.csv), [SOURCE_AUDIT_T01.md](../../../data/corpus/SOURCE_AUDIT_T01.md), [SOURCE_AUDIT_T02.md](../../../data/corpus/SOURCE_AUDIT_T02.md))
+- [x] Approved provision excerpts with locators and version manifest ([passages.csv](../../../data/corpus/passages.csv): PASS-002 through PASS-025 submitted for activation)
+- [x] Formulation intake questions and source-backed routing table ([thulasi-t01-specification.md](thulasi-t01-specification.md), [thulasi-t02-intake-rules.md](thulasi-t02-intake-rules.md))
+- [x] Topic coverage map, exclusions and supersession/change log ([thulasi-t02-intake-rules.md](thulasi-t02-intake-rules.md) Section 5, [SOURCE_AUDIT_T02.md](../../../data/corpus/SOURCE_AUDIT_T02.md))
+- [ ] Expected evidence and claim-support annotations (scheduled for T-03 through T-05)
 - [ ] Relevant master-plan acceptance gates met and actual evidence recorded.
 - [ ] Independent peer review completed and all critical findings resolved (pending Harshit & Deepshika review).
 - [ ] Outputs integrated into the shared project; handoff notes and limitations documented.
@@ -79,7 +77,7 @@ Weeks 15-16 are reserved for testing, repairs, packaging and submission; do not 
 
 1. Create one source-record example with authority, URL, jurisdiction, dates, version and locator. (Completed in Phase 1: see [SOURCE_AUDIT_T01.md](../../../data/corpus/SOURCE_AUDIT_T01.md))
 2. Identify sources for the first supported question in each selected topic. (Completed in Phase 1: see [thulasi-t01-specification.md](thulasi-t01-specification.md))
-3. Mark missing dates, unclear applicability and restricted access explicitly. (Completed in Phase 1: documented honestly in [source_register.csv](../../../data/corpus/source_register.csv))
+3. Mark missing dates, unclear applicability and restricted access explicitly. (Completed in Phase 1 & 2: documented honestly in [source_register.csv](../../../data/corpus/source_register.csv))
 
 ## Progress record
 
@@ -87,6 +85,6 @@ Use task IDs in issues and PRs. Replace the placeholder row only when work start
 
 | Task ID | Status | Evidence / issue / PR | Reviewer | Blocker / next action |
 |---|---|---|---|---|
-| T-01 | In review (draft PR) | Branch `thulasi/t-01-phase-1`; [PR #1](https://github.com/Harshit-ambati/IP-SAKTI-Sahayak/pull/1); [thulasi-t01-specification.md](thulasi-t01-specification.md), [SOURCE_AUDIT_T01.md](../../../data/corpus/SOURCE_AUDIT_T01.md), [source_register.csv](../../../data/corpus/source_register.csv), [documents.csv](../../../data/corpus/documents.csv), [passages.csv](../../../data/corpus/passages.csv) | Harshit (activation), Deepshika (terminology) | Awaiting Harshit's review of verified provisions before RAG activation; terminology signoff by Deepshika |
-| T-02 | Planned | Scheduled for Weeks 3–4 (extend corpus to 10 reviewed sources, intake rules, representative product scenarios) | Harshit (activation), Deepshika (terminology) | Unblocks after T-01 merge & activation |
+| T-01 | Merged | Branch `thulasi/t-01-phase-1`; [PR #1](https://github.com/Harshit-ambati/IP-SAKTI-Sahayak/pull/1) (merge commit `1a7cae4`); [thulasi-t01-specification.md](thulasi-t01-specification.md), [SOURCE_AUDIT_T01.md](../../../data/corpus/SOURCE_AUDIT_T01.md) | Harshit (activation), Deepshika (terminology) | Merged into main on 2026-11-21 |
+| T-02 | In review (draft PR) | Branch `thulasi/t-02-phase-2`; Draft PR; [thulasi-t02-intake-rules.md](thulasi-t02-intake-rules.md), [SOURCE_AUDIT_T02.md](../../../data/corpus/SOURCE_AUDIT_T02.md), [source_register.csv](../../../data/corpus/source_register.csv), [documents.csv](../../../data/corpus/documents.csv), [passages.csv](../../../data/corpus/passages.csv) | Harshit (activation), Deepshika (terminology) | Awaiting Harshit's review of verified provisions before RAG activation; terminology signoff by Deepshika |
 | T-03 | Planned | Scheduled for Weeks 5–6 (bounded IP/ABS/TK decision rules, ~20 source records, machine-readable rule contract) | Harshit (activation), Deepshika (terminology) | Unblocks after T-02 merge |
