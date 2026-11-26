@@ -208,11 +208,12 @@
   },
   "source_drawer": {
     "modal_title": "Authoritative Statutory Reference",
-    "authority_label": "Issuing Authority",
+    "source_title_label": "Source Document Title",
     "locator_label": "Provision Locator",
     "source_id_label": "Source ID",
     "passage_id_label": "Passage ID",
-    "gazette_date_label": "Gazette / Effective Date",
+    "jurisdiction_label": "Legal Jurisdiction",
+    "corpus_version_label": "Corpus Version",
     "url_label": "Official Public Portal",
     "excerpt_label": "Official Provision Excerpt",
     "review_status_label": "Corpus Review Status",
@@ -223,8 +224,8 @@
       "rejected": "Rejected from Corpus"
     },
     "close_btn": "Close Source Panel",
-    "copy_citation_btn": "Copy Full Legal Citation",
-    "open_portal_btn": "Open Official Instrument Link"
+    "copy_citation_btn": "Copy Legal Citation",
+    "open_portal_btn": "Open Official Instrument Portal"
   },
   "safety": {
     "safe_abstention_title": "Safe Abstention: Grounding Unavailable",

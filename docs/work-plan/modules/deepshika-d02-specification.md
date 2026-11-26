@@ -20,25 +20,30 @@ Task D-02 establishes the foundational user interface localization and component
 
 ---
 
-## 2. Shared Contract Alignment (No Invented API Fields)
+## 2. Target Contract Alignment & Integration Status (Zero Invented Fields)
 
-All frontend components specified below bind directly to the frozen v1 exchange schemas and backend endpoints:
+All frontend components specified below bind directly to the target exchange schemas and backend endpoints:
 
-### Schema Mapping (Harshit's `contracts/v1/sahayak.schema.json`)
+### Schema Status & Integration Reality
+- **Target Contract Schema:** `contracts/v1/sahayak.schema.json` is the **proposed v1 exchange schema authored by Harshit in draft PR #5 (Task H-01)**. It remains open and unmerged.
+- **Current Merged Backend Status:** The currently merged backend on `main` (Suresh's Task Su-01, PR #3 at commit `7cf0f55`) serves service and data skeletons with synthetic mock fixtures (`mock_answer_response`), while Suresh's Task Su-02 (draft PR #7) implements SQLite FTS5 evidence retrieval.
+- **Frontend Architecture Rule:** Components must accept current synthetic mock fixtures while strictly conforming to Harshit's proposed H-01 schema definitions for seamless forward compatibility upon H-01 merge. No fields outside the proposed schema are introduced.
 
-| Schema Entity | Frontend Consumer Component | Bound Contract Fields |
-|---|---|---|
-| `Intake` | `FormulationIntakeForm` | `contract_version`, `request_id`, `jurisdiction`, `language`, `question`, `facts` (`formulation_title`, `ingredients`, `classical_text_reference`, `processing_method`, `intended_use`, `claims_disease_treatment`, `claims_disease_cure`, `has_novel_ingredient`, `standardized_fraction`, `external_application_only`) |
-| `ClassificationResult` | `ProvisionalClassificationCard` | `contract_version`, `request_id`, `route` (`classical_generic`, `patent_proprietary`, `novel_non_classical`, `phytopharmaceutical`, `ayurveda_aahara`, `cosmetic`, `unknown`), `provisional` (`true`), `missing_facts`, `reason` |
-| `EvidencePassage` | `SourceModal` / `SourceDrawer` | `passage_id`, `source_id`, `jurisdiction`, `source_title`, `source_url`, `locator`, `text`, `review_status` (`approved`, `pending`, `stale`, `rejected`), `corpus_version` |
-| `Claim` | `AnswerFindingCard` | `text`, `evidence_ids` (array of `passage_id` strings) |
-| `AnswerResult` | `CitedGuidanceView` | `contract_version`, `request_id`, `status` (`clarify`, `answered`, `abstained`, `referral`), `jurisdiction`, `language`, `route`, `assumptions`, `claims`, `evidence`, `limitations`, `corpus_version`, `model_version` |
-| `ReferralPacket` | `ReferralDossierScreen` | `contract_version`, `request_id`, `jurisdiction`, `language`, `question`, `route`, `assumptions`, `evidence_ids`, `unresolved_issues` |
+### Schema Mapping (Proposed `contracts/v1/sahayak.schema.json`)
 
-### Backend API Endpoints (Suresh's `backend/app/api/routes/`)
+| Schema Entity | Frontend Consumer Component | Bound Contract Fields | Schema Boundaries & Notes |
+|---|---|---|---|
+| `Intake` | `FormulationIntakeForm` | `contract_version`, `request_id`, `jurisdiction`, `language`, `question`, `facts` | Mandatory facts include: `formulation_title`, `ingredients`, `classical_text_reference`, `processing_method`, `intended_use`, `claims_disease_treatment`, `claims_disease_cure`, `has_novel_ingredient`, `standardized_fraction`, `external_application_only`. |
+| `ClassificationResult` | `ProvisionalClassificationCard` | `contract_version`, `request_id`, `route`, `provisional`, `missing_facts`, `reason` | Routes: `classical_generic`, `patent_proprietary`, `novel_non_classical`, `phytopharmaceutical`, `ayurveda_aahara`, `cosmetic`, `unknown`. `provisional` is strictly `true`. |
+| `EvidencePassage` | `SourceModal` / `SourceDrawer` | `passage_id`, `source_id`, `jurisdiction`, `source_title`, `source_url`, `locator`, `text`, `review_status`, `corpus_version` | **Strict Schema Boundary:** `EvidencePassage` defines exactly these 9 fields. It does **NOT** contain `authority` or `gazette_date` (which belong to document-level corpus registers, not per-passage payloads). Review status is restricted to `approved`, `pending`, `stale`, `rejected`. |
+| `Claim` | `AnswerFindingCard` | `text`, `evidence_ids` | Array of `passage_id` strings linking assertions directly to retrieved evidence. |
+| `AnswerResult` | `CitedGuidanceView` | `contract_version`, `request_id`, `status`, `jurisdiction`, `language`, `route`, `assumptions`, `claims`, `evidence`, `limitations`, `corpus_version`, `model_version` | Status: `clarify`, `answered`, `abstained`, `referral`. When `answered`, `claims` and `evidence` must have $\ge 1$ item; when abstained/referral, `claims` has 0 items. |
+| `ReferralPacket` | `ReferralDossierScreen` | `contract_version`, `request_id`, `jurisdiction`, `language`, `question`, `route`, `assumptions`, `evidence_ids`, `unresolved_issues` | Structured exportable packet for specialist handoff. |
+
+### Backend API Endpoints (Current Merged Su-01 / Target Su-02)
 
 - `POST /api/v1/classify`: Accepts `Intake` payload, returns `ClassificationResult`.
-- `POST /api/v1/answer`: Accepts `Intake` payload, returns `AnswerResult`.
+- `POST /api/v1/answer`: Accepts `Intake` payload, returns `AnswerResult` (served via synthetic fixture in Su-01; FTS5 retrieval in draft Su-02).
 - `GET /api/v1/sources/{source_id}`: Retrieves authoritative document metadata.
 - `GET /api/v1/sources/{source_id}/passages/{passage_id}`: Retrieves specific provision excerpt.
 - `POST /api/v1/referral`: Generates exportable `ReferralPacket`.
@@ -49,28 +54,32 @@ All frontend components specified below bind directly to the frozen v1 exchange 
 
 The source view displays authoritative legal backing for retrieved claims. It can be triggered from any cited claim pill or provision badge.
 
+> **Corpus Reference Distinction:**
+> - `PASS-001` in `data/corpus/passages.csv` is a preliminary Section 3(k) record (software/algorithms, excluded from the Ayurvedic formulation classification index).
+> - Section 3(p) (traditional knowledge aggregation exclusion) is recorded as **`PASS-002`** under source `REAL-001` (The Patents Act, 1970).
+> - In the merged corpus baseline (`1a7cae4`), `PASS-002` has `review_status = "reviewed_t01_pending_activation"`. It is verified against the official statute by Thulasi and submitted for Harshit's formal activation review. It must **not** be presented as already approved.
+
 ### Component Wireframe (Desktop Slide-Over Drawer)
 
 ```text
 ┌────────────────────────────────────────────────────────────────────────┐
 │ [×] Close (Esc)          STATUTORY SOURCE REFERENCE          [REAL-001]│
 ├────────────────────────────────────────────────────────────────────────┤
-│ Title: The Patents Act, 1970 (as amended)                              │
-│ Issuing Authority: Office of the Controller General of Patents (CGPDTM)│
-│ Legal Jurisdiction: India Jurisdiction (Domestic Indian Law)           │
+│ Source Document Title: The Patents Act, 1970                           │
+│ Source ID: REAL-001                     Passage ID: PASS-002           │
+│ Legal Jurisdiction: India               Corpus Version: v0.1-baseline  │
 │ Provision Locator: Section 3(p)                                        │
-│ Gazette / Effective Date: 1972-04-20                                   │
-│ Corpus Review Status: [ Reviewed & Approved ]                          │
+│ Corpus Review Status: [ Pending Formal Activation ]                    │
 ├────────────────────────────────────────────────────────────────────────┤
-│ OFFICIAL STATUTORY EXCERPT (Passage ID: PASS-001):                     │
+│ OFFICIAL STATUTORY EXCERPT (Passage ID: PASS-002):                     │
 │ ┌────────────────────────────────────────────────────────────────────┐ │
-│ │ "3. What are not inventions.—The following are not inventions      │ │
-│ │  within the meaning of this Act,—                                  │ │
-│ │  (p) an invention which in effect is traditional knowledge or      │ │
-│ │      which is an aggregation or duplication of known properties of │ │
-│ │      traditionally known component or components."                 │ │
+│ │ "Section 3(p) excludes from patentability an invention which in   │ │
+│ │  effect is traditional knowledge or which is an aggregation or     │ │
+│ │  duplication of known properties of traditionally known component │ │
+│ │  or components."                                                   │ │
 │ └────────────────────────────────────────────────────────────────────┘ │
-│ Language Toggle: [ English (Original Legal Text) | हिन्दी सारांश ]     │
+│ Note: Verified against official Patents Act 1970; pending activation. │
+│ Language Toggle: [ English (Original Statutory Text) | हिन्दी सारांश ] │
 ├────────────────────────────────────────────────────────────────────────┤
 │ [↗ Open Official Instrument Portal]         [📋 Copy Legal Citation]   │
 └────────────────────────────────────────────────────────────────────────┘
@@ -105,45 +114,54 @@ The source view displays authoritative legal backing for retrieved claims. It ca
       </button>
     </header>
 
-    <!-- Metadata Grid -->
+    <!-- Metadata Grid (Strictly bound to EvidencePassage fields) -->
     <section class="source-meta-grid" id="source-dialog-desc">
-      <div class="meta-item">
-        <span class="meta-label">Issuing Authority</span>
-        <span class="meta-value">Office of CGPDTM (IP India)</span>
-      </div>
       <div class="meta-item">
         <span class="meta-label">Provision Locator</span>
         <span class="meta-value locator-tag">Section 3(p)</span>
       </div>
       <div class="meta-item">
-        <span class="meta-label">Jurisdiction</span>
-        <span class="meta-value">India (Domestic)</span>
+        <span class="meta-label">Passage Identifier</span>
+        <span class="meta-value">PASS-002</span>
       </div>
       <div class="meta-item">
-        <span class="meta-label">Corpus Status</span>
-        <span class="status-badge status-approved">Reviewed & Approved</span>
+        <span class="meta-label">Legal Jurisdiction</span>
+        <span class="meta-value">India</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Corpus Version</span>
+        <span class="meta-value">v0.1-baseline</span>
+      </div>
+      <div class="meta-item full-width">
+        <span class="meta-label">Corpus Review Status</span>
+        <span class="status-badge status-pending" aria-label="Review status: Pending activation">
+          Pending Formal Activation
+        </span>
       </div>
     </section>
 
     <!-- Official Excerpt Box -->
     <section class="source-excerpt-container">
       <div class="excerpt-header">
-        <span class="passage-id-tag">Passage: PASS-001</span>
-        <span class="legal-verbatim-notice">Verbatim Official Gazette Text</span>
+        <span class="passage-id-tag">Passage: PASS-002</span>
+        <span class="legal-verbatim-notice">Verified Official Instrument Record</span>
       </div>
       <blockquote class="source-excerpt-body" lang="en">
-        "3. What are not inventions.—The following are not inventions within the meaning of this Act,— (p) an invention which in effect is traditional knowledge or which is an aggregation or duplication of known properties of traditionally known component or components."
+        "Section 3(p) excludes from patentability an invention which in effect is traditional knowledge or which is an aggregation or duplication of known properties of traditionally known component or components."
       </blockquote>
+      <p class="source-status-footnote">
+        Source record verified by Thulasi from official Patents Act 1970 text; pending formal Harshit activation review.
+      </p>
     </section>
 
     <!-- Action Footer -->
     <footer class="source-drawer-footer">
       <a 
-        href="https://www.indiacode.nic.in/bitstream/123456789/1392/1/A1970-39.pdf" 
+        href="https://www.ipindia.gov.in/acts/patent-act-1970/section-3" 
         target="_blank" 
         rel="noopener noreferrer" 
         class="source-portal-link"
-        aria-label="Open official India Code instrument portal in new tab"
+        aria-label="Open official IP India portal in new tab"
       >
         <span>Open Official Portal</span>
         <svg aria-hidden="true" width="16" height="16" fill="currentColor"><path d="..."/></svg>
@@ -159,6 +177,7 @@ The source view displays authoritative legal backing for retrieved claims. It ca
 
   </div>
 </div>
+```
 ```
 
 ---
