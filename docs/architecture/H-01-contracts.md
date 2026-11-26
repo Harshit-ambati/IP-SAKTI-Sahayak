@@ -27,8 +27,35 @@ The seven routes are provisional labels, including `unknown`. `international_ove
 
 ## Open decisions and dependencies
 
-Suresh: confirm endpoint names, validation ownership, staff authorization and source lookup response. Akshay: confirm whether the abstention fixture covers the required empty/source/referral states. Thulasi: confirm route definitions and activate reviewed provisions before any answered fixture is added. Deepshika: confirm regional language and translated notice wording. Sabeena: supply the development-case template. Harshit/team: record demo laptop, local model license, size, memory use, response latency and offline operation before selecting a generator.
+Suresh: confirm endpoint names, validation ownership, staff authorization and source lookup response. Akshay: confirm whether the abstention fixture covers the required empty/source/referral states. Thulasi: confirm route definitions and activate reviewed provisions before any answered fixture is added. Deepshika: confirm regional language and translated notice wording. Sabeena: supply the development-case template. Harshit/team: confirm whether the tested laptop is the demo laptop and agree on the demo latency budget.
 
-## Local model feasibility observation, 15 November 2026
+## Local model feasibility trial, 26 November 2026
 
-This Windows 11 environment reports 8 logical CPUs, 15.28 GiB total RAM and 3.93 GiB available RAM at the time of inspection. Python has `transformers`, but no `ollama`, `llama-server`, `llama-cli`, `llama_cpp`, `nvidia-smi` or local Hugging Face model cache was found. The system memory query through CIM was denied, so the RAM reading came from `psutil`. No model inference, download, license check, latency measurement or offline generation test was performed. Local generation feasibility therefore remains **unproven**, and no model has been selected. A named demo laptop and permitted model download are needed for the week-2 trial.
+The trial used the current Windows 11 laptop (build 26300, AMD Ryzen 5 7520U, 8 logical CPUs, 15,648 MiB RAM). It ran on four CPU threads in float32 with Python 3.14.2, PyTorch 2.14.0+cpu, Transformers 5.17.0 and psutil 7.2.2. The checkpoint was [SmolLM2-135M-Instruct at revision `12fd25f`](https://huggingface.co/HuggingFaceTB/SmolLM2-135M-Instruct/tree/12fd25f77366fa6b3b4b768ec3050bf629380bac), published under Apache-2.0. Its weights were 269,060,552 bytes and the downloaded snapshot files totaled 272,496,399 bytes (259.9 MiB, excluding download metadata).
+
+| Measurement | Observed result |
+|---|---:|
+| Startup through first complete response, including imports | 33.15 s |
+| Checkpoint and tokenizer load within startup | 4.711 s |
+| Peak process working set, including Python and libraries | 1,029.5 MiB |
+| Median complete response time for the two subsequent prompts | 1.411 s |
+| Python network attempts during loading and inference | 0 |
+
+| Synthetic case | Complete response | Result |
+|---|---:|---|
+| Explain the value of a source link | 3.271 s, 28 generated tokens | Explained that a direct source link lets the reader verify information. |
+| Answer from a synthetic passage and cite `SYN-001` | 1.181 s, 10 generated tokens | Returned “The demo library opens at 9 AM.” and omitted the requested citation ID. |
+| Explain why there is no answer without reviewed evidence | 1.641 s, 15 generated tokens | Said it could not determine eligibility without reviewing the evidence. |
+
+The run demonstrates offline CPU generation on this laptop. The citation omission rules out relying on this checkpoint to emit citations correctly on its own. Keep citation resolution and suppression of unsupported output in application code. These are three short English prompts from one process launch. Legal answer quality, multilingual behavior, performance with a loaded application, and performance on any different demo laptop remain unmeasured. Startup makes preloading useful for an interactive demo. Generator selection remains open pending evidence quality evaluation.
+
+### Reproduce the measurement
+
+Download the pinned snapshot once, then run the trial in a separate Python process. The trial uses local files only and blocks Python socket connection and DNS attempts. It prints all three outputs and metrics as JSON. Model files belong outside the repository.
+
+```powershell
+$trialPath = Join-Path ([IO.Path]::GetTempPath()) 'sahayak-h01-smollm2-12fd25f'
+python -m pip install 'torch==2.14.0' 'transformers==5.17.0' 'psutil==7.2.2'
+python -B -c "import sys; from huggingface_hub import snapshot_download; snapshot_download('HuggingFaceTB/SmolLM2-135M-Instruct', revision='12fd25f77366fa6b3b4b768ec3050bf629380bac', local_dir=sys.argv[1], allow_patterns=['*.json','*.safetensors','merges.txt','vocab.json'], token=False)" $trialPath
+python -B scripts/trial_local_model.py $trialPath
+```
