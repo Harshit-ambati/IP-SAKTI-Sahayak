@@ -94,32 +94,32 @@
       },
       "q_food_text": {
         "id": "Q-FOOD-TEXT",
-        "prompt": "Is the dietary formulation prepared in accordance with recipes or processes described in First Schedule authoritative Ayurvedic texts?",
-        "help_text": "Under FSSAI Ayurveda Aahara Regulations 2022 Regulation 2(b), Ayurveda Aahara must be prepared in accordance with recipes in authoritative Ayurvedic books.",
-        "missing_fact_prompt": "Does the dietary formulation derive from authoritative Ayurvedic texts listed in Schedule A of the Ayurveda Aahara Regulations?",
+        "prompt": "Is the dietary formulation prepared in accordance with recipes or processes described in Schedule A authoritative Ayurvedic texts?",
+        "help_text": "Under FSSAI Ayurveda Aahara Regulations 2022 Regulation 2(b), Ayurveda Aahara must be prepared in accordance with recipes or principles in authoritative Ayurvedic books listed in Schedule A.",
+        "missing_fact_prompt": "Is this food preparation made in accordance with the recipes or principles in authoritative Ayurvedic books listed in Schedule A of the Ayurveda Aahara regulations?",
         "options": {
-          "in_classical_text": "Prepared in accordance with authoritative Ayurvedic texts (First Schedule / Schedule A)",
-          "not_in_classical_text": "Not derived from authoritative classical texts (General food / novel supplement)"
+          "in_classical_text": "Prepared in accordance with authoritative Ayurvedic texts listed in Schedule A",
+          "not_in_classical_text": "Not derived from Schedule A authoritative classical texts (General food / novel supplement)"
         }
       },
       "q_food_claim": {
         "id": "Q-FOOD-CLAIM",
-        "prompt": "Does the dietary product label or advertising make claims to prevent, treat, or cure any human disease or disorder?",
-        "help_text": "FSSAI Ayurveda Aahara Regulation 8 strictly prohibits any claim to prevent, treat, or cure human disease or disorder.",
-        "missing_fact_prompt": "Please verify your marketing and labelling claims: Does the product make claims to prevent, treat, or cure human diseases or disorders?",
+        "prompt": "Does the dietary product label, presentation, or advertising claim to prevent, treat, or cure any human disease?",
+        "help_text": "FSSAI Ayurveda Aahara (Ayurveda Aahara) Regulation 8 strictly prohibits any claim to prevent, treat, or cure any human disease in labelling, presentation, or advertising.",
+        "missing_fact_prompt": "Please verify your marketing and labelling claims: Does the product claim to prevent, treat, or cure any human disease in labelling, advertising, or presentation?",
         "options": {
-          "no_disease_claims": "No disease treatment, prevention, or cure claims (Only general health/wellness)",
-          "claims_prevent_treat_cure": "Claims prevention, treatment, or cure of human disease or disorder"
+          "no_disease_claims": "No disease prevention, treatment, or cure claims (Only general health/wellness)",
+          "claims_prevent_treat_cure": "Claims prevention, treatment, or cure of human disease"
         }
       },
       "q_food_syn": {
         "id": "Q-FOOD-SYN",
-        "prompt": "Does the dietary formulation contain added synthetic vitamins, minerals, or amino acids?",
-        "help_text": "Regulation 3(4) of FSSAI Ayurveda Aahara Regulations states that Ayurveda Aahara shall not contain added synthetic vitamins, minerals, or amino acids.",
-        "missing_fact_prompt": "Please clarify composition: Does the food formulation contain any added synthetic vitamins, minerals, or synthetic amino acids?",
+        "prompt": "Does the dietary formulation contain added vitamins, minerals, or amino acids (whether natural or synthetic)?",
+        "help_text": "Regulation 3(4) of FSSAI Ayurveda Aahara (Ayurveda Aahara) Regulations states that no person shall add vitamins, minerals, or amino acids to Ayurveda Aahara (Ayurveda Aahara).",
+        "missing_fact_prompt": "Please clarify composition: Does the food formulation contain any added vitamins, minerals, or amino acids?",
         "options": {
-          "no_synthetic_additives": "No synthetic vitamins, minerals, or amino acids added",
-          "contains_synthetic_additives": "Contains added synthetic vitamins, minerals, or amino acids"
+          "no_synthetic_additives": "No added vitamins, minerals, or amino acids",
+          "contains_synthetic_additives": "Contains added vitamins, minerals, or amino acids"
         }
       },
       "q_cosm_claim": {
