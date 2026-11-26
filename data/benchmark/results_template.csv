@@ -1,0 +1,2 @@
+case_id,run_id,eval_date,release_version,corpus_version,model_version,actual_route,actual_behavior,retrieved_passage_ids,claim_support_score,citation_validity,route_match,behavior_match,reviewer,reviewer_notes,defect_link
+SYN-CASE-001,RUN-EXAMPLE-001,2026-11-26,v0.1-rc,v0.2-t02,gemini-3.8-flash,classical_generic,answer_with_citations,PASS-009;PASS-017;PASS-002,1.0,valid,true,true,pending_thulasi_review,Example entry showing expected evaluation ledger format,none
