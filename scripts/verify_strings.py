@@ -49,7 +49,7 @@ REQUIRED_IMMUTABLE_TOKENS = [
     # Statutory Names (NAME_IMMUTABLE)
     "Ayurveda Aahara", "Phytopharmaceutical Drug",
     # Acronyms (ACRONYM_IMMUTABLE)
-    "WIPO", "FSSAI", "NBA", "TKDL"
+    "WIPO", "AYUSH", "FSSAI", "NBA", "TKDL"
 ]
 
 
@@ -191,12 +191,18 @@ def main():
                     verified_occurrences += 1
 
     print(f"      [PASS] 100% per-string preservation confirmed across {verified_occurrences} token instances.")
-    print(f"      Monitored tokens verified in corresponding localized strings:")
+    print(f"      Monitored statutory tokens verified in corresponding localized strings:")
     for t in REQUIRED_IMMUTABLE_TOKENS:
         print(f"        [PASS] {t}")
 
+    print("\n[INFO] Scope Boundary Note:")
+    print("  - Automated check confirms 100% template key parity and per-key token retention.")
+    print("  - Referential integrity of database citation IDs (PASS-xxx / REAL-xxx) is validated")
+    print("    by corpus/benchmark suites (validate_t02.py, validate_sa01.py), not UI string templates.")
+    print("  - Translation nuance and semantic Hindi fidelity remain subject to human review.")
+
     print("\n" + "=" * 70)
-    print(f"SUCCESS: Verification PASSED (100% key parity, {len(en_leaves)} keys, per-string token preservation).")
+    print(f"SUCCESS: Verification PASSED (100% key parity, {len(en_leaves)} keys, {len(REQUIRED_IMMUTABLE_TOKENS)} monitored tokens).")
     print("=" * 70)
     return 0
 

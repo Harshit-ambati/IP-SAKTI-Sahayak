@@ -54,10 +54,11 @@ All frontend components specified below bind directly to the target exchange sch
 
 The source view displays authoritative legal backing for retrieved claims. It can be triggered from any cited claim pill or provision badge.
 
-> **Corpus Reference Distinction:**
+> **Corpus Reference & Public Evidence Retrieval Distinction:**
 > - `PASS-001` in `data/corpus/passages.csv` is a preliminary Section 3(k) record (software/algorithms, excluded from the Ayurvedic formulation classification index).
 > - Section 3(p) (traditional knowledge aggregation exclusion) is recorded as **`PASS-002`** under source `REAL-001` (The Patents Act, 1970).
-> - In the merged corpus baseline (`1a7cae4`), `PASS-002` has `review_status = "reviewed_t01_pending_activation"`. It is verified against the official statute by Thulasi and submitted for Harshit's formal activation review. It must **not** be presented as already approved.
+> - In the merged corpus baseline (`1a7cae4`), `PASS-002` has `review_status = "reviewed_t01_pending_activation"`. It stores a **source-backed paraphrase** (`paraphrased_content` in `passages.csv`), not an approved verbatim statutory excerpt.
+> - **Public UI Availability Gate:** In the public production UI, source passages are retrievable and displayed in the source drawer **only when `review_status === 'approved'`**. If a passage is `reviewed_t01_pending_activation`, `pending`, or `stale`, public retrieval is restricted and the drawer displays: *“Corpus passage pending formal activation review; retrieval restricted until approved.”* The wireframe below illustrates an **internal design mock** for inspecting pending records with their pending badge, without representing them as retrievable approved public evidence.
 
 ### Component Wireframe (Desktop Slide-Over Drawer)
 
@@ -71,15 +72,15 @@ The source view displays authoritative legal backing for retrieved claims. It ca
 │ Provision Locator: Section 3(p)                                        │
 │ Corpus Review Status: [ Pending Formal Activation ]                    │
 ├────────────────────────────────────────────────────────────────────────┤
-│ OFFICIAL STATUTORY EXCERPT (Passage ID: PASS-002):                     │
+│ PARAPHRASED CORPUS PASSAGE (Passage ID: PASS-002 - Pending Activation):│
 │ ┌────────────────────────────────────────────────────────────────────┐ │
 │ │ "Section 3(p) excludes from patentability an invention which in   │ │
 │ │  effect is traditional knowledge or which is an aggregation or     │ │
 │ │  duplication of known properties of traditionally known component │ │
 │ │  or components."                                                   │ │
 │ └────────────────────────────────────────────────────────────────────┘ │
-│ Note: Verified against official Patents Act 1970; pending activation. │
-│ Language Toggle: [ English (Original Statutory Text) | हिन्दी सारांश ] │
+│ Note: Source-backed paraphrase; pending formal activation review.     │
+│ Language Toggle: [ English (Paraphrased Text) | हिन्दी सारांश ]       │
 ├────────────────────────────────────────────────────────────────────────┤
 │ [↗ Open Official Instrument Portal]         [📋 Copy Legal Citation]   │
 └────────────────────────────────────────────────────────────────────────┘
@@ -140,24 +141,24 @@ The source view displays authoritative legal backing for retrieved claims. It ca
       </div>
     </section>
 
-    <!-- Official Excerpt Box -->
+    <!-- Paraphrased Passage Excerpt Box -->
     <section class="source-excerpt-container">
       <div class="excerpt-header">
         <span class="passage-id-tag">Passage: PASS-002</span>
-        <span class="legal-verbatim-notice">Verified Official Instrument Record</span>
+        <span class="legal-verbatim-notice">Source-Backed Paraphrase (Pending Activation)</span>
       </div>
       <blockquote class="source-excerpt-body" lang="en">
         "Section 3(p) excludes from patentability an invention which in effect is traditional knowledge or which is an aggregation or duplication of known properties of traditionally known component or components."
       </blockquote>
       <p class="source-status-footnote">
-        Source record verified by Thulasi from official Patents Act 1970 text; pending formal Harshit activation review.
+        Source-backed paraphrase verified by Thulasi from official Patents Act 1970 text; pending formal Harshit activation review.
       </p>
     </section>
 
     <!-- Action Footer -->
     <footer class="source-drawer-footer">
       <a 
-        href="https://www.ipindia.gov.in/acts/patent-act-1970/section-3" 
+        href="https://www.ipindia.gov.in/acts/patent-act-1970/section-3"
         target="_blank" 
         rel="noopener noreferrer" 
         class="source-portal-link"

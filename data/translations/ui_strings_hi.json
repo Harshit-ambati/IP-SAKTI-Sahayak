@@ -215,7 +215,7 @@
     "jurisdiction_label": "कानूनी क्षेत्राधिकार (Jurisdiction)",
     "corpus_version_label": "कॉर्पस संस्करण (Corpus Version)",
     "url_label": "आधिकारिक सार्वजनिक पोर्टल (Official Portal)",
-    "excerpt_label": "आधिकारिक प्रावधान उद्धरण (Official Excerpt)",
+    "excerpt_label": "कॉर्पस अनुच्छेद सारांश (Paraphrased Corpus Passage)",
     "review_status_label": "कॉर्पस समीक्षा स्थिति (Review Status)",
     "status_values": {
       "approved": "समीक्षित एवं स्वीकृत (Approved)",

@@ -28,7 +28,7 @@ Both translation files share an identical recursive JSON structure organized acr
 | `intake` | Guided formulation questionnaire | Progress indicators, formulation metadata fields, 8 elimination questions (`Q-USE`, `Q-INGR`, `Q-FORM`, `Q-ROUTE`, `Q-FOOD-TEXT`, `Q-FOOD-CLAIM`, `Q-FOOD-SYN`, `Q-COSM-CLAIM`), options, helper text, and missing-fact clarification prompts |
 | `routes` | Provisional routing outputs | 7 classification routes: Classical ASU Drug, Patent or Proprietary ASU Drug, Novel Formulation, Phytopharmaceutical Drug, Ayurveda Aahara, Ayurvedic Cosmetic, and Unknown/Ambiguous |
 | `answer` | Cited answer presentation | Response status badges (`clarify`, `answered`, `abstained`, `referral`), verified findings card, evidence support levels, assumptions, limitations, cited provisions |
-| `source_drawer` | Accessible source drawer / modal | Source Document Title, Provision Locator, Source ID, Passage ID, Legal Jurisdiction, Corpus Version, official portal link, verbatim excerpt, corpus review status (`approved`, `pending`, `stale`, `rejected`) |
+| `source_drawer` | Accessible source drawer / modal | Source Document Title, Provision Locator, Source ID, Passage ID, Legal Jurisdiction, Corpus Version, official portal link, source-backed passage paraphrase, corpus review status (`approved`, `pending`, `stale`, `rejected`) |
 | `safety` | Uncertainty & safe abstention | Safe abstention banner, out-of-scope notice, missing mandatory facts prompt, unverified translation safety fallback |
 | `referral` | Specialist consultation dossier | Dossier title, download buttons (JSON/PDF), unresolved statutory issues list, official facilitation contact points (IP India, AYUSH SLA, NBA, FSSAI, TKDL) |
 | `accessibility` | Screen-reader & WCAG 2.1 AA | Skip to main content link, modal open/close ARIA announcements, language/jurisdiction change announcements, dynamic `aria-live` status messages |
@@ -74,6 +74,7 @@ python scripts/verify_strings.py
 ```
 Checks:
 - Valid JSON parsing for all locale files.
-- 100% key parity (recursive tree comparison).
+- 100% key parity across all 183 keys (recursive tree comparison).
 - Non-empty values for all terminal string keys.
-- Presence of all required immutable statutory tokens in localized files.
+- Rigorous per-string preservation of 24 monitored statutory and institutional tokens (`Section 3(a)`, `Section 3(h)`, `Section 3(p)`, `Section 3(e)`, `Section 3(aaa)`, `Rule 2(eb)`, `Regulation 2(b)`, `Regulation 8`, `Regulation 3(4)`, `Ayurveda Aahara`, `Phytopharmaceutical Drug`, `WIPO`, `AYUSH`, `FSSAI`, `NBA`, `TKDL`, and 8 `Q-` question IDs) across 49 instances.
+- *Scope note:* Automated checks verify template key and token preservation. Referential integrity of database citation IDs (`PASS-xxx`, `REAL-xxx`) is validated by corpus and benchmark suites (`validate_t02.py`, `validate_sa01.py`). Semantic legal nuance remains subject to independent human review.

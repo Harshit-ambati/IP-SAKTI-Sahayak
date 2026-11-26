@@ -215,7 +215,7 @@
     "jurisdiction_label": "Legal Jurisdiction",
     "corpus_version_label": "Corpus Version",
     "url_label": "Official Public Portal",
-    "excerpt_label": "Official Provision Excerpt",
+    "excerpt_label": "Paraphrased Corpus Passage",
     "review_status_label": "Corpus Review Status",
     "status_values": {
       "approved": "Reviewed & Approved",
