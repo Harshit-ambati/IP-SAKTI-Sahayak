@@ -90,25 +90,25 @@ The source view displays authoritative legal backing for retrieved claims. It ca
 
 ```html
 <!-- Source View Dialog Container -->
-<div 
-  id="source-modal" 
-  role="dialog" 
-  aria-modal="true" 
-  aria-labelledby="source-dialog-title" 
+<div
+  id="source-modal"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="source-dialog-title"
   aria-describedby="source-dialog-desc"
   class="source-drawer-overlay"
 >
   <div class="source-drawer-panel" tabIndex="-1">
-    
+
     <!-- Header -->
     <header class="source-drawer-header">
       <div class="source-header-titles">
         <span class="source-id-badge" aria-label="Source Identifier">REAL-001</span>
         <h2 id="source-dialog-title" class="source-title">The Patents Act, 1970</h2>
       </div>
-      <button 
-        type="button" 
-        class="source-close-btn" 
+      <button
+        type="button"
+        class="source-close-btn"
         aria-label="Close statutory source reference panel"
       >
         <span aria-hidden="true">&times;</span>
@@ -157,18 +157,18 @@ The source view displays authoritative legal backing for retrieved claims. It ca
 
     <!-- Action Footer -->
     <footer class="source-drawer-footer">
-      <a 
+      <a
         href="https://www.ipindia.gov.in/acts/patent-act-1970/section-3"
-        target="_blank" 
-        rel="noopener noreferrer" 
+        target="_blank"
+        rel="noopener noreferrer"
         class="source-portal-link"
         aria-label="Open official IP India portal in new tab"
       >
         <span>Open Official Portal</span>
         <svg aria-hidden="true" width="16" height="16" fill="currentColor"><path d="..."/></svg>
       </a>
-      <button 
-        type="button" 
+      <button
+        type="button"
         class="source-copy-btn"
         aria-label="Copy legal citation to clipboard"
       >
