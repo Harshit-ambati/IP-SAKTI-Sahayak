@@ -1,0 +1,265 @@
+{
+  "brand": {
+    "title": "IP-SAKTI Sahayak",
+    "subtitle": "Multilingual Source-Cited Assistant for Intellectual Property & Regulatory Information in Ayurveda",
+    "version_tag": "v1.0.0-phase2",
+    "scope_badge": "Bounded Regulatory Scope"
+  },
+  "nav": {
+    "home": "Home",
+    "intake": "Formulation Intake",
+    "answer": "Cited Guidance",
+    "sources": "Knowledge Sources",
+    "referral": "Referral Dossier",
+    "language_selector_label": "Select Interface Language",
+    "jurisdiction_toggle_label": "Select Legal Jurisdiction"
+  },
+  "disclaimer": {
+    "banner": "Informational guidance only. Not legal advice or regulatory certification.",
+    "header_short": "Informational Assistant · Non-Binding",
+    "footer_full": "IP-SAKTI Sahayak provides informational guidance grounded in public statutory texts. It does not constitute legal advice, patent examination certification, or regulatory marketing approval. All provisional routes must be verified by a qualified practitioner.",
+    "not_legal_advice": "This system provides information, not legal advice. Evidence coverage or AI confidence is not proof of legal correctness.",
+    "provisional_warning": "Provisional classification is based solely on user-declared attributes and does not substitute for formal State Licensing Authority (SLA) or FSSAI determination."
+  },
+  "jurisdiction": {
+    "india_label": "India Jurisdiction",
+    "india_desc": "Domestic Indian statutory regime: Patents Act 1970, Drugs and Cosmetics Act 1940, and FSSAI Regulations.",
+    "international_label": "International Overview",
+    "international_desc": "Multilateral overview: WIPO GRATK Treaty and international patent disclosure frameworks (non-domestic).",
+    "toggle_hint": "Switch between domestic Indian statutory analysis and non-binding international treaty overview."
+  },
+  "intake": {
+    "title": "Ayurvedic Formulation Intake",
+    "subtitle": "Answer the guided questions below to determine the provisional product classification and applicable regulatory pathway.",
+    "step_indicator": "Step {current} of {total}",
+    "progress_label": "Intake Completion Progress",
+    "reset_btn": "Reset Questionnaire",
+    "submit_btn": "Analyze Formulation",
+    "back_btn": "Previous Question",
+    "next_btn": "Next Question",
+    "metadata": {
+      "formulation_title_label": "Formulation / Product Title",
+      "formulation_title_placeholder": "e.g., Classical Ashwagandha Churna or Proprietary Herbal Extract",
+      "ingredients_label": "Active Botanical and Mineral Ingredients",
+      "ingredients_placeholder": "e.g., Withania somnifera root powder, Piper longum fruit",
+      "classical_text_label": "First Schedule Classical Text Citation",
+      "classical_text_placeholder": "e.g., Sharangadhara Samhita, Madhyama Khanda, Adhyaya 6",
+      "processing_method_label": "Method of Processing / Dosage Form",
+      "processing_method_placeholder": "e.g., Churna (powder), Vati (tablet), Taila (medicated oil), or Standardized Extract"
+    },
+    "questions": {
+      "q_use": {
+        "id": "Q-USE",
+        "prompt": "What is the primary intended use of the formulation?",
+        "help_text": "Determines whether the product falls under the medicinal framework (D&C Act), dietary food framework (FSSAI), or external cosmetic framework.",
+        "missing_fact_prompt": "Please specify the primary intended purpose: Is the product meant to treat/prevent disease, serve as a daily dietary supplement, or provide external cosmetic care?",
+        "options": {
+          "medicinal": "Medicinal (Treatment, prevention, mitigation, or cure of human disease/disorder)",
+          "food_dietary": "Food / Dietary Supplement (Daily nutritional nourishment or physiological maintenance)",
+          "cosmetic": "Cosmetic (External cleansing, beautifying, perfuming, or enhancing appearance)",
+          "other": "Other / Unspecified Purpose"
+        }
+      },
+      "q_ingr": {
+        "id": "Q-INGR",
+        "prompt": "Are all active botanical and mineral ingredients listed in First Schedule classical Ayurvedic texts?",
+        "help_text": "First Schedule to the Drugs and Cosmetics Act 1940 contains 54 authoritative Ayurvedic treatises (e.g., Charaka Samhita, Sushruta Samhita, API).",
+        "missing_fact_prompt": "Please confirm the source of your active ingredients: Are all botanical/mineral ingredients documented in First Schedule Ayurvedic texts such as Charaka Samhita or API?",
+        "options": {
+          "all_classical": "All ingredients are listed in First Schedule classical texts",
+          "partial_classical": "Contains ingredients not documented in First Schedule classical texts",
+          "synthetic_added": "Contains added synthetic active substances or isolated chemical entities"
+        }
+      },
+      "q_form": {
+        "id": "Q-FORM",
+        "prompt": "Is the formulation prepared strictly according to an unchanged recipe from an authoritative classical text?",
+        "help_text": "Distinguishes classical generic ASU medicines (Section 3(a)) from patent or proprietary ASU medicines (Section 3(h)).",
+        "missing_fact_prompt": "Is the formulation prepared strictly according to an unchanged recipe from an authoritative Ayurvedic book, or have you modified the combination, proportions, or processing?",
+        "options": {
+          "exact_classical_recipe": "Strictly unchanged classical recipe and traditional processing method",
+          "proprietary_combination": "Novel/modified combination of classical ingredients (Proprietary recipe)",
+          "modified_dosage_form": "Classical ingredients delivered via modern non-classical delivery system (e.g., liposome, nanoparticle)"
+        }
+      },
+      "q_route": {
+        "id": "Q-ROUTE",
+        "prompt": "What is the intended administration route of the formulation?",
+        "help_text": "Under Section 3(h) and Rule 2(eb), parenterals (injections) are strictly excluded from ASU and phytopharmaceutical definitions.",
+        "missing_fact_prompt": "Please confirm the mode of administration: Is the product administered orally/topically, or is it intended for parenteral (injection) administration?",
+        "options": {
+          "oral_topical": "Oral, topical, or traditional external application (Non-parenteral)",
+          "parenteral_injection": "Parenteral administration (Injections, implants, or intravenous delivery)"
+        }
+      },
+      "q_food_text": {
+        "id": "Q-FOOD-TEXT",
+        "prompt": "Is the dietary formulation prepared in accordance with recipes or processes described in Schedule A authoritative Ayurvedic texts?",
+        "help_text": "Under FSSAI Ayurveda Aahara Regulations 2022 Regulation 2(b), Ayurveda Aahara must be prepared in accordance with recipes or principles in authoritative Ayurvedic books listed in Schedule A.",
+        "missing_fact_prompt": "Is this food preparation made in accordance with the recipes or principles in authoritative Ayurvedic books listed in Schedule A of the Ayurveda Aahara regulations?",
+        "options": {
+          "in_classical_text": "Prepared in accordance with authoritative Ayurvedic texts listed in Schedule A",
+          "not_in_classical_text": "Not derived from Schedule A authoritative classical texts (General food / novel supplement)"
+        }
+      },
+      "q_food_claim": {
+        "id": "Q-FOOD-CLAIM",
+        "prompt": "Does the dietary product label, presentation, or advertising claim to prevent, treat, or cure any human disease?",
+        "help_text": "FSSAI Ayurveda Aahara (Ayurveda Aahara) Regulation 8 strictly prohibits any claim to prevent, treat, or cure any human disease in labelling, presentation, or advertising.",
+        "missing_fact_prompt": "Please verify your marketing and labelling claims: Does the product claim to prevent, treat, or cure any human disease in labelling, advertising, or presentation?",
+        "options": {
+          "no_disease_claims": "No disease prevention, treatment, or cure claims (Only general health/wellness)",
+          "claims_prevent_treat_cure": "Claims prevention, treatment, or cure of human disease"
+        }
+      },
+      "q_food_syn": {
+        "id": "Q-FOOD-SYN",
+        "prompt": "Does the dietary formulation contain added vitamins, minerals, or amino acids (whether natural or synthetic)?",
+        "help_text": "Regulation 3(4) of FSSAI Ayurveda Aahara (Ayurveda Aahara) Regulations states that no person shall add vitamins, minerals, or amino acids to Ayurveda Aahara (Ayurveda Aahara).",
+        "missing_fact_prompt": "Please clarify composition: Does the food formulation contain any added vitamins, minerals, or amino acids?",
+        "options": {
+          "no_synthetic_additives": "No added vitamins, minerals, or amino acids",
+          "contains_synthetic_additives": "Contains added vitamins, minerals, or amino acids"
+        }
+      },
+      "q_cosm_claim": {
+        "id": "Q-COSM-CLAIM",
+        "prompt": "Does the cosmetic formulation make therapeutic or medicinal claims to cure skin/hair diseases?",
+        "help_text": "Under Section 3(aaa) of the Drugs and Cosmetics Act 1940, cosmetics are strictly for cleansing, beautifying, or altering appearance without therapeutic disease claims.",
+        "missing_fact_prompt": "Please clarify cosmetic claims: Is the product solely for cleansing, perfuming, or beautifying, or does it claim therapeutic cure for dermatological disease?",
+        "options": {
+          "external_cleansing_beautifying": "Purely external application for cleansing, beautifying, or altering appearance",
+          "claims_cure_disease": "Claims therapeutic treatment or cure of dermatological or medical disease"
+        }
+      }
+    }
+  },
+  "routes": {
+    "classical_generic": {
+      "label": "Classical ASU Drug",
+      "short_label": "Classical ASU",
+      "statutory_ref": "Drugs and Cosmetics Act 1940, Section 3(a) & First Schedule",
+      "description": "Manufactured strictly in accordance with formulae described in authoritative books specified in the First Schedule. Excluded from patentability under Section 3(p) as traditional knowledge.",
+      "referral_needed": false
+    },
+    "patent_proprietary": {
+      "label": "Patent or Proprietary (P&P) ASU Drug",
+      "short_label": "P&P ASU Drug",
+      "statutory_ref": "Drugs and Cosmetics Act 1940, Section 3(h)",
+      "description": "Formulation containing ingredients mentioned in First Schedule texts but prepared in proprietary proportions. Strictly non-parenteral. Section 3(p) and Section 3(e) patent examination applies.",
+      "referral_needed": false
+    },
+    "novel_non_classical": {
+      "label": "Novel / Non-Classical Formulation",
+      "short_label": "Novel Formulation",
+      "statutory_ref": "Drugs and Cosmetics Act 1940 / Patents Act 1970",
+      "description": "Contains non-classical botanical/mineral ingredients or novel synthetic delivery systems outside established classical ASU frameworks. Requires professional regulatory referral.",
+      "referral_needed": true
+    },
+    "phytopharmaceutical": {
+      "label": "Phytopharmaceutical Drug",
+      "short_label": "Phytopharmaceutical Drug",
+      "statutory_ref": "Drugs Rules 1945, Rule 2(eb) & Schedule Y",
+      "description": "Purified and standardized fraction with defined minimum 4 bioactive/phytochemical markers from medicinal plant extract for internal/external use. Strictly non-parenteral. Evaluated under CDSCO new drug pathway.",
+      "referral_needed": true
+    },
+    "ayurveda_aahara": {
+      "label": "Ayurveda Aahara",
+      "short_label": "Ayurveda Aahara",
+      "statutory_ref": "FSSAI Ayurveda Aahara Regulations 2022, Regulation 2(b) & Regulation 8",
+      "description": "Food or dietary supplement prepared in accordance with recipes described in authoritative Ayurvedic treatises. Strictly prohibited from claiming prevention, treatment, or cure of human disease (Regulation 8).",
+      "referral_needed": false
+    },
+    "cosmetic": {
+      "label": "Ayurvedic Cosmetic",
+      "short_label": "Ayurvedic Cosmetic",
+      "statutory_ref": "Drugs and Cosmetics Act 1940, Section 3(aaa)",
+      "description": "Article intended to be rubbed, poured, sprinkled, or sprayed on human body for cleansing, beautifying, or altering appearance. Prohibited from therapeutic disease claims.",
+      "referral_needed": false
+    },
+    "unknown": {
+      "label": "Unknown / Ambiguous",
+      "short_label": "Ambiguous Input",
+      "statutory_ref": "Master Plan Safety Gate & Safe Abstention Protocol",
+      "description": "The declared formulation parameters contain missing mandatory facts or conflicting attributes. Classification cannot proceed without clarification or specialist referral.",
+      "referral_needed": true
+    }
+  },
+  "answer": {
+    "title": "Authoritative Guidance & Evidence Analysis",
+    "status_labels": {
+      "clarify": "Clarification Required",
+      "answered": "Guidance Provided",
+      "abstained": "Safe Abstention",
+      "referral": "Professional Referral Recommended"
+    },
+    "claim_card_title": "Verified Legal & Regulatory Findings",
+    "evidence_status_labels": {
+      "supported": "Supported by Official Passage",
+      "partial": "Partially Supported",
+      "insufficient": "Insufficient Evidence Grounding"
+    },
+    "assumptions_title": "Factual & Statutory Assumptions",
+    "limitations_title": "Regulatory & Analytical Limitations",
+    "cited_provisions_title": "Cited Statutory Provisions & Treaties",
+    "view_source_btn": "Inspect Official Source & Provision",
+    "copy_citation_btn": "Copy Citation Locator",
+    "citation_copied": "Citation copied to clipboard"
+  },
+  "source_drawer": {
+    "modal_title": "Authoritative Statutory Reference",
+    "source_title_label": "Source Document Title",
+    "locator_label": "Provision Locator",
+    "source_id_label": "Source ID",
+    "passage_id_label": "Passage ID",
+    "jurisdiction_label": "Legal Jurisdiction",
+    "corpus_version_label": "Corpus Version",
+    "url_label": "Official Public Portal",
+    "excerpt_label": "Paraphrased Corpus Passage",
+    "review_status_label": "Corpus Review Status",
+    "status_values": {
+      "approved": "Reviewed & Approved",
+      "pending": "Pending Formal Activation",
+      "stale": "Superseded / Amendment Pending",
+      "rejected": "Rejected from Corpus"
+    },
+    "close_btn": "Close Source Panel",
+    "copy_citation_btn": "Copy Legal Citation",
+    "open_portal_btn": "Open Official Instrument Portal"
+  },
+  "safety": {
+    "safe_abstention_title": "Safe Abstention: Grounding Unavailable",
+    "safe_abstention_desc": "The authoritative corpus does not contain an approved statutory provision supporting a verified answer for this query. To prevent AI hallucination and misleading legal advice, the assistant safely abstains.",
+    "out_of_scope_title": "Out of Regulatory Scope",
+    "out_of_scope_desc": "Foreign country-specific export compliance (e.g. US FDA, EU EMA) and commercial patent clearance (Freedom-to-Operate) are outside the system's verified scope.",
+    "clarification_title": "Missing Mandatory Formulation Facts",
+    "clarification_desc": "Essential statutory criteria could not be evaluated because mandatory formulation facts were omitted or ambiguous. Please provide the required information below.",
+    "unverified_translation_title": "Unverified Translation Fallback Banner",
+    "unverified_translation_desc": "Dynamic translation for this technical provision has not completed dual-reviewer sign-off. Displaying approved English statutory text to preserve legal accuracy."
+  },
+  "referral": {
+    "title": "Professional Referral Dossier",
+    "subtitle": "Structured dossier prepared for consultation with an AYUSH regulatory consultant, registered patent agent, or legal counsel.",
+    "download_btn": "Download Referral Packet (JSON/PDF)",
+    "unresolved_issues_title": "Unresolved Factual & Regulatory Points",
+    "suggested_practitioners_title": "Official Facilitation & Regulatory Contact Points",
+    "practitioners_list": {
+      "ip_facilitator": "IP India Patent Facilitation Center & TIFAC",
+      "ayush_licensing": "State Licensing Authority (SLA) for AYUSH Drugs",
+      "nba_helpdesk": "National Biodiversity Authority (NBA) Helpdesk for ABS Form 7/8",
+      "fssai_licensing": "FSSAI Central / State Licensing Authority (Ayurveda Aahara Division)",
+      "tkdl_portal": "CSIR-TKDL (Traditional Knowledge Digital Library) Public Information Portal"
+    },
+    "disclaimer": "The referral packet summarizes user declarations and system findings. It is not an application for registration or official communication."
+  },
+  "accessibility": {
+    "skip_to_content": "Skip to main content",
+    "screen_reader_modal_open": "Statutory source details dialog opened. Press Escape to close.",
+    "screen_reader_modal_close": "Statutory source dialog closed. Focus returned to citation button.",
+    "screen_reader_lang_change": "Interface language changed to {language}.",
+    "screen_reader_jurisdiction_change": "Legal jurisdiction filter updated to {jurisdiction}.",
+    "close_modal_hint": "Press Escape or click Close to return to guidance",
+    "aria_live_answering": "Evaluating formulation against statutory decision rules...",
+    "aria_live_error": "Input error: Please review the highlighted mandatory questions."
+  }
+}
