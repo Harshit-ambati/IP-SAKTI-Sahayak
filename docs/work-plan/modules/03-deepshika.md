@@ -66,20 +66,20 @@ Weeks 15-16 are reserved for testing, repairs, packaging and submission; do not 
 
 ## Deliverable checklist
 
-- [ ] Intake and answer-flow specifications for Akshay
-- [ ] English, Hindi and selected regional-language UI strings
-- [ ] Controlled glossary of approximately 80-120 terms
-- [ ] Reviewed translated answer fixtures and citation-parity checks
-- [ ] Accessibility checklist, semantic-fidelity and comprehension results
+- [x] Intake and answer-flow specifications for Akshay ([deepshika-d01-specification.md](deepshika-d01-specification.md))
+- [x] Controlled glossary v0 of 30 foundational terms ([controlled_glossary_v0.csv](../../../data/glossary/controlled_glossary_v0.csv); expanding to 80-120 in v1)
+- [x] Accessibility checklist, semantic-fidelity and translation feasibility results ([deepshika-d01-specification.md](deepshika-d01-specification.md))
+- [ ] English, Hindi and selected regional-language UI strings (Scheduled for Task D-02, Weeks 3–4)
+- [ ] Reviewed translated answer fixtures and citation-parity checks (Scheduled for Tasks D-03/D-04)
 - [ ] Relevant master-plan acceptance gates met and actual evidence recorded.
-- [ ] Independent peer review completed and all critical findings resolved.
+- [ ] Independent peer review completed and all critical findings resolved (Pending Thulasi, Sabeena, and Harshit review).
 - [ ] Outputs integrated into the shared project; handoff notes and limitations documented.
 
 ## Start here
 
-1. Name available Hindi and regional-language reviewers at kickoff.
-2. Define reviewed translations for jurisdiction, uncertainty, abstention and referral.
-3. Specify how original legal names, section numbers and source IDs remain visible.
+1. Name available Hindi and regional-language reviewers at kickoff. (Completed in Phase 1: see [deepshika-d01-specification.md](deepshika-d01-specification.md) Section 2; Telugu identified as leading candidate, maintained as an explicit kickoff decision awaiting team sign-off).
+2. Define reviewed translations for jurisdiction, uncertainty, abstention and referral. (Completed in Phase 1: 30 terms in [controlled_glossary_v0.csv](../../../data/glossary/controlled_glossary_v0.csv)).
+3. Specify how original legal names, section numbers and source IDs remain visible. (Completed in Phase 1: preservation rules `ID_IMMUTABLE`, `NUMBER_IMMUTABLE`, `NAME_IMMUTABLE` in [deepshika-d01-specification.md](deepshika-d01-specification.md)).
 
 ## Progress record
 
@@ -87,4 +87,4 @@ Use task IDs in issues and PRs. Replace the placeholder row only when work start
 
 | Task ID | Status | Evidence / issue / PR | Reviewer | Blocker / next action |
 |---|---|---|---|---|
-| Not started | Planned | None yet | Unassigned | Confirm kickoff inputs |
+| D-01 | In review (draft PR) | Branch `deepshika/d-01-phase-1`; [Draft PR #2](https://github.com/Harshit-ambati/IP-SAKTI-Sahayak/pull/2); [deepshika-d01-specification.md](deepshika-d01-specification.md), [controlled_glossary_v0.csv](../../../data/glossary/controlled_glossary_v0.csv), [verify_glossary.py](../../../scripts/verify_glossary.py) | Harshit (approved), Thulasi (approved), Sabeena (usability) | Harshit and Thulasi approved; Sabeena usability review pending; regional language kickoff confirmation pending |
