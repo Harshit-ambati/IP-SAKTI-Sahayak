@@ -87,4 +87,5 @@ Use task IDs in issues and PRs. Replace the placeholder row only when work start
 
 | Task ID | Status | Evidence / issue / PR | Reviewer | Blocker / next action |
 |---|---|---|---|---|
-| Not started | Planned | None yet | Unassigned | Confirm kickoff inputs |
+| H-01 | Merged | [PR #5](https://github.com/Harshit-ambati/IP-SAKTI-Sahayak/pull/5), merge `7cf65fa` | Suresh, Thulasi | Local trial results documented in the merged architecture note |
+| H-02 | In progress | [Issue #14](https://github.com/Harshit-ambati/IP-SAKTI-Sahayak/issues/14) | Suresh, Thulasi | Confirm at least three reviewed provisions for activation and verify the real cited path |

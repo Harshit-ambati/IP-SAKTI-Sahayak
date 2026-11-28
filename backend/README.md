@@ -213,6 +213,20 @@ Allows frontend cards and citation popups to resolve exact source documents and 
 ### 4.5 Referral Packet Export: `POST /api/v1/referral/export`
 Generates a user-controlled referral packet containing intake facts, statutory provisions, and unresolved issues for export to a professional attorney or Ayush practitioner. No automated third-party messages are transmitted.
 
+### 4.6 H-02 local provision lookup
+
+From the repository root, stage the corpus in a fresh temporary database and run:
+
+```powershell
+$env:IPSAKTI_DB_PATH = Join-Path ([IO.Path]::GetTempPath()) ("sahayak-h02-" + [guid]::NewGuid() + ".db")
+python -B -m backend.app.db.init_db
+python -B -m backend.app.provision_lookup --db $env:IPSAKTI_DB_PATH --jurisdiction India PASS-002
+```
+
+The lookup uses the backend's existing SQLite FTS5 index, with one indexed row per passage. It accepts a passage ID, a provision locator, or a literal phrase in an indexed title, locator or paraphrase. Choose `India` or `international_overview`. It opens the database read-only and returns an H-01 answer object. A single eligible match returns the reviewed paraphrase, passage ID, official URL and locator. Multiple matches ask for a passage ID. No matches return `abstained` with empty claims and evidence. Use a precise provision lookup rather than a product eligibility question.
+
+Both the source and passage must be active and real, and the passage must have explicit `approved` status. The merged T-02 records are pending activation, so the example above abstains. The cited path is verified with isolated test records until Thulasi and Harshit clear provisions for activation. The local command does not change the general answer endpoint, which is handled by Su-02.
+
 ---
 
 ## 5. Security & Privacy Safeguards
