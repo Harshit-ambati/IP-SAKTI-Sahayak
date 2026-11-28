@@ -1,0 +1,22 @@
+{
+  "intake": {
+    "contract_version": "1.0.0", "request_id": "SYN-H01-001", "jurisdiction": "India", "language": "en",
+    "question": "Where can I check the rules for my proposed product?", "facts": {"product_description": "synthetic example"}
+  },
+  "classification": {
+    "contract_version": "1.0.0", "request_id": "SYN-H01-001", "route": "unknown", "provisional": true,
+    "missing_facts": ["intended_use", "ingredients", "preparation_method"],
+    "reason": "Synthetic fixture; no classification rules have been reviewed."
+  },
+  "answer": {
+    "contract_version": "1.0.0", "request_id": "SYN-H01-001", "status": "abstained", "jurisdiction": "India",
+    "language": "en", "route": "unknown", "assumptions": [], "claims": [], "evidence": [],
+    "limitations": ["No reviewed provision is available for this question."],
+    "corpus_version": "unapproved-starter-inventory", "model_version": "none"
+  },
+  "referral": {
+    "contract_version": "1.0.0", "request_id": "SYN-H01-001", "jurisdiction": "India", "language": "en",
+    "question": "Where can I check the rules for my proposed product?", "route": "unknown", "assumptions": [],
+    "evidence_ids": [], "unresolved_issues": ["Product facts and reviewed evidence are missing."]
+  }
+}
