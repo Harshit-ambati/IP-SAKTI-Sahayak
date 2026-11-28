@@ -87,4 +87,5 @@ Use task IDs in issues and PRs. Replace the placeholder row only when work start
 
 | Task ID | Status | Evidence / issue / PR | Reviewer | Blocker / next action |
 |---|---|---|---|---|
-| Su-01 | Submitted for review | Draft PR (branch `suresh/su-01-phase-1`); backend skeleton, SQLite FTS5, synthetic fixtures, 24/24 tests passing | Harshit, Akshay | Awaiting Harshit contract review; Su-02 gated on Su-01 PR merge |
+| Su-01 | Complete | Merged PR #3 (commit `7cf0f55`); FastAPI skeleton, SQLite FTS5, 37 passing tests, CI green | Harshit, Akshay | Merged into main; Su-02 gate cleared |
+| Su-02 | In progress | Issue #6, PR #7, branch `suresh/su-02-phase-2`; stable QueryEngineAdapter interface, SQLiteFTS5QueryAdapter, dynamic evidence retrieval, strict answerability & evidence safety gates, 58 passing tests, CI green | Harshit, Akshay | Addressing review comments on PR #7 |

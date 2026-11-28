@@ -3,6 +3,7 @@ Tests for health check endpoints (Task Su-01).
 """
 
 from fastapi.testclient import TestClient
+from app.config import VERSION
 
 
 def test_root_endpoint(client: TestClient):
@@ -11,7 +12,7 @@ def test_root_endpoint(client: TestClient):
     data = response.json()
     assert data["status"] == "operational"
     assert "IP-SAKTI" in data["service"]
-    assert data["phase"] == "Su-01: API and Data Skeleton"
+    assert "Su-02" in data["phase"]
 
 
 def test_health_endpoint(client: TestClient):
@@ -29,4 +30,4 @@ def test_api_v1_health_endpoint(client: TestClient):
     assert response.status_code == 200
     data = response.json()
     assert data["status"] == "healthy"
-    assert data["version"] == "0.1.0-su01"
+    assert data["version"] == VERSION

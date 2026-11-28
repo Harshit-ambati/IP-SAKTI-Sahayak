@@ -1,9 +1,11 @@
-name: Su-01 Backend CI
+name: Backend CI
 
 on:
   push:
     branches:
-      - "suresh/su-01-phase-1"
+      - main
+      - dev
+      - "suresh/**"
   pull_request:
     branches:
       - main
@@ -11,7 +13,7 @@ on:
 
 jobs:
   test:
-    name: "pytest – Su-01 Backend (Python 3.12, Ubuntu)"
+    name: "pytest – Backend (Python 3.12, Ubuntu)"
     runs-on: ubuntu-latest
 
     steps:
